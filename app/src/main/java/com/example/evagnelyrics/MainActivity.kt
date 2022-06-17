@@ -12,21 +12,5 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setListenners()
     }
-
-    private fun setListenners() {
-        binding.myBut.setOnClickListener {
-            showDialog().show()
-        }
-    }
-
-    private fun showDialog(): BottomSheetDialog {
-        val response = BottomSheetDialog(this)
-        response.setContentView(R.layout.my_bottom_shet)
-
-        return response
-    }
-
 }
