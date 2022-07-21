@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Evagne Lyrics</string>
-    <string name="hello_world">Hello World</string>
-    <string name="bye_world">Bye World</string>
-    <string name="see_you_world">See you World</string>
+    <string name="songs_title">Canciones</string>
+    <string name="songs_description">Vea sus canciones</string>
+    <string name="albums_title">Albumes</string>
+    <string name="albums_description">Vea su lista de albumes</string>
+    <string name="title_wallpapers">Fotografias</string>
+    <string name="description_wallpapers">Vea una lista de fotografias</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>

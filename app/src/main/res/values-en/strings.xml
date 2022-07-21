@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Evagne Lyrics</string>
+    <string name="songs_title">Songs</string>
+    <string name="songs_description">See her songs</string>
+    <string name="albums_title">Albums</string>
+    <string name="albums_description">See her albums list</string>
+    <string name="title_wallpapers">Wallpapers</string>
+    <string name="description_wallpapers">See her wallpapers list</string>
+    <!-- TODO: Remove or change this placeholder text -->
+</resources>

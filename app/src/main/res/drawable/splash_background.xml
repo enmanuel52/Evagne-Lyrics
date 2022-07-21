@@ -2,9 +2,12 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
 
-    <item android:drawable="?attr/colorPrimary"/>
+    <item android:drawable="?attr/colorPrimary" />
 
-    <item android:drawable="@drawable/splash"
-        android:gravity="center"/>
+    <item
+        android:width="410dp"
+        android:height="720dp"
+        android:drawable="@drawable/img1_7185"
+        android:gravity="center" />
 
 </layer-list>

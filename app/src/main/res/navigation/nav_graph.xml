@@ -6,8 +6,45 @@
     app:startDestination="@id/main_fragment">
 
     <fragment
-        android:name="com.example.evagnelyrics.MainFragment"
+        android:name="com.example.evagnelyrics.ui.fragment.MainFragment"
         android:label="fragment_main"
         android:id="@+id/main_fragment"
-        tools:layout="@layout/fragment_main"/>
+        tools:layout="@layout/fragment_main">
+
+        <action
+            android:id="@+id/action_main_fragment_to_list_fragment"
+            app:destination="@id/list_fragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right">
+        </action>
+    </fragment>
+
+    <fragment
+        android:name="com.example.evagnelyrics.ui.fragment.ListFragment"
+        android:label="fragment_list"
+        android:id="@+id/list_fragment"
+        tools:layout="@layout/fragment_list">
+
+        <action
+            android:id="@+id/action_list_fragment_to_songs_fragment"
+            app:destination="@id/song_fragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:label="fragment_song"
+        android:name="com.example.evagnelyrics.ui.fragment.SongFragment"
+        android:id="@+id/song_fragment"
+        tools:layout="@layout/fragment_song">
+
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="false"/>
+    </fragment>
 </navigation>
