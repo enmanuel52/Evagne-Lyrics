@@ -6,7 +6,7 @@
     app:startDestination="@id/main_fragment">
 
     <fragment
-        android:name="com.example.evagnelyrics.MainFragment"
+        android:name="com.example.evagnelyrics.ui.fragment.MainFragment"
         android:label="fragment_main"
         android:id="@+id/main_fragment"
         tools:layout="@layout/fragment_main"/>

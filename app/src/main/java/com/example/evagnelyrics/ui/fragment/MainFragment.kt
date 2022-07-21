@@ -1,4 +1,4 @@
-package com.example.evagnelyrics
+package com.example.evagnelyrics.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,9 +1,8 @@
-package com.example.evagnelyrics
+package com.example.evagnelyrics.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.evagnelyrics.databinding.ActivityMainBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class MainActivity : AppCompatActivity() {
 

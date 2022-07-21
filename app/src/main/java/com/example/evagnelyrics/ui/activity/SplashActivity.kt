@@ -1,4 +1,4 @@
-package com.example.evagnelyrics
+package com.example.evagnelyrics.ui.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
