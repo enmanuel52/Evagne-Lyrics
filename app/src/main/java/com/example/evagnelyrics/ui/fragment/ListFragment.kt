@@ -61,7 +61,7 @@ class ListFragment : Fragment() {
             viewModel.fav.observe(viewLifecycleOwner) {fav->
                 binding.listToolbar.menu.findItem(R.id.showFav).let {menu ->
                     if (fav) {
-                        menu.icon.setTint(Color.RED)
+                        menu.icon.setTint(requireContext().getColor(R.color.pink))
                     } else {
                         menu.icon.setTint(Color.WHITE)
                     }

@@ -1,5 +1,7 @@
 package com.example.evagnelyrics.core
 
+import android.content.Context
+import com.example.evagnelyrics.EvagneLyricsApp
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 
 object Items {
@@ -22,6 +24,8 @@ object Items {
                 Y por pendejo fue que la cagaste
                 no habrá otro regreso, me dañaste
                 
+                
+                Coro:
                 Yo siempre te dí lo mejor de mi
                 te aguanté de todo, yo por ti sufrí
                 Sabiendo que algún día me aburriría
@@ -30,6 +34,7 @@ object Items {
                 ya no voy a caer en to´a tu falsedad
                 Vete a meterle el cuento ese a otra
                 que aquí no te funciona más
+                
                 
                 Parece mentira que esta relación
                 era tan bonita y por un ligue a dañó
@@ -46,6 +51,8 @@ object Items {
                 Tu plan no funciono, conmigo se acabo
                 Tu no quieres a nadie, la careta se te cayo.
                 
+                
+                Coro:
                 Yo siempre te dí lo mejor de mi
                 te aguanté de todo, yo por ti sufrí
                 Sabiendo que algún día me aburriría
@@ -54,6 +61,7 @@ object Items {
                 ya no voy a caer en to´a tu falsedad
                 Vete a meterle el cuento ese a otra
                 que aquí no te funciona más.
+                
                 
                 Te tocó tomar de tu propia medicina
                 Y te asienta muy mal, pero es que no te imaginas
@@ -65,6 +73,8 @@ object Items {
                 Hey
                 Todo tu juego se terminó
                 
+                
+                coro:
                 Yo siempre te dí lo mejor de mi
                 te aguanté de todo, yo por ti sufrí
                 Sabiendo que algún día me aburriría
@@ -73,6 +83,7 @@ object Items {
                 ya no voy a caer en to´a tu falsedad
                 Vete a meterle el cuento ese a otra
                 que aquí no te funciona más
+                
             """.trimIndent(),
         ),
         LyricsEntity(

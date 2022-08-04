@@ -25,7 +25,7 @@
 
     <style name="ShapeAppearance.MaterialComponents.SmallComponent.Mine">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">24dp</item>
+        <item name="cornerSize">8dp</item>
     </style>
 
     <style name="Widget.MaterialComponents.CardView.Mine">
@@ -34,5 +34,8 @@
 
     <style name="Base.Widget.MaterialComponents.TextView.Mine">
         <item name="android:textSize">16sp</item>
+    </style>
+    <style name="Base.Widget.MaterialComponents.TextView.MyTitle">
+        <item name="android:textSize">24sp</item>
     </style>
 </resources>
