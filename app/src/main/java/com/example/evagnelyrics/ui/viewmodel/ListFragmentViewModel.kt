@@ -43,21 +43,21 @@ class ListFragmentViewModel @Inject constructor(
             filterFav()
     }
 
-    fun filterFav() {
+    private fun filterFav() {
         songs.apply {
             value = value.filter { it.favorite }
         }
     }
 
-        fun showFav() {
-            fav.apply {
-                value = !(value!!)
-                if (value!!) {
-                    //filter favs
-                    filterFav()
-                } else {
-                    getAllTitles()
-                }
+    fun showFav() {
+        fav.apply {
+            value = !(value!!)
+            if (value!!) {
+                //filter favs
+                filterFav()
+            } else {
+                getAllTitles()
             }
         }
     }
+}

@@ -114,9 +114,11 @@ class ListFragment : Fragment() {
             }
         }
 
-
     }
 
+    /*
+    * setting the search configuration
+    * */
     private fun search() {
         //set the searchView
         val searchManager =

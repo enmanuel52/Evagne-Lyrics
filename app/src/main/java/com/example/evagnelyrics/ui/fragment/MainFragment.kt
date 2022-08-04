@@ -39,9 +39,14 @@ class MainFragment : Fragment() {
 
     private fun initUi() {
         binding.songs.setOnClickListener { toSongs() }
+        binding.wallpapers.setOnClickListener { toGallery() }
     }
 
-    fun toSongs() {
+    private fun toGallery() {
+        findNavController().navigate(MainFragmentDirections.actionMainFragmentToGalleryFragment())
+    }
+
+    private fun toSongs() {
         findNavController().navigate(MainFragmentDirections.actionMainFragmentToListFragment())
     }
 }
