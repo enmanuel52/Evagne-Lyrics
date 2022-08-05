@@ -39,7 +39,7 @@ class ListAdapter(val listener: (Action) -> Unit) :
             if(current.favorite)
                 setImageResource(R.drawable.ic_round_favorite_24)
             else
-                setImageResource(R.drawable.ic_round_favorite_white_24)
+                setImageResource(R.drawable.ic_round_favorite_empty_24)
         }
     }
 

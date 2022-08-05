@@ -12,7 +12,6 @@ import androidx.navigation.fragment.navArgs
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.databinding.FragmentSongBinding
 import com.example.evagnelyrics.ui.viewmodel.SongFragmentViewModel
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
@@ -11,11 +12,17 @@ import javax.inject.Inject
 class MainFragmentViewModel @Inject constructor(
     private val insertAllLyricsUC: InsertAllLyricsUC,
     private val getAllLyricsUC: GetAllLyricsUC,
-): ViewModel() {
+) : ViewModel() {
+
+    val nightMode: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun setDatabase() {
-        if(getAllLyricsUC().isEmpty()) {
+        if (getAllLyricsUC().isEmpty()) {
             insertAllLyricsUC(Items.songs)
         }
+    }
+
+    fun changeLightMode() {
+        nightMode.value = !(nightMode.value!!)
     }
 }

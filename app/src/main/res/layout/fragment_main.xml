@@ -13,8 +13,8 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="?attr/colorPrimary"
-            app:contentScrim="?attr/colorPrimary"
+            android:backgroundTint="@color/splash_background"
+            app:contentScrim="@color/splash_background"
             app:layout_scrollFlags="exitUntilCollapsed|scroll"
             app:titleEnabled="true"
             app:toolbarId="@id/mainToolbar">
@@ -22,8 +22,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/avatar"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:layout_gravity="top"
+                android:layout_height="390dp"
                 android:src="@drawable/img3_7228_crop" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -33,8 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:layout_collapseMode="pin"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/white" />
+            app:title="@string/app_name" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -79,7 +77,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
                         android:layout_marginBottom="50dp"
-                        android:text="@string/songs_title" />
+                        android:text="@string/songs_title"
+                        android:textColor="@color/white" />
                 </androidx.coordinatorlayout.widget.CoordinatorLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -111,7 +110,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
                         android:layout_marginBottom="50dp"
-                        android:text="@string/title_wallpapers" />
+                        android:text="@string/title_wallpapers"
+                        android:textColor="@color/white" />
                 </androidx.coordinatorlayout.widget.CoordinatorLayout>
             </com.google.android.material.card.MaterialCardView>
 

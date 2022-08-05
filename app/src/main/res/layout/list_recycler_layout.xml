@@ -32,7 +32,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:maxLines="1"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/playIcon"
             app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +45,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_round_favorite_white_24" />
+            tools:src="@drawable/ic_round_favorite_empty_24" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

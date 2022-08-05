@@ -26,8 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:layout_collapseMode="none"
-            app:title="@string/songs_title"
-            app:titleTextColor="@color/white" />
+            app:title="@string/songs_title" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

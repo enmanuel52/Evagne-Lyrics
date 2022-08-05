@@ -11,9 +11,7 @@
         android:id="@+id/gallery_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primaryColor"
-        app:title="@string/title_wallpapers"
-        app:titleTextColor="?attr/colorOnPrimary" />
+        app:title="@string/title_wallpapers" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/imageRecycler"

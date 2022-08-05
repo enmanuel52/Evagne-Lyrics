@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/showFav"
-        android:icon="@drawable/ic_round_favorite_white_24"
+        android:icon="@drawable/ic_round_favorite_empty_24"
         android:title="Show fav"
         app:showAsAction="ifRoom" />
 
