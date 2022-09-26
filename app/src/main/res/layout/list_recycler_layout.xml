@@ -27,7 +27,6 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/songTitle"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"

@@ -4,6 +4,7 @@
 buildscript {
 
     ext {
+        compose_version = '1.2.0'
         hilt_version = '2.40.5'
         navigation_version = '2.4.2'
     }

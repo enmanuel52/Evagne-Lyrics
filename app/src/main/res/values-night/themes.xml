@@ -18,5 +18,7 @@
         </item>
 
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Mine</item>
+
+        <item name="fontFamily">@font/dancing_script_variable_font_wght</item>
     </style>
 </resources>

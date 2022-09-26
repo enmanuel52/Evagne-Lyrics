@@ -8,7 +8,7 @@ class FavoriteUC @Inject constructor(
     private val lyricsRepo: LyricsRepo,
     private val getLyricsByTitleUC: GetLyricsByTitleUC,
 ){
-    operator fun invoke(title: String): Unit{
+    operator fun invoke(title: String){
         val lyric = getLyricsByTitleUC(title)
         lyricsRepo.updateSong(
             LyricsEntity(

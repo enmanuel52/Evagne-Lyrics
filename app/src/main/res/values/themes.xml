@@ -18,6 +18,8 @@
         </item>
 
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Mine</item>
+
+        <item name="fontFamily">@font/dancing_script_variable_font_wght</item>
     </style>
 
     <style name="Theme.EvagneLyrics.Splash">
@@ -40,7 +42,7 @@
     </style>
 
     <style name="Base.Widget.MaterialComponents.TextView.MyTitle">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Widget.MaterialComponents.Toolbar.Mine">

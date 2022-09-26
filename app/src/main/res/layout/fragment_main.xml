@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/splash_background"
             app:contentScrim="@color/splash_background"
-            app:layout_scrollFlags="exitUntilCollapsed|scroll"
+            app:layout_scrollFlags="exitUntilCollapsed"
             app:titleEnabled="true"
             app:toolbarId="@id/mainToolbar">
 
@@ -38,7 +38,7 @@
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
@@ -72,7 +72,6 @@
                         android:src="@drawable/img2_7190" />
 
                     <com.google.android.material.textview.MaterialTextView
-                        style="@style/Base.Widget.MaterialComponents.TextView.MyTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
@@ -105,7 +104,6 @@
                         android:src="@drawable/img4_7236" />
 
                     <com.google.android.material.textview.MaterialTextView
-                        style="@style/Base.Widget.MaterialComponents.TextView.MyTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
