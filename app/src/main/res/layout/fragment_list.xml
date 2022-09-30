@@ -46,6 +46,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/emptyText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:text="@string/empty_fav_songs"
+                android:visibility="gone"/>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 

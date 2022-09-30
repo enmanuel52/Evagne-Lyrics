@@ -3,6 +3,7 @@ package com.example.evagnelyrics.data.database.dao
 import androidx.room.*
 import com.example.evagnelyrics.data.database.entities.LYRICS_TABLE_NAME
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Dao
 interface LyricsDao {

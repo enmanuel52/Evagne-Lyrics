@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -67,6 +68,11 @@ class ListFragment : Fragment() {
                         menu.icon.setTint(Color.WHITE)
                     }
                 }
+                binding.listToolbar.menu.findItem(R.id.searchItem).let { search ->
+                    search.isVisible = !fav
+                }
+
+                binding.emptyText.isVisible = fav && viewModel.songs.value.isEmpty()
             }
         }
     }
@@ -154,5 +160,4 @@ class ListFragment : Fragment() {
             }
         }
     }
-
 }

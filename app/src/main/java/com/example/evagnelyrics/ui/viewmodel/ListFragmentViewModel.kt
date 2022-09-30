@@ -27,7 +27,7 @@ class ListFragmentViewModel @Inject constructor(
     fun initValuesForTesting(
         songs: List<LyricsEntity> = emptyList(),
         fav: Boolean = false,
-    ){
+    ) {
         _songs.value = songs
         _fav.value = fav
     }
@@ -35,30 +35,22 @@ class ListFragmentViewModel @Inject constructor(
     fun getAllTitles() {
         viewModelScope.launch {
             _songs.value = getAllLyricsUC()
-//            if (_fav.value!!)
-//                filterFav()
         }
     }
 
     fun searchByName(title: String) {
         viewModelScope.launch {
-            _songs.value = searchByTitleUC(title)
-//            if (_fav.value!!)
-//                filterFav()
+            _songs.value = searchByTitleUC(title, fav = false)
         }
     }
 
     fun favAction(title: String) {
         favoriteUC(title)
         getAllTitles()
-//        if (_fav.value!!)
-//            filterFav()
     }
 
     private fun filterFav() {
-        _songs.apply {
-            value = value.filter { it.favorite }
-        }
+        _songs.value = _songs.value.filter { it.favorite }
     }
 
     fun onFavMode() {

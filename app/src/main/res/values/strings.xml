@@ -4,5 +4,6 @@
     <string name="albums_title">Albumes</string>
     <string name="title_wallpapers">Fotografías</string>
     <string name="picture_title">Imagen</string>
+    <string name="empty_fav_songs">No tiene canciones favoritas</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

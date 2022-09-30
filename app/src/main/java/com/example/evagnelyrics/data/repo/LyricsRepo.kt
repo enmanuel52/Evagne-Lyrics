@@ -8,7 +8,7 @@ class LyricsRepo(
 ) {
     fun insertAllLyrics(lyrics: List<LyricsEntity>) = lyricsLocalDataSource.insertAllLyrics(lyrics)
 
-    fun getAllLyrics(): List<LyricsEntity> = lyricsLocalDataSource.getAllLyrics()
+    fun getAllLyrics() = lyricsLocalDataSource.getAllLyrics()
 
     fun getLyricByTitle(title: String): LyricsEntity = lyricsLocalDataSource.getLyricByTitle(title)
 

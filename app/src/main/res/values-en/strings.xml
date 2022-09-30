@@ -5,4 +5,5 @@
     <string name="albums_title">Albums</string>
     <string name="title_wallpapers">Wallpapers</string>
     <string name="picture_title">Picture</string>
+    <string name="empty_fav_songs">Yo do not have favorite songs</string>
 </resources>

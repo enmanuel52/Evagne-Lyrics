@@ -14,14 +14,31 @@ class ListAdapter(val listener: (Action) -> Unit) :
 
     inner class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = ListRecyclerLayoutBinding.bind(view)
-        fun onBind() {
-            binding.root.setOnClickListener { listener(
-                Action.Click(title = items[adapterPosition].title)
-            ) }
+
+        init {
+            binding.root.setOnClickListener {
+                listener(
+                    Action.Click(title = items[adapterPosition].title)
+                )
+            }
 
             binding.favorite.setOnClickListener {
                 listener(Action.Favorite(items[adapterPosition].title))
             }
+        }
+
+        fun bind(position: Int) {
+            val current = items[position]
+            binding.run {
+                songTitle.text = current.title
+                favorite.apply {
+                    if (current.favorite)
+                        setImageResource(R.drawable.ic_round_favorite_24)
+                    else
+                        setImageResource(R.drawable.ic_round_favorite_empty_24)
+                }
+            }
+
         }
     }
 
@@ -31,17 +48,7 @@ class ListAdapter(val listener: (Action) -> Unit) :
         return ListViewHolder(view!!)
     }
 
-    override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        holder.onBind()
-        val current = items[position]
-        holder.binding.songTitle.text = current.title
-        holder.binding.favorite.apply {
-            if(current.favorite)
-                setImageResource(R.drawable.ic_round_favorite_24)
-            else
-                setImageResource(R.drawable.ic_round_favorite_empty_24)
-        }
-    }
+    override fun onBindViewHolder(holder: ListViewHolder, position: Int) = holder.bind(position)
 
     override fun getItemCount(): Int = items.count()
 }
