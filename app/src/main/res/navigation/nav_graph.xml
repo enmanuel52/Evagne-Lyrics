@@ -60,5 +60,26 @@
         android:name="com.example.evagnelyrics.ui.fragment.GalleryFragment"
         tools:layout="@layout/fragment_gallery"
         android:label="fragment_gallery"
-        android:id="@+id/gallery_fragment"/>
+        android:id="@+id/gallery_fragment">
+        <action
+            android:id="@+id/action_gallery_fragment_to_image_fragment"
+            app:destination="@id/image_fragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right"/>
+
+    </fragment>
+
+    <fragment
+        android:name="com.example.evagnelyrics.ui.fragment.PictureFragment"
+        tools:layout="@layout/fragment_picture"
+        android:label="fragment_list"
+        android:id="@+id/image_fragment">
+
+        <argument
+            app:argType="integer"
+            android:name="image"
+            app:nullable="false"/>
+    </fragment>
 </navigation>

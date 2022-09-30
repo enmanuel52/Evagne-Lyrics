@@ -50,7 +50,7 @@ internal class ListFragmentViewModelTest {
     fun `get all titles from the use case and save in songs livedata`() = runBlocking {
         //given
         val song = LyricsEntity("Falsedad", "", false)
-        listFragmentViewModel.songs.value = emptyList()
+        listFragmentViewModel.initValuesForTesting(songs = emptyList())
         coEvery { getAllLyricsUC() } returns listOf(song)
         //when
         listFragmentViewModel.getAllTitles()
@@ -61,9 +61,9 @@ internal class ListFragmentViewModelTest {
     @Test
     fun `set fav live data to true and filter`() {
         //given
-        listFragmentViewModel.fav.value = false
+        listFragmentViewModel.initValuesForTesting(fav = false)
         //when
-        listFragmentViewModel.showFav()
+        listFragmentViewModel.onFavMode()
         //then
         assert(listFragmentViewModel.fav.value == true)
 //        verify(exactly = 1) { listFragmentViewModel.filterFav() }

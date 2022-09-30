@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.databinding.FragmentGalleryBinding
 import com.example.evagnelyrics.ui.adapter.GalleryAdapter
+import com.example.evagnelyrics.ui.listener.OnClickListener
 
 class GalleryFragment : Fragment() {
     private lateinit var _binding: FragmentGalleryBinding
@@ -24,11 +25,21 @@ class GalleryFragment : Fragment() {
 
         initUi()
 
-        return binding.root}
+        return binding.root
+    }
 
     private fun initUi() {
         binding.imageRecycler.apply {
-            adapter = GalleryAdapter()
+            adapter = GalleryAdapter(object : OnClickListener<Int> {
+                override fun onClick(model: Int) {
+                    findNavController().navigate(
+                        GalleryFragmentDirections.actionGalleryFragmentToImageFragment(
+                            model
+                        )
+                    )
+                }
+
+            })
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
 

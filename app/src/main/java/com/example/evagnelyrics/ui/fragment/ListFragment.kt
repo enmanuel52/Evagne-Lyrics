@@ -10,8 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.evagnelyrics.R
@@ -49,16 +50,17 @@ class ListFragment : Fragment() {
     private fun subscribeUi() {
         viewModel.getAllTitles()
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.songs.flowWithLifecycle(lifecycle)
-                .collectLatest {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.songs.collectLatest {
                     adapter.items = it
                     adapter.notifyDataSetChanged()
                 }
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.fav.observe(viewLifecycleOwner) {fav->
-                binding.listToolbar.menu.findItem(R.id.showFav).let {menu ->
+            viewModel.fav.observe(viewLifecycleOwner) { fav ->
+                binding.listToolbar.menu.findItem(R.id.showFav).let { menu ->
                     if (fav) {
                         menu.icon.setTint(requireContext().getColor(R.color.pink))
                     } else {
@@ -103,7 +105,7 @@ class ListFragment : Fragment() {
                         true
                     }
                     R.id.showFav -> {
-                        viewModel.showFav()
+                        viewModel.onFavMode()
                         true
                     }
                     else -> {

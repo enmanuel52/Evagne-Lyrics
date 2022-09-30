@@ -11,11 +11,7 @@ class FavoriteUC @Inject constructor(
     operator fun invoke(title: String){
         val lyric = getLyricsByTitleUC(title)
         lyricsRepo.updateSong(
-            LyricsEntity(
-                title,
-                letter= lyric.letter,
-                favorite = !(lyric.favorite)
-            )
+            lyric.copy(favorite = !lyric.favorite)
         )
     }
 }

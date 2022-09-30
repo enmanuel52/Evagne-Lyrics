@@ -4,4 +4,5 @@
     <string name="songs_title">Songs</string>
     <string name="albums_title">Albums</string>
     <string name="title_wallpapers">Wallpapers</string>
+    <string name="picture_title">Picture</string>
 </resources>

@@ -3,5 +3,6 @@
     <string name="songs_title">Canciones</string>
     <string name="albums_title">Albumes</string>
     <string name="title_wallpapers">Fotografías</string>
+    <string name="picture_title">Imagen</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

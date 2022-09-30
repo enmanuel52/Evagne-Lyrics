@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +8,7 @@ import com.example.evagnelyrics.data.database.entities.LyricsEntity
 import com.example.evagnelyrics.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,51 +18,52 @@ class ListFragmentViewModel @Inject constructor(
     private val searchByTitleUC: SearchByTitleUC,
     private val favoriteUC: FavoriteUC,
 ) : ViewModel() {
-    val songs = MutableStateFlow<List<LyricsEntity>>(emptyList())
-    val fav: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _songs = MutableStateFlow<List<LyricsEntity>>(emptyList())
+    val songs: StateFlow<List<LyricsEntity>> get() = _songs
+
+    private val _fav: MutableLiveData<Boolean> = MutableLiveData(false)
+    val fav: LiveData<Boolean> get() = _fav
+
+    fun initValuesForTesting(
+        songs: List<LyricsEntity> = emptyList(),
+        fav: Boolean = false,
+    ){
+        _songs.value = songs
+        _fav.value = fav
+    }
 
     fun getAllTitles() {
         viewModelScope.launch {
-            songs.value = getAllLyricsUC()
-            if (fav.value!!)
-                filterFav()
+            _songs.value = getAllLyricsUC()
+//            if (_fav.value!!)
+//                filterFav()
         }
     }
 
     fun searchByName(title: String) {
         viewModelScope.launch {
-            songs.value = searchByTitleUC(title)
-            if (fav.value!!)
-                filterFav()
+            _songs.value = searchByTitleUC(title)
+//            if (_fav.value!!)
+//                filterFav()
         }
     }
 
     fun favAction(title: String) {
         favoriteUC(title)
         getAllTitles()
-        if (fav.value!!)
-            filterFav()
+//        if (_fav.value!!)
+//            filterFav()
     }
 
-    fun filterFav() {
-        songs.apply {
+    private fun filterFav() {
+        _songs.apply {
             value = value.filter { it.favorite }
         }
     }
 
-    fun showFav() {
-        fav.value = fav.value != true
+    fun onFavMode() {
+        _fav.value = _fav.value != true
         if (fav.value == true) filterFav()
         else getAllTitles()
-
-//        fav.apply {
-//            value = !(value!!)
-//            if (value!!) {
-//                //filter favs
-//                filterFav()
-//            } else {
-//                getAllTitles()
-//            }
-//        }
     }
 }
