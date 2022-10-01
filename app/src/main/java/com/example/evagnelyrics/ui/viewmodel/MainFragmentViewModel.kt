@@ -14,7 +14,7 @@ class MainFragmentViewModel @Inject constructor(
     private val getAllLyricsUC: GetAllLyricsUC,
 ) : ViewModel() {
 
-    val nightMode: MutableLiveData<Boolean> = MutableLiveData(false)
+//    val nightMode: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun setDatabase() {
         if (getAllLyricsUC().isEmpty()) {
@@ -22,7 +22,7 @@ class MainFragmentViewModel @Inject constructor(
         }
     }
 
-    fun changeLightMode() {
-        nightMode.value = !(nightMode.value!!)
-    }
+//    fun changeLightMode() {
+//        nightMode.value = !(nightMode.value!!)
+//    }
 }

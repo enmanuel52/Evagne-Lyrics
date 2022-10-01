@@ -41,21 +41,23 @@ class MainFragment : Fragment() {
         /*//here I'll call datastore for the last value of the dark mode
         viewModel.initNightMode(false)*/
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.nightMode.observe(viewLifecycleOwner) {
-                if (! (it!!)) {
-                    //set light mode, and icon for it
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    binding.mainToolbar.menu.findItem(R.id.nightMode)
-                        .setIcon(R.drawable.ic_baseline_bedtime_24)
-                } else {
-                    //set night mode
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    binding.mainToolbar.menu.findItem(R.id.nightMode)
-                        .setIcon(R.drawable.ic_baseline_wb_sunny_24)
-                }
-            }
-        }
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.nightMode.observe(viewLifecycleOwner) { night ->
+//                if (!(night!!)) {
+//                    //set light mode, and icon for it
+////                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//                    requireActivity().setTheme(R.style.Theme_EvagneLyrics_Light)
+//                    binding.mainToolbar.menu.findItem(R.id.nightMode)
+//                        .setIcon(R.drawable.ic_baseline_bedtime_24)
+//                } else {
+//                    //set night mode
+////                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//                    requireActivity().setTheme(R.style.Theme_EvagneLyrics_Night)
+//                    binding.mainToolbar.menu.findItem(R.id.nightMode)
+//                        .setIcon(R.drawable.ic_baseline_wb_sunny_24)
+//                }
+//            }
+//        }
     }
 
     private fun initUi() {
@@ -75,16 +77,16 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.mainToolbar.inflateMenu(R.menu.main_menu)
-        binding.mainToolbar.setOnMenuItemClickListener { menu ->
-            when (menu.itemId) {
-                R.id.nightMode -> {
-                    viewModel.changeLightMode()
-                    true
-                }
-                else -> {
-                    true
-                }
-            }
-        }
+//        binding.mainToolbar.setOnMenuItemClickListener { menu ->
+//            when (menu.itemId) {
+//                R.id.nightMode -> {
+//                    viewModel.changeLightMode()
+//                    true
+//                }
+//                else -> {
+//                    true
+//                }
+//            }
+//        }
     }
 }
