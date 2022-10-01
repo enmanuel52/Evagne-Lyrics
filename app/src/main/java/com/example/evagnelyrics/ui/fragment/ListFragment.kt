@@ -12,15 +12,18 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.evagnelyrics.R
+import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.databinding.FragmentListBinding
 import com.example.evagnelyrics.ui.adapter.Action
 import com.example.evagnelyrics.ui.adapter.ListAdapter
 import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -72,8 +75,24 @@ class ListFragment : Fragment() {
                     search.isVisible = !fav
                 }
 
-                binding.emptyText.isVisible = fav && viewModel.songs.value.isEmpty()
+//                binding.emptyText.isVisible = fav && viewModel.songs.value.isEmpty()
             }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.flowWithLifecycle(lifecycle)
+                .collectLatest { state ->
+                    when (state) {
+                        is Resource.Error -> {
+                            Snackbar.make(
+                                binding.root,
+                                state.msg,
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                        is Resource.Success -> {}
+                    }
+                }
         }
     }
 
@@ -97,7 +116,7 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding.listToolbar) {
+        binding.listToolbar.run {
             inflateMenu(R.menu.list_menu)
             search()
             setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)

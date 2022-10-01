@@ -6,10 +6,8 @@ import javax.inject.Inject
 
 class FavoriteUC @Inject constructor(
     private val lyricsRepo: LyricsRepo,
-    private val getLyricsByTitleUC: GetLyricsByTitleUC,
 ){
-    operator fun invoke(title: String){
-        val lyric = getLyricsByTitleUC(title)
+    operator fun invoke(lyric: LyricsEntity){
         lyricsRepo.updateSong(
             lyric.copy(favorite = !lyric.favorite)
         )

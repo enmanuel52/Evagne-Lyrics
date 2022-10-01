@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 import com.example.evagnelyrics.domain.usecase.FavoriteUC
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
+import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
 import com.example.evagnelyrics.domain.usecase.SearchByTitleUC
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
@@ -29,6 +30,9 @@ internal class ListFragmentViewModelTest {
     @RelaxedMockK
     lateinit var favoriteUC: FavoriteUC
 
+    @RelaxedMockK
+    lateinit var getLyricsByTitleUC: GetLyricsByTitleUC
+
     private lateinit var listFragmentViewModel: ListFragmentViewModel
 
     @get:Rule
@@ -37,7 +41,8 @@ internal class ListFragmentViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        listFragmentViewModel = ListFragmentViewModel(getAllLyricsUC, searchByTitleUC, favoriteUC)
+        listFragmentViewModel =
+            ListFragmentViewModel(getAllLyricsUC, searchByTitleUC, favoriteUC, getLyricsByTitleUC)
         Dispatchers.setMain(Dispatchers.Unconfined)
     }
 
