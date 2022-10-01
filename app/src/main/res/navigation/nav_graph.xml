@@ -38,10 +38,10 @@
         <action
             android:id="@+id/action_list_fragment_to_songs_fragment"
             app:destination="@id/song_fragment"
-            app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right"/>
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/slide_out"
+            app:popEnterAnim="@anim/pop_slide_in"
+            app:popExitAnim="@anim/pop_slide_out"/>
     </fragment>
 
     <fragment
