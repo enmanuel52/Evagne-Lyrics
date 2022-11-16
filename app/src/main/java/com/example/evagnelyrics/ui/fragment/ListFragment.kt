@@ -22,6 +22,7 @@ import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.databinding.FragmentListBinding
 import com.example.evagnelyrics.ui.adapter.Action
 import com.example.evagnelyrics.ui.adapter.ListAdapter
+import com.example.evagnelyrics.ui.compose.screen.list.ListScreen
 import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,69 +46,72 @@ class ListFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentListBinding.inflate(inflater, container, false)
 
-        initUi()
-        subscribeUi()
+        binding.composeView.setContent {
+            ListScreen(navForward = { toLyrics(it) })
+        }
+//        initUi()
+//        subscribeUi()
 
         return binding.root
     }
 
-    private fun subscribeUi() {
-        viewModel.getAllTitles()
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.songs.collectLatest {
-                    adapter.items = it
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        }
+//    private fun subscribeUi() {
+//        viewModel.getAllTitles()
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.songs.collectLatest {
+//                    adapter.items = it
+//                    adapter.notifyDataSetChanged()
+//                }
+//            }
+//        }
+//
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.fav.observe(viewLifecycleOwner) { fav ->
+//                binding.listToolbar.menu.findItem(R.id.showFav).let { menu ->
+//                    if (fav) {
+//                        menu.icon.setTint(requireContext().getColor(R.color.pink))
+//                    } else {
+//                        menu.icon.setTint(Color.WHITE)
+//                    }
+//                }
+//                binding.listToolbar.menu.findItem(R.id.searchItem).let { search ->
+//                    search.isVisible = !fav
+//                }
+//
+////                binding.emptyText.isVisible = fav && viewModel.songs.value.isEmpty()
+//            }
+//        }
+//
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.uiState.flowWithLifecycle(lifecycle)
+//                .collectLatest { state ->
+//                    when (state) {
+//                        is Resource.Error -> {
+//                            Snackbar.make(
+//                                binding.root,
+//                                state.msg,
+//                                Snackbar.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                        is Resource.Success -> {}
+//                    }
+//                }
+//        }
+//    }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.fav.observe(viewLifecycleOwner) { fav ->
-                binding.listToolbar.menu.findItem(R.id.showFav).let { menu ->
-                    if (fav) {
-                        menu.icon.setTint(requireContext().getColor(R.color.pink))
-                    } else {
-                        menu.icon.setTint(Color.WHITE)
-                    }
-                }
-                binding.listToolbar.menu.findItem(R.id.searchItem).let { search ->
-                    search.isVisible = !fav
-                }
-
-//                binding.emptyText.isVisible = fav && viewModel.songs.value.isEmpty()
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.flowWithLifecycle(lifecycle)
-                .collectLatest { state ->
-                    when (state) {
-                        is Resource.Error -> {
-                            Snackbar.make(
-                                binding.root,
-                                state.msg,
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
-                        is Resource.Success -> {}
-                    }
-                }
-        }
-    }
-
-    private fun initUi() {
-        adapter = ListAdapter {
-            if (it is Action.Click) {
-                toLyrics(it.title)
-            } else if (it is Action.Favorite) {
-                viewModel.favAction(it.title)
-            }
-        }
-
-        binding.listRecycler.adapter = adapter
-        binding.listRecycler.layoutManager = LinearLayoutManager(requireContext())
-    }
+//    private fun initUi() {
+//        adapter = ListAdapter {
+//            if (it is Action.Click) {
+//                toLyrics(it.title)
+//            } else if (it is Action.Favorite) {
+//                viewModel.favAction(it.title)
+//            }
+//        }
+//
+//        binding.listRecycler.adapter = adapter
+//        binding.listRecycler.layoutManager = LinearLayoutManager(requireContext())
+//    }
 
     private fun toLyrics(title: String) {
         findNavController().navigate(ListFragmentDirections.actionListFragmentToSongsFragment(title))

@@ -6,10 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.MainFragment">
 
+    <androidx.compose.ui.platform.ComposeView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/composeView"/>
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp">
+        android:elevation="8dp"
+        android:visibility="gone">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
@@ -36,6 +42,7 @@
         android:layout_height="match_parent"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
