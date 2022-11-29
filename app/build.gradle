@@ -10,7 +10,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.examplemvvm"
+        applicationId "com.example.evagnelyrics"
         minSdk 21
         targetSdk 33
         versionCode 1
@@ -32,6 +32,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion kotlin_version
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -98,6 +102,10 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation 'androidx.activity:activity-compose:1.5.1'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.compiler:compiler:1.3.2"
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-beta01"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
 
     //DataStore

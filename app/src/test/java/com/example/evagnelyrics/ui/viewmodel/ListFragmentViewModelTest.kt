@@ -58,9 +58,9 @@ internal class ListFragmentViewModelTest {
         listFragmentViewModel.initValuesForTesting(songs = emptyList())
         coEvery { getAllLyricsUC() } returns listOf(song)
         //when
-        listFragmentViewModel.getAllTitles()
+        listFragmentViewModel.getAllSongs()
         //then
-        assert(listFragmentViewModel.songs.value == listOf(song))
+        assert(listFragmentViewModel.titles.value == listOf(song.title))
     }
 
     @Test
@@ -70,7 +70,7 @@ internal class ListFragmentViewModelTest {
         //when
         listFragmentViewModel.onFavMode()
         //then
-        assert(listFragmentViewModel.fav.value == true)
+        assert(listFragmentViewModel.favMode.value == true)
 //        verify(exactly = 1) { listFragmentViewModel.filterFav() }
     }
 }

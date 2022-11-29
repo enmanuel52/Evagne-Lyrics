@@ -2,32 +2,20 @@ package com.example.evagnelyrics.ui.fragment
 
 import android.app.SearchManager
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.evagnelyrics.R
-import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.databinding.FragmentListBinding
-import com.example.evagnelyrics.ui.adapter.Action
 import com.example.evagnelyrics.ui.adapter.ListAdapter
 import com.example.evagnelyrics.ui.compose.screen.list.ListScreen
 import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ListFragment : Fragment() {
@@ -168,7 +156,7 @@ class ListFragment : Fragment() {
                     if (newText != null) {
                         viewModel.searchByName(title = newText.lowercase())
                     } else
-                        viewModel.getAllTitles()
+                        viewModel.getAllSongs()
 
                     return true
                 }
@@ -178,7 +166,7 @@ class ListFragment : Fragment() {
             setOnQueryTextFocusChangeListener { _, b ->
                 if (!b) {
                     //show songs
-                    viewModel.getAllTitles()
+                    viewModel.getAllSongs()
                 }
             }
         }

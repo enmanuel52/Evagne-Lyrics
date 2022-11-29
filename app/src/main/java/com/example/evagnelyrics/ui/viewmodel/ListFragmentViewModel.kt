@@ -1,7 +1,5 @@
 package com.example.evagnelyrics.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.evagnelyrics.core.Resource
@@ -17,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.JdkConstants.ListSelectionMode
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,14 +24,12 @@ class ListFragmentViewModel @Inject constructor(
     private val favoriteUC: FavoriteUC,
     private val getLyricsByTitleUC: GetLyricsByTitleUC,
 ) : ViewModel() {
-    private val _songs = MutableStateFlow<List<LyricsEntity>>(emptyList())
-    val songs = _songs.asStateFlow()
 
-    private val _fav: MutableLiveData<Boolean> = MutableLiveData(false)
-    val fav: LiveData<Boolean> = _fav
+    private val _favMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val favMode = _favMode.asStateFlow()
 
-    private val _favsTitles: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
-    val favsTitles get() = _favsTitles.asStateFlow()
+    private val _favs: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    val favs get() = _favs.asStateFlow()
 
     private val _titles: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val titles get() = _titles.asStateFlow()
@@ -46,26 +41,34 @@ class ListFragmentViewModel @Inject constructor(
         songs: List<LyricsEntity> = emptyList(),
         fav: Boolean = false,
     ) {
-        _songs.value = songs
-        _fav.value = fav
+//        _songs.value = songs
+        _favMode.value = fav
     }
 
-    fun getAllTitles() {
+    init {
+        getAllSongs()
+    }
+
+    fun getAllSongs() {
         viewModelScope.launch {
-            _songs.value = getAllLyricsUC()
+            val lyrics = getAllLyricsUC()
 
             _titles.update {
-                _songs.value.map { it.title }
+                lyrics.map { it.title }
+            }
+
+            _favs.update {
+                lyrics.filter { it.favorite }.map { it.title }
             }
         }
     }
 
     fun searchByName(title: String) {
         viewModelScope.launch {
-            _songs.value = searchByTitleUC(title, fav = false)
+            val lyrics = searchByTitleUC(title, fav = false)
 
             _titles.update {
-                _songs.value.map { it.title }
+                lyrics.map { it.title }
             }
         }
     }
@@ -73,19 +76,11 @@ class ListFragmentViewModel @Inject constructor(
     /**
      * if it is not on fav mode*/
     fun favAction(title: String) = viewModelScope.launch {
-        if (_fav.value != true) {
+        if (!_favMode.value) {
             val lyric = getLyricsByTitleUC(title)
             //update db
             favoriteUC(lyric)
             favsUpdate(lyric.title)
-            val ind = _songs.value.indexOf(lyric)
-            //update _songs
-            _songs.value = _songs.value.mapIndexed { index, lyricsEntity ->
-                if (ind == index)
-                    lyricsEntity.copy(favorite = !lyricsEntity.favorite)
-                else
-                    lyricsEntity
-            }
         } else {
             //not allowed in fav mode
             _uiState.send(Resource.Error("It is not allowed on fav mode"))
@@ -93,10 +88,10 @@ class ListFragmentViewModel @Inject constructor(
     }
 
     private fun favsUpdate(title: String) {
-        _favsTitles.update {
-            if(it.contains(title)){
+        _favs.update {
+            if (it.contains(title)) {
                 it.minus(title)
-            }else{
+            } else {
                 it.plus(title)
             }
         }
@@ -104,19 +99,14 @@ class ListFragmentViewModel @Inject constructor(
     }
 
     private fun filterFav() {
-        _songs.update { songs ->
-            songs.filter { it.favorite }
-        }
-        _titles.update {
-            _songs.value.map { it.title }
+        _titles.update { list ->
+            list.filter { favs.value.contains(it) }
         }
     }
 
     fun onFavMode() {
-        _fav.value = _fav.value != true
-        if (fav.value == true) filterFav()
-        else _songs.update {
-            getAllLyricsUC()
-        }
+        _favMode.value = _favMode.value != true
+        if (favMode.value == true) filterFav()
+        else getAllSongs()
     }
 }

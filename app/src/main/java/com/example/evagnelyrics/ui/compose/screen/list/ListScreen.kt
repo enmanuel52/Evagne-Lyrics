@@ -21,30 +21,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
 
 @Composable
 fun ListScreen(
-    viewModel: ListFragmentViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: ListFragmentViewModel = viewModel(),
     navForward: (title: String) -> Unit = {},
 ) {
 
+    val favMode by viewModel.favMode.collectAsState()
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Canciones") },
+                backgroundColor = Color(0xFF858EC2),
+                title = { Text(text = "Canciones", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { /*go back*/ }) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = "back arrow"
+                            contentDescription = "back arrow",
+                            tint = Color.White
                         )
                     }
                 },
@@ -53,14 +58,16 @@ fun ListScreen(
                         IconButton(onClick = { viewModel.onFavMode() }) {
                             Icon(
                                 imageVector = Icons.Rounded.Favorite,
-                                contentDescription = "fav mode"
+                                contentDescription = "fav mode",
+                                tint = if (favMode) Color.Red else Color.White
                             )
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         IconButton(onClick = { /*do search*/ }) {
                             Icon(
                                 imageVector = Icons.Rounded.Search,
-                                contentDescription = "search"
+                                contentDescription = "search",
+                                tint = Color.White
                             )
                         }
                     }
@@ -91,20 +98,20 @@ fun SongsList(
     songs: List<String> = emptyList(),
     navForward: (title: String) -> Unit = {},
 ) {
-    LazyColumn(modifier = modifier.fillMaxSize()) {
+    LazyColumn {
         items(songs.size) { index ->
             val visibleState = MutableTransitionState(false).apply {
                 targetState = true
             }
             AnimatedVisibility(visibleState = visibleState,
-                enter = slideInHorizontally(tween(delayMillis = index * 150)) { -it } + fadeIn(
+                enter = slideInHorizontally(tween(delayMillis = index * 150)) { it } + fadeIn(
                     tween(
                         delayMillis = index * 150
                     )
                 )
             ) {
                 SongItem(
-                    modifier.clickable {
+                    Modifier.clickable {
                         navForward(songs[index])
                     },
                     title = songs[index]
@@ -118,32 +125,39 @@ fun SongsList(
 fun SongItem(
     modifier: Modifier = Modifier,
     title: String,
-    viewModel: ListFragmentViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: ListFragmentViewModel = viewModel()
 ) {
     Row(
         modifier = modifier
-            .padding(top = 6.dp)
-            .border(width = 1.dp, shape = RoundedCornerShape(20), color = Color.Yellow)
-            .background(Color.Magenta),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .fillMaxWidth()
+            .padding(top = 4.dp, start = 2.dp, end = 2.dp)
+            .height(56.dp)
+            .background(Color(0xFF858EC2), shape = RoundedCornerShape(20))
+            .border(width = 2.dp, shape = RoundedCornerShape(20), color = Color.LightGray),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row {
-            Icon(imageVector = Icons.Rounded.PlaylistPlay, contentDescription = null)
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = title)
+            Icon(
+                imageVector = Icons.Rounded.PlaylistPlay,
+                contentDescription = null,
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(text = title, color = Color.White)
         }
-        Spacer(modifier = Modifier.width(12.dp))
         //collect favs list
-        val favsTitles by viewModel.favsTitles.collectAsState(emptyList())
-        FavIcon(title, favsTitles)
+        val favTitles by viewModel.favs.collectAsState(emptyList())
+        FavIcon(title, favTitles) { viewModel.favAction(it) }
     }
 }
 
 @Composable
-fun FavIcon(title: String, favs: List<String> = emptyList()) {
+fun FavIcon(title: String, favs: List<String> = emptyList(), favAction: (String) -> Unit) {
     IconButton(
         modifier = Modifier.padding(end = 12.dp),
-        onClick = { /*toggle fav*/ }) {
+        onClick = { favAction(title) }) {
         Icon(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = "fav button",
