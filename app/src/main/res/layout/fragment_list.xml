@@ -33,7 +33,7 @@
             android:layout_height="?actionBarSize"
             android:backgroundTint="?attr/colorPrimary"
             app:layout_collapseMode="none"
-            app:title="@string/songs_title" />
+            app:title="@string/songs" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

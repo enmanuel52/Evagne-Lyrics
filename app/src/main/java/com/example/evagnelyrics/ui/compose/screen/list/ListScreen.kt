@@ -24,16 +24,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Resource
+import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.ui.fragment.ACTION_BACK
+import com.example.evagnelyrics.ui.fragment.ACTION_NEXT
 import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
 
 @Composable
 fun ListScreen(
     viewModel: ListFragmentViewModel = viewModel(),
-    navForward: (title: String) -> Unit = {},
+    navTo: (route: String) -> Unit = {},
 ) {
 
     val favMode by viewModel.favMode.collectAsState()
@@ -42,10 +47,10 @@ fun ListScreen(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                backgroundColor = Color(0xFF858EC2),
-                title = { Text(text = "Canciones", color = Color.White) },
+                backgroundColor = MaterialTheme.colors.primary,
+                title = { Text(text = stringResource(id = R.string.songs), color = Color.White) },
                 navigationIcon = {
-                    IconButton(onClick = { /*go back*/ }) {
+                    IconButton(onClick = { navTo(ACTION_BACK) }) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "back arrow",
@@ -76,7 +81,7 @@ fun ListScreen(
         }
     ) {
         val titles by viewModel.titles.collectAsState(emptyList())
-        SongsList(Modifier.padding(it), titles, navForward)
+        SongsList(Modifier.padding(it), titles, navTo)
 
         //collect uiStates
         val uiState by viewModel.uiState.collectAsState(Resource.Success(Unit))
@@ -96,7 +101,7 @@ fun ListScreen(
 fun SongsList(
     modifier: Modifier = Modifier,
     songs: List<String> = emptyList(),
-    navForward: (title: String) -> Unit = {},
+    navTo: (title: String) -> Unit = {},
 ) {
     LazyColumn {
         items(songs.size) { index ->
@@ -106,13 +111,13 @@ fun SongsList(
             AnimatedVisibility(visibleState = visibleState,
                 enter = slideInHorizontally(tween(delayMillis = index * 150)) { it } + fadeIn(
                     tween(
-                        delayMillis = index * 150
+                        delayMillis = 200
                     )
                 )
             ) {
                 SongItem(
                     Modifier.clickable {
-                        navForward(songs[index])
+                        navTo(ACTION_NEXT + "/" + songs[index])
                     },
                     title = songs[index]
                 )
@@ -130,21 +135,29 @@ fun SongItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 4.dp, start = 2.dp, end = 2.dp)
-            .height(56.dp)
-            .background(Color(0xFF858EC2), shape = RoundedCornerShape(20))
-            .border(width = 2.dp, shape = RoundedCornerShape(20), color = Color.LightGray),
+            .padding(
+                top = MaterialTheme.dimen.verySmall,
+                start = MaterialTheme.dimen.superSmall,
+                end = MaterialTheme.dimen.superSmall
+            )
+            .height(MaterialTheme.dimen.almostGiant)
+            .background(MaterialTheme.colors.primary, shape = RoundedCornerShape(20))
+            .border(
+                width = MaterialTheme.dimen.superSmall,
+                shape = RoundedCornerShape(20),
+                color = Color.LightGray
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row {
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
             Icon(
                 imageVector = Icons.Rounded.PlaylistPlay,
                 contentDescription = null,
                 tint = Color.White
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
             Text(text = title, color = Color.White)
         }
         //collect favs list
@@ -156,7 +169,7 @@ fun SongItem(
 @Composable
 fun FavIcon(title: String, favs: List<String> = emptyList(), favAction: (String) -> Unit) {
     IconButton(
-        modifier = Modifier.padding(end = 12.dp),
+        modifier = Modifier.padding(end = MaterialTheme.dimen.mediumSmall),
         onClick = { favAction(title) }) {
         Icon(
             imageVector = Icons.Rounded.Favorite,

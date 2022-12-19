@@ -3,17 +3,18 @@ package com.example.evagnelyrics.ui.fragment
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.databinding.FragmentListBinding
 import com.example.evagnelyrics.ui.adapter.ListAdapter
 import com.example.evagnelyrics.ui.compose.screen.list.ListScreen
+import com.example.evagnelyrics.ui.theme.EvagneLyricsTheme
 import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +36,17 @@ class ListFragment : Fragment() {
         _binding = FragmentListBinding.inflate(inflater, container, false)
 
         binding.composeView.setContent {
-            ListScreen(navForward = { toLyrics(it) })
+            EvagneLyricsTheme {
+                ListScreen { route ->
+                    when {
+                        route == ACTION_BACK -> findNavController().popBackStack()
+                        route.contains(ACTION_NEXT) -> {
+                            val title = route.substring(route.indexOf("/") + 1)
+                            toLyrics(title)
+                        }
+                    }
+                }
+            }
         }
 //        initUi()
 //        subscribeUi()
@@ -172,3 +183,6 @@ class ListFragment : Fragment() {
         }
     }
 }
+
+const val ACTION_BACK = "action_back"
+const val ACTION_NEXT = "action_next"

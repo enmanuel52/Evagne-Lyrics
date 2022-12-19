@@ -78,7 +78,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
                         android:layout_marginBottom="50dp"
-                        android:text="@string/songs_title"
+                        android:text="@string/songs"
                         android:textColor="@color/white" />
                 </androidx.coordinatorlayout.widget.CoordinatorLayout>
             </com.google.android.material.card.MaterialCardView>
