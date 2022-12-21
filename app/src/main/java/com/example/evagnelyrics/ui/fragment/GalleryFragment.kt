@@ -1,16 +1,13 @@
 package com.example.evagnelyrics.ui.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.evagnelyrics.R
 import com.example.evagnelyrics.databinding.FragmentGalleryBinding
-import com.example.evagnelyrics.ui.adapter.GalleryAdapter
-import com.example.evagnelyrics.ui.listener.OnClickListener
+import com.example.evagnelyrics.ui.compose.screen.gallery.GalleryScreen
 
 class GalleryFragment : Fragment() {
     private lateinit var _binding: FragmentGalleryBinding
@@ -23,27 +20,22 @@ class GalleryFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
 
-        initUi()
-
-        return binding.root
-    }
-
-    private fun initUi() {
-        binding.imageRecycler.apply {
-            adapter = GalleryAdapter(object : OnClickListener<Int> {
-                override fun onClick(model: Int) {
-                    findNavController().navigate(
-                        GalleryFragmentDirections.actionGalleryFragmentToImageFragment(
-                            model
+        binding.composeView.setContent {
+            GalleryScreen { route ->
+                when {
+                    route == ACTION_BACK -> findNavController().popBackStack()
+                    route.contains(ACTION_NEXT) -> {
+                        val index = route.substring(route.indexOf("/") + 1)
+                        findNavController().navigate(
+                            GalleryFragmentDirections.actionGalleryFragmentToImageFragment(
+                                index.toInt()
+                            )
                         )
-                    )
+                    }
                 }
-
-            })
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            }
         }
 
-        binding.galleryToolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-        binding.galleryToolbar.setNavigationOnClickListener { findNavController().popBackStack() }
+        return binding.root
     }
 }

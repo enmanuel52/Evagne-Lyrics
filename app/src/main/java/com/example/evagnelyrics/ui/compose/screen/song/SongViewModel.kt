@@ -1,4 +1,4 @@
-package com.example.evagnelyrics.ui.viewmodel
+package com.example.evagnelyrics.ui.compose.screen.song
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,13 +8,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SongFragmentViewModel @Inject constructor(
+class SongViewModel @Inject constructor(
     private val getLyricsByTitleUC: GetLyricsByTitleUC,
 ) : ViewModel() {
 
     val song: MutableLiveData<LyricsEntity?> = MutableLiveData(null)
 
-    fun onCreate(title: String) {
+    fun fetch(title: String) {
         song.value = getLyricsByTitleUC(title)
     }
 }

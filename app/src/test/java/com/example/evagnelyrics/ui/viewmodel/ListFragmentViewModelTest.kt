@@ -6,6 +6,7 @@ import com.example.evagnelyrics.domain.usecase.FavoriteUC
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
 import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
 import com.example.evagnelyrics.domain.usecase.SearchByTitleUC
+import com.example.evagnelyrics.ui.compose.screen.list.ListViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,7 @@ internal class ListFragmentViewModelTest {
     @RelaxedMockK
     lateinit var getLyricsByTitleUC: GetLyricsByTitleUC
 
-    private lateinit var listFragmentViewModel: ListFragmentViewModel
+    private lateinit var listFragmentViewModel: ListViewModel
 
     @get:Rule
     var rule = InstantTaskExecutorRule()
@@ -42,7 +43,7 @@ internal class ListFragmentViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         listFragmentViewModel =
-            ListFragmentViewModel(getAllLyricsUC, searchByTitleUC, favoriteUC, getLyricsByTitleUC)
+            ListViewModel(getAllLyricsUC, searchByTitleUC, favoriteUC, getLyricsByTitleUC)
         Dispatchers.setMain(Dispatchers.Unconfined)
     }
 

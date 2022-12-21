@@ -27,17 +27,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.fragment.ACTION_BACK
 import com.example.evagnelyrics.ui.fragment.ACTION_NEXT
-import com.example.evagnelyrics.ui.viewmodel.ListFragmentViewModel
 
 @Composable
 fun ListScreen(
-    viewModel: ListFragmentViewModel = viewModel(),
+    viewModel: ListViewModel = hiltViewModel(),
     navTo: (route: String) -> Unit = {},
 ) {
 
@@ -130,7 +129,7 @@ fun SongsList(
 fun SongItem(
     modifier: Modifier = Modifier,
     title: String,
-    viewModel: ListFragmentViewModel = viewModel()
+    viewModel: ListViewModel = hiltViewModel()
 ) {
     Row(
         modifier = modifier
@@ -145,7 +144,7 @@ fun SongItem(
             .border(
                 width = MaterialTheme.dimen.superSmall,
                 shape = RoundedCornerShape(20),
-                color = Color.LightGray
+                color = MaterialTheme.colors.secondary
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -188,5 +187,5 @@ fun ListScreenPreview() {
 @Composable
 @Preview(showSystemUi = true)
 fun SongsListScreenPreview() {
-    SongsList(songs = listOf("Hola"))
+    SongsList(songs = listOf("Hello"))
 }

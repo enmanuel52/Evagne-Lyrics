@@ -1,7 +1,6 @@
 package com.example.evagnelyrics.core
 
-import android.content.Context
-import com.example.evagnelyrics.EvagneLyricsApp
+import com.example.evagnelyrics.R
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 
 object Items {
@@ -96,5 +95,13 @@ object Items {
                 multilinea
             """.trimIndent(),
         ),
+    )
+
+    val images = listOf(
+        R.drawable.img1_7185,
+        R.drawable.img2_7190,
+        R.drawable.img3_7228,
+        R.drawable.img4_7236,
+        R.drawable.img5_7281,
     )
 }

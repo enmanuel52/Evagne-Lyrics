@@ -14,7 +14,17 @@ val Typography = Typography(
         fontFamily = FontFamily(Font(R.font.mouse_memoirs_regular)),
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-    )
+    ),
+    h1 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mouse_memoirs_regular)),
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp,
+    ),
+    subtitle1 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mouse_memoirs_regular)),
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp,
+    ),
     /* Other default text styles to override
     button = TextStyle(
         fontFamily = FontFamily.Default,

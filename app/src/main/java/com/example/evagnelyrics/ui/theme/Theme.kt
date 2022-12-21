@@ -6,19 +6,22 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import com.example.evagnelyrics.core.LocalDimen
+import androidx.compose.ui.graphics.Color
 import com.example.evagnelyrics.core.Dimen
+import com.example.evagnelyrics.core.LocalDimen
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
     primaryVariant = Purple700,
-    secondary = Teal200
+    secondary = Gold,
+    onSurface = Color.White
 )
 
 private val LightColorPalette = lightColors(
     primary = LightBluePurple,
     primaryVariant = Purple700,
-    secondary = Teal200
+    secondary = Gold,
+    onSurface = Color.Black
 
     /* Other default colors to override
     background = Color.White,

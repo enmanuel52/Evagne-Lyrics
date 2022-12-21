@@ -1,4 +1,4 @@
-package com.example.evagnelyrics.ui.viewmodel
+package com.example.evagnelyrics.ui.compose.screen.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ListFragmentViewModel @Inject constructor(
+class ListViewModel @Inject constructor(
     private val getAllLyricsUC: GetAllLyricsUC,
     private val searchByTitleUC: SearchByTitleUC,
     private val favoriteUC: FavoriteUC,

@@ -1,6 +1,5 @@
-package com.example.evagnelyrics.ui.viewmodel
+package com.example.evagnelyrics.ui.compose.screen.main
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
@@ -9,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainFragmentViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val insertAllLyricsUC: InsertAllLyricsUC,
     private val getAllLyricsUC: GetAllLyricsUC,
 ) : ViewModel() {

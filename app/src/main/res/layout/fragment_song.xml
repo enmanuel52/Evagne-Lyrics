@@ -1,35 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.fragment.SongFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <androidx.compose.ui.platform.ComposeView
+        android:id ="@+id/composeView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:titleCentered="true"
-        tools:title="Title" />
+        android:layout_height="match_parent"/>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/letter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="48dp"
-            android:textAlignment="center"
-            tools:text="Este es un texto" />
-
-    </androidx.core.widget.NestedScrollView>
-
-</LinearLayout>
+</FrameLayout>

@@ -1,121 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.MainFragment"
-    android:id="@+id/container">
+    tools:context=".ui.fragment.MainFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent" />
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/splash_background"
-            app:contentScrim="@color/splash_background"
-            app:layout_scrollFlags="exitUntilCollapsed"
-            app:titleEnabled="true"
-            app:toolbarId="@id/mainToolbar">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/avatar"
-                android:layout_width="match_parent"
-                android:layout_height="390dp"
-                android:src="@drawable/img3_7228_crop" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/mainToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:actionBarSize"
-            app:layout_collapseMode="pin"
-            app:title="@string/app_name" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/songs"
-                android:layout_width="200dp"
-                android:layout_height="300dp"
-                android:checkable="true"
-                android:clickable="true"
-                android:elevation="8dp"
-                android:focusable="true">
-
-                <androidx.coordinatorlayout.widget.CoordinatorLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/primaryColor">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/songs_picture"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:src="@drawable/img2_7190" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center|bottom"
-                        android:layout_marginBottom="50dp"
-                        android:text="@string/songs"
-                        android:textColor="@color/white" />
-                </androidx.coordinatorlayout.widget.CoordinatorLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/wallpapers"
-                android:layout_width="200dp"
-                android:layout_height="300dp"
-                android:layout_marginStart="16dp"
-                android:checkable="true"
-                android:clickable="true"
-                android:elevation="8dp"
-                android:focusable="true">
-
-                <androidx.coordinatorlayout.widget.CoordinatorLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/primaryColor">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/walls_picture"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:src="@drawable/img4_7236" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center|bottom"
-                        android:layout_marginBottom="50dp"
-                        android:text="@string/title_wallpapers"
-                        android:textColor="@color/white" />
-                </androidx.coordinatorlayout.widget.CoordinatorLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
-    </HorizontalScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>
