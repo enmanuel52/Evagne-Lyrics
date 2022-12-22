@@ -6,20 +6,25 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.navigation.Route
+import com.example.evagnelyrics.ui.theme.component.EvText
+import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 
 @Composable
 fun GalleryScreen(
@@ -28,7 +33,13 @@ fun GalleryScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(text = stringResource(id = R.string.title_wallpapers)) },
+            title = {
+                EvText(
+                    resource = R.string.title_wallpapers,
+                    style = EvTextStyle.Head,
+                    color = Color.White
+                )
+            },
             navigationIcon = {
                 IconButton(onClick = {
                     navController.popBackStack()

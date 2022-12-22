@@ -1,10 +1,13 @@
 package com.example.evagnelyrics.ui.screen.main
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
 import com.example.evagnelyrics.domain.usecase.InsertAllLyricsUC
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.lastOrNull
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,15 +16,9 @@ class MainViewModel @Inject constructor(
     private val getAllLyricsUC: GetAllLyricsUC,
 ) : ViewModel() {
 
-//    val nightMode: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    fun setDatabase() {
-        if (getAllLyricsUC().isEmpty()) {
-            insertAllLyricsUC(Items.songs)
+    fun setDatabase() = viewModelScope.launch {
+        if (getAllLyricsUC().lastOrNull()?.isEmpty() == true) {
+            insertAllLyricsUC(Items.songs.map { it.toDomain() })
         }
     }
-
-//    fun changeLightMode() {
-//        nightMode.value = !(nightMode.value!!)
-//    }
 }

@@ -5,8 +5,8 @@ import com.example.evagnelyrics.domain.model.Lyric
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetAllLyricsUC @Inject constructor(
-    private val lyricsRepo: LyricsRepo
+class GetFavoritesUC @Inject constructor(
+    private val repo: LyricsRepo,
 ) {
-    operator fun invoke(): Flow<List<Lyric>> = lyricsRepo.getAllLyrics()
+    operator fun invoke(): Flow<List<Lyric>> = repo.getAllFavorites()
 }

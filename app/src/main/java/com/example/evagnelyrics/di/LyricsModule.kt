@@ -21,7 +21,8 @@ object LyricsModule {
     @Provides
     fun provideRoom(@ApplicationContext context: Context): LyricsDataBase = synchronized(this) {
         Room.databaseBuilder(context, LyricsDataBase::class.java, "lyrics_table")
-            .fallbackToDestructiveMigration().allowMainThreadQueries().build()
+            .fallbackToDestructiveMigration()
+            .allowMainThreadQueries().build()
     }
 
     @Singleton

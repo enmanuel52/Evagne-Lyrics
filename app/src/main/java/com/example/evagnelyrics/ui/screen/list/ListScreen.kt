@@ -1,7 +1,5 @@
 package com.example.evagnelyrics.ui.screen.list
 
-import android.util.Log
-import android.view.KeyEvent
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
@@ -24,32 +22,33 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
+import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = hiltViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
-
-    val favMode by viewModel.favMode.collectAsState()
     val scaffoldState = rememberScaffoldState()
+
+    //viewModel states
+    val favMode by viewModel.favMode.collectAsState()
     val searchMode by viewModel.searchMode.collectAsState(false)
     val text by viewModel.searchField.observeAsState()
+    val titles by viewModel.titles.collectAsState()
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -58,9 +57,10 @@ fun ListScreen(
                 backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     SlideFromRight(visible = !searchMode) {
-                        Text(
-                            text = stringResource(id = R.string.songs),
-                            color = Color.White
+                        EvText(
+                            resource = R.string.songs,
+                            color = Color.White,
+                            style = EvTextStyle.Head,
                         )
                     }
                     SlideFromRight(visible = searchMode) {
@@ -78,8 +78,6 @@ fun ListScreen(
                     IconButton(onClick = {
                         if (searchMode) {
                             viewModel.toggleSearchMode()
-                            //reset the list
-                            viewModel.searching("")
                         } else {
                             navController.popBackStack()
                         }
@@ -118,20 +116,19 @@ fun ListScreen(
             )
         }
     ) {
-        val titles by viewModel.titles.collectAsState(emptyList())
         SongsList(Modifier.padding(it), titles) { title: String ->
             navController.navigate(Route.Song.toString() + "/$title")
         }
 
         //collect uiStates
-        val uiState by viewModel.uiState.collectAsState(Resource.Success(Unit))
-
         LaunchedEffect(key1 = true) {
-            when (val state = uiState) {
-                is Resource.Error -> {
-                    scaffoldState.snackbarHostState.showSnackbar(state.msg)
+            viewModel.uiState.collectLatest { state ->
+                when (state) {
+                    is Resource.Error -> {
+                        scaffoldState.snackbarHostState.showSnackbar(state.msg)
+                    }
+                    is Resource.Success -> {}
                 }
-                is Resource.Success -> {}
             }
         }
     }
@@ -194,20 +191,20 @@ fun SongItem(
             Text(text = title, color = Color.White)
         }
         //collect favs list
-        val favTitles by viewModel.favs.collectAsState(emptyList())
-        FavIcon(title, favTitles) { viewModel.favAction(it) }
+        val favTitles by viewModel.favorites.collectAsState(emptyList())
+        FavIcon(title, favTitles.map { it.title }) { viewModel.favAction(it) }
     }
 }
 
 @Composable
-fun FavIcon(title: String, favs: List<String> = emptyList(), favAction: (String) -> Unit) {
+fun FavIcon(title: String, favTitles: List<String> = emptyList(), favAction: (String) -> Unit) {
     IconButton(
         modifier = Modifier.padding(end = MaterialTheme.dimen.mediumSmall),
         onClick = { favAction(title) }) {
         Icon(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = "fav button",
-            tint = if (favs.contains(title)) Color.Red else Color.White
+            tint = if (favTitles.contains(title)) Color.Red else Color.White
         )
     }
 }

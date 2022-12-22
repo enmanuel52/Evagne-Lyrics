@@ -1,54 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.EvagneLyrics" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" >@color/primaryDarkColor</item>
-        <!-- Customize your theme here. -->
-        <item name="materialCardViewStyle">@style/Widget.MaterialComponents.CardView.Mine</item>
-
-        <item name="android:textViewStyle">@style/Base.Widget.MaterialComponents.TextView.Mine
-        </item>
-
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Mine</item>
-
-        <item name="fontFamily">@font/dancing_script_variable_font_wght</item>
+        <item name="android:statusBarColor" >@color/primaryColor</item>
     </style>
 
     <style name="Theme.EvagneLyrics.Splash">
         <item name="android:windowBackground">@drawable/splash_background</item>
-    </style>
-
-    <style name="ShapeAppearance.MaterialComponents.SmallComponent.Mine">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">8dp</item>
-    </style>
-
-    <style name="Widget.MaterialComponents.CardView.Mine">
-        <item name="shapeAppearance">@style/ShapeAppearance.MaterialComponents.SmallComponent.Mine
-        </item>
-    </style>
-
-    <style name="Base.Widget.MaterialComponents.TextView.Mine">
-        <item name="android:textSize">24sp</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
-    </style>
-
-    <style name="Base.Widget.MaterialComponents.TextView.MyTitle">
-        <item name="android:textSize">18sp</item>
-    </style>
-
-    <style name="Widget.MaterialComponents.Toolbar.Mine">
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="titleTextColor">?attr/colorOnPrimary</item>
-        <item name="navigationIconTint">?attr/colorOnPrimary</item>
-        <item name="iconTint">?attr/colorOnPrimary</item>
     </style>
 </resources>

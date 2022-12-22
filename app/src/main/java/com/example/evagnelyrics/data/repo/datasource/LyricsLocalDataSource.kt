@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class LyricsLocalDataSource(
     private val lyricsDao: LyricsDao,
 ) {
-    fun insertAllLyrics(lyrics: List<LyricsEntity>) = lyricsDao.insertAllLyrics(lyrics)
+    suspend fun insertAllLyrics(lyrics: List<LyricsEntity>) = lyricsDao.insertAllLyrics(lyrics)
 
     fun getAllLyrics() = lyricsDao.getAllLyrics()
 
@@ -15,5 +15,7 @@ class LyricsLocalDataSource(
 
     fun searchByTitle(title: String): List<LyricsEntity> = lyricsDao.searchByTitle(title)
 
-    fun updateSong(lyricsEntity: LyricsEntity) = lyricsDao.updateSong(lyricsEntity)
+    suspend fun updateSong(lyricsEntity: LyricsEntity) = lyricsDao.updateSong(lyricsEntity)
+
+    fun getAllFavorites() = lyricsDao.getAllFavorites()
 }

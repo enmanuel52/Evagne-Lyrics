@@ -3,15 +3,16 @@ package com.example.evagnelyrics.data.database.dao
 import androidx.room.*
 import com.example.evagnelyrics.data.database.entities.LYRICS_TABLE_NAME
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LyricsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllLyrics(lyrics: List<LyricsEntity>)
+    suspend fun insertAllLyrics(lyrics: List<LyricsEntity>)
 
     @Query("SELECT * FROM $LYRICS_TABLE_NAME ORDER BY title")
-    fun getAllLyrics(): List<LyricsEntity>
+    fun getAllLyrics(): Flow<List<LyricsEntity>>
 
     @Query("SELECT * FROM $LYRICS_TABLE_NAME WHERE title LIKE :title")
     fun getLyricByTitle(title: String): LyricsEntity
@@ -20,5 +21,8 @@ interface LyricsDao {
     fun searchByTitle(title: String): List<LyricsEntity>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateSong(lyricsEntity: LyricsEntity)
+    suspend fun updateSong(lyricsEntity: LyricsEntity)
+
+    @Query("SELECT * FROM $LYRICS_TABLE_NAME WHERE favorite  ORDER BY title")
+    fun getAllFavorites(): Flow<List<LyricsEntity>>
 }
