@@ -22,34 +22,6 @@
         <item name="fontFamily">@font/dancing_script_variable_font_wght</item>
     </style>
 
-<!--    <style name="Theme.EvagneLyrics.Night">-->
-<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/secondaryColor</item>-->
-<!--        <item name="colorPrimaryVariant">@color/secondaryDarkColor</item>-->
-<!--        <item name="colorOnPrimary">@color/white</item>-->
-<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
-<!--        <item name="colorSecondary">@color/teal_200</item>-->
-<!--        <item name="colorSecondaryVariant">@color/teal_200</item>-->
-<!--        <item name="colorOnSecondary">@color/black</item>-->
-<!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
-<!--        <item name="android:statusBarColor" >@color/secondaryDarkColor</item>-->
-
-<!--        <item name="android:colorBackground">@color/black</item>-->
-<!--    </style>-->
-
-<!--    <style name="Theme.EvagneLyrics.Light">-->
-<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/primaryColor</item>-->
-<!--        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>-->
-<!--        <item name="colorOnPrimary">@color/black</item>-->
-<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
-<!--        <item name="colorSecondary">@color/teal_200</item>-->
-<!--        <item name="colorSecondaryVariant">@color/teal_700</item>-->
-<!--        <item name="colorOnSecondary">@color/white</item>-->
-<!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
-<!--        <item name="android:statusBarColor" >@color/primaryDarkColor</item>-->
-<!--    </style>-->
-
     <style name="Theme.EvagneLyrics.Splash">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>

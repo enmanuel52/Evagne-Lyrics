@@ -1,5 +1,7 @@
-package com.example.evagnelyrics.ui.compose.screen.list
+package com.example.evagnelyrics.ui.screen.list
 
+import android.util.Log
+import android.view.KeyEvent
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
@@ -22,15 +24,18 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.R
+import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
-import com.example.evagnelyrics.ui.fragment.ACTION_BACK
-import com.example.evagnelyrics.ui.fragment.ACTION_NEXT
+import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvTextField
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
@@ -38,13 +43,14 @@ import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = hiltViewModel(),
-    navTo: (route: String) -> Unit = {},
+    navController: NavHostController = LocalNavController.current!!
 ) {
 
     val favMode by viewModel.favMode.collectAsState()
     val scaffoldState = rememberScaffoldState()
     val searchMode by viewModel.searchMode.collectAsState(false)
     val text by viewModel.searchField.observeAsState()
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -75,7 +81,7 @@ fun ListScreen(
                             //reset the list
                             viewModel.searching("")
                         } else {
-                            navTo(ACTION_BACK)
+                            navController.popBackStack()
                         }
                     }) {
                         Icon(
@@ -113,7 +119,9 @@ fun ListScreen(
         }
     ) {
         val titles by viewModel.titles.collectAsState(emptyList())
-        SongsList(Modifier.padding(it), titles, navTo)
+        SongsList(Modifier.padding(it), titles) { title: String ->
+            navController.navigate(Route.Song.toString() + "/$title")
+        }
 
         //collect uiStates
         val uiState by viewModel.uiState.collectAsState(Resource.Success(Unit))
@@ -140,10 +148,14 @@ fun SongsList(
             val visibleState = MutableTransitionState(false).apply {
                 targetState = true
             }
-            SlideFromRight(visibleState = visibleState) {
+            SlideFromRight(
+                visibleState = visibleState,
+                delayMillis = index * 200 + 100,
+                durationMillis = 250
+            ) {
                 SongItem(
                     Modifier.clickable {
-                        navTo(ACTION_NEXT + "/" + songs[index])
+                        navTo(songs[index])
                     },
                     title = songs[index]
                 )

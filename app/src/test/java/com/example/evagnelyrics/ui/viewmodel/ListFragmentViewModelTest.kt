@@ -6,7 +6,7 @@ import com.example.evagnelyrics.domain.usecase.FavoriteUC
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
 import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
 import com.example.evagnelyrics.domain.usecase.SearchByTitleUC
-import com.example.evagnelyrics.ui.compose.screen.list.ListViewModel
+import com.example.evagnelyrics.ui.screen.list.ListViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.Dispatchers

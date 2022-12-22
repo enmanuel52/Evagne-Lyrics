@@ -1,4 +1,4 @@
-package com.example.evagnelyrics.ui.compose.screen.main
+package com.example.evagnelyrics.ui.screen.main
 
 import androidx.lifecycle.ViewModel
 import com.example.evagnelyrics.core.Items

@@ -1,4 +1,4 @@
-package com.example.evagnelyrics.ui.compose.screen.song
+package com.example.evagnelyrics.ui.screen.song
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
