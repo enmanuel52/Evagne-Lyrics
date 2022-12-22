@@ -1,5 +1,7 @@
 package com.example.evagnelyrics.ui.compose.screen.list
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.evagnelyrics.core.Resource
@@ -37,6 +39,12 @@ class ListViewModel @Inject constructor(
     private val _uiState: Channel<Resource<Unit>> = Channel()
     val uiState get() = _uiState.receiveAsFlow()
 
+    private val _searchMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val searchMode get() = _searchMode.asStateFlow()
+
+    private val _searchField: MutableLiveData<String> = MutableLiveData("")
+    val searchField: LiveData<String> get() = _searchField
+
     fun initValuesForTesting(
         songs: List<LyricsEntity> = emptyList(),
         fav: Boolean = false,
@@ -59,16 +67,6 @@ class ListViewModel @Inject constructor(
 
             _favs.update {
                 lyrics.filter { it.favorite }.map { it.title }
-            }
-        }
-    }
-
-    fun searchByName(title: String) {
-        viewModelScope.launch {
-            val lyrics = searchByTitleUC(title, fav = false)
-
-            _titles.update {
-                lyrics.map { it.title }
             }
         }
     }
@@ -106,7 +104,21 @@ class ListViewModel @Inject constructor(
 
     fun onFavMode() {
         _favMode.value = _favMode.value != true
-        if (favMode.value == true) filterFav()
+        if (favMode.value) filterFav()
         else getAllSongs()
+    }
+
+    fun toggleSearchMode() = viewModelScope.launch {
+        _searchMode.update { !searchMode.value }
+    }
+
+    fun searching(title: String) {
+        _searchField.value = title
+
+        val lyrics = searchByTitleUC(title, fav = false)
+
+        _titles.update {
+            lyrics.map { it.title }
+        }
     }
 }

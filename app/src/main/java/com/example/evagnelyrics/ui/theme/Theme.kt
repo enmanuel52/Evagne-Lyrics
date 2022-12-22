@@ -1,11 +1,14 @@
 package com.example.evagnelyrics.ui.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.evagnelyrics.core.Dimen
 import com.example.evagnelyrics.core.LocalDimen
@@ -14,14 +17,18 @@ private val DarkColorPalette = darkColors(
     primary = Purple200,
     primaryVariant = Purple700,
     secondary = Gold,
-    onSurface = Color.White
+    onSurface = Color.White,
+    surface = Color.Gray,
+    background = Color.Black,
 )
 
 private val LightColorPalette = lightColors(
     primary = LightBluePurple,
     primaryVariant = Purple700,
     secondary = Gold,
-    onSurface = Color.Black
+    onSurface = Color.White,
+    surface = LightBluePurple,
+    background = Purple100,
 
     /* Other default colors to override
     background = Color.White,
@@ -49,7 +56,12 @@ fun EvagneLyricsTheme(
             colors = colors,
             typography = Typography,
             shapes = Shapes,
-            content = content
+            content = {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.background)
+                ) { content() }
+            }
         )
     }
 }

@@ -58,7 +58,7 @@ fun SongScreen(
                     .fillMaxWidth()
                     .padding(MaterialTheme.dimen.medium)
                     .verticalScroll(rememberScrollState()),
-                color = MaterialTheme.colors.onSurface
+                color = MaterialTheme.colors.primary
             )
 
         }

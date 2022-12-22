@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.compose.screen.main
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -47,40 +48,49 @@ fun MainScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(MaterialTheme.dimen.large))
-            Image(
-                painter = painterResource(R.drawable.img3_7228_crop), contentDescription = "front",
-                modifier = Modifier
-                    .size(300.dp)
-                    .border(
-                        MaterialTheme.dimen.verySmall,
-                        MaterialTheme.colors.secondary,
-                        RoundedCornerShape(50)
-                    )
-                    .clip(RoundedCornerShape(50)),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
-            EvText(
-                resource = R.string.app_name,
-                style = EvTextStyle.Head,
-                color = MaterialTheme.colors.secondary
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
-            LazyRow(
-                modifier = Modifier
-                    .height(280.dp)
-                    .padding(end = MaterialTheme.dimen.verySmall)
+            Column(
+                modifier = Modifier.weight(6f),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
-                val titles = listOf(R.string.songs, R.string.title_wallpapers)
-                val destinations = listOf(TO_SONGS, TO_WALLPAPERS)
-                items(count = 2) { index ->
-                    MainCard(image = pictures[index], title = titles[index]) {
-                        navTo(destinations[index])
+
+                Spacer(modifier = Modifier.height(MaterialTheme.dimen.large))
+                Image(
+                    painter = painterResource(R.drawable.img3_7228_crop),
+                    contentDescription = "front",
+                    modifier = Modifier
+                        .size(300.dp)
+                        .border(
+                            MaterialTheme.dimen.verySmall,
+                            MaterialTheme.colors.secondary,
+                            RoundedCornerShape(50)
+                        )
+                        .clip(RoundedCornerShape(50)),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
+                EvText(
+                    resource = R.string.app_name,
+                    style = EvTextStyle.Head,
+                    color = MaterialTheme.colors.secondary
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
+                LazyRow(
+                    modifier = Modifier
+                        .height(320.dp)
+                        .padding(end = MaterialTheme.dimen.verySmall)
+                ) {
+                    val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
+                    val titles = listOf(R.string.songs, R.string.title_wallpapers)
+                    val destinations = listOf(TO_SONGS, TO_WALLPAPERS)
+                    items(count = 2) { index ->
+                        MainCard(image = pictures[index], title = titles[index]) {
+                            navTo(destinations[index])
+                        }
                     }
                 }
+
             }
+
 
             val constraints = ConstraintSet {
                 val byDevRef = createRefFor(BY_DEV_ID)
@@ -96,7 +106,8 @@ fun MainScreen(
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .height(100.dp)
+                    .weight(1f),
                 constraintSet = constraints
             ) {
                 EvText(
@@ -120,6 +131,7 @@ fun MainCard(
     navigate: () -> Unit
 ) {
     Card(
+        elevation = MaterialTheme.dimen.verySmall,
         modifier = Modifier
             .fillMaxHeight()
             .width(180.dp)
@@ -129,19 +141,22 @@ fun MainCard(
             .background(MaterialTheme.colors.primary)
             .clickable { navigate() }
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = image),
                 contentDescription = stringResource(id = title) + "image",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(6f)
+                    .clip(RoundedCornerShape(8)),
+                contentScale = ContentScale.Crop,
             )
             EvText(
                 resource = title,
-                color = MaterialTheme.colors.secondary,
+                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier
-                    .padding(bottom = MaterialTheme.dimen.mediumSmall)
-                    .align(Alignment.BottomCenter)
+                    .padding(vertical = MaterialTheme.dimen.small)
+                    .weight(1f)
             )
         }
     }
@@ -149,7 +164,7 @@ fun MainCard(
 
 const val BY_DEV_ID = "byDevId"
 
-@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun MainScreenPreview() {
     MainScreen {}

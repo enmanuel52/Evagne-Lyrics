@@ -1,12 +1,10 @@
 package com.example.evagnelyrics.ui.compose.screen.gallery
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -47,21 +45,25 @@ fun GalleryScreen(
                 columns = GridCells.Fixed(count = 2),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small),
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small),
-                contentPadding = PaddingValues(vertical = MaterialTheme.dimen.verySmall)
+                contentPadding = PaddingValues(all = MaterialTheme.dimen.verySmall)
             ) {
-                itemsIndexed(Items.images) { image, no ->
+                items(Items.images.size) { index ->
                     Image(
-                        painter = painterResource(id = R.drawable.img2_7190),
-                        contentDescription = "image # $no",
+                        painter = painterResource(
+                            id = when (index) {
+                                0 -> R.drawable.img1_7185
+                                1 -> R.drawable.img2_7190
+                                2 -> R.drawable.img3_7228
+                                3 -> R.drawable.img4_7236
+                                4 -> R.drawable.img5_7281
+                                else -> R.drawable.img1_7185
+                            }
+                        ),
+                        contentDescription = "image # $index",
                         modifier = Modifier
-                            .border(
-                                MaterialTheme.dimen.superSmall,
-                                MaterialTheme.colors.secondary,
-                                RoundedCornerShape(percent = 5)
-                            )
                             .clip(RoundedCornerShape(5))
                             .clickable {
-                                navTo("$ACTION_NEXT/$no")
+                                navTo("$ACTION_NEXT/$index")
                             }
                     )
                 }

@@ -6,5 +6,6 @@
     <string name="picture_title">Imagen</string>
     <string name="empty_fav_songs">No tiene canciones favoritas</string>
     <string name="by_dev">by Enmanuel Bergling</string>
+    <string name="search_song_hint">Busque una canción</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

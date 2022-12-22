@@ -1,12 +1,9 @@
 package com.example.evagnelyrics.ui.compose.screen.list
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +31,9 @@ import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.fragment.ACTION_BACK
 import com.example.evagnelyrics.ui.fragment.ACTION_NEXT
+import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
+import com.example.evagnelyrics.ui.theme.component.EvTextField
+import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 
 @Composable
 fun ListScreen(
@@ -42,14 +43,41 @@ fun ListScreen(
 
     val favMode by viewModel.favMode.collectAsState()
     val scaffoldState = rememberScaffoldState()
+    val searchMode by viewModel.searchMode.collectAsState(false)
+    val text by viewModel.searchField.observeAsState()
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.primary,
-                title = { Text(text = stringResource(id = R.string.songs), color = Color.White) },
+                title = {
+                    SlideFromRight(visible = !searchMode) {
+                        Text(
+                            text = stringResource(id = R.string.songs),
+                            color = Color.White
+                        )
+                    }
+                    SlideFromRight(visible = searchMode) {
+                        EvTextField(
+                            value = text.orEmpty(),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            style = EvTextStyle.Head,
+                            hint = R.string.search_song_hint,
+                            keyboardAction = EvKeyboardAction.Go,
+                        ) { viewModel.searching(it) }
+                    }
+                },
                 navigationIcon = {
-                    IconButton(onClick = { navTo(ACTION_BACK) }) {
+                    IconButton(onClick = {
+                        if (searchMode) {
+                            viewModel.toggleSearchMode()
+                            //reset the list
+                            viewModel.searching("")
+                        } else {
+                            navTo(ACTION_BACK)
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "back arrow",
@@ -58,24 +86,29 @@ fun ListScreen(
                     }
                 },
                 actions = {
-                    Row {
-                        IconButton(onClick = { viewModel.onFavMode() }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Favorite,
-                                contentDescription = "fav mode",
-                                tint = if (favMode) Color.Red else Color.White
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(6.dp))
-                        IconButton(onClick = { /*do search*/ }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Search,
-                                contentDescription = "search",
-                                tint = Color.White
-                            )
+                    SlideFromRight(visible = !searchMode) {
+                        Row {
+                            IconButton(onClick = { viewModel.onFavMode() }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Favorite,
+                                    contentDescription = "fav mode",
+                                    tint = if (favMode) Color.Red else Color.White
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            IconButton(onClick = {
+                                viewModel.toggleSearchMode()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Search,
+                                    contentDescription = "search",
+                                    tint = Color.White
+                                )
+                            }
+
                         }
                     }
-                }
+                },
             )
         }
     ) {
@@ -107,13 +140,7 @@ fun SongsList(
             val visibleState = MutableTransitionState(false).apply {
                 targetState = true
             }
-            AnimatedVisibility(visibleState = visibleState,
-                enter = slideInHorizontally(tween(delayMillis = index * 150)) { it } + fadeIn(
-                    tween(
-                        delayMillis = 200
-                    )
-                )
-            ) {
+            SlideFromRight(visibleState = visibleState) {
                 SongItem(
                     Modifier.clickable {
                         navTo(ACTION_NEXT + "/" + songs[index])
@@ -140,12 +167,7 @@ fun SongItem(
                 end = MaterialTheme.dimen.superSmall
             )
             .height(MaterialTheme.dimen.almostGiant)
-            .background(MaterialTheme.colors.primary, shape = RoundedCornerShape(20))
-            .border(
-                width = MaterialTheme.dimen.superSmall,
-                shape = RoundedCornerShape(20),
-                color = MaterialTheme.colors.secondary
-            ),
+            .background(MaterialTheme.colors.primary, shape = RoundedCornerShape(20)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -175,6 +197,76 @@ fun FavIcon(title: String, favs: List<String> = emptyList(), favAction: (String)
             contentDescription = "fav button",
             tint = if (favs.contains(title)) Color.Red else Color.White
         )
+    }
+}
+
+/**
+ * AnimatedVisibility for slide from right and hide on right*/
+@Composable
+fun SlideFromRight(
+    visibleState: MutableTransitionState<Boolean>,
+    delayMillis: Int = 0,
+    durationMillis: Int = 400,
+    content: @Composable () -> Unit,
+) {
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter = slideInHorizontally(
+            tween(
+                durationMillis = 400,
+                delayMillis = delayMillis
+            )
+        ) { it } + fadeIn(
+            tween(
+                durationMillis = 400, delayMillis = delayMillis
+            )
+        ),
+        exit = slideOutHorizontally(
+            tween(
+                durationMillis = 400,
+                delayMillis = delayMillis
+            )
+        ) { it } + fadeOut(
+            tween(
+                durationMillis = 400, delayMillis = delayMillis
+            )
+        ),
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun SlideFromRight(
+    visible: Boolean,
+    delayMillis: Int = 0,
+    durationMillis: Int = 400,
+    content: @Composable () -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally(
+            tween(
+                durationMillis = durationMillis,
+                delayMillis = delayMillis
+            )
+        ) { it } + fadeIn(
+            tween(
+                durationMillis = durationMillis, delayMillis = delayMillis
+            )
+        ),
+        exit = slideOutHorizontally(
+            tween(
+                durationMillis = durationMillis,
+                delayMillis = delayMillis
+            )
+        ) { it } + fadeOut(
+            tween(
+                durationMillis = durationMillis, delayMillis = delayMillis
+            )
+        ),
+    ) {
+        content()
     }
 }
 

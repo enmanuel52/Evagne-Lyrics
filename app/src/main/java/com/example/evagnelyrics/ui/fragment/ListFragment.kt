@@ -1,9 +1,11 @@
 package com.example.evagnelyrics.ui.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.evagnelyrics.databinding.FragmentListBinding
@@ -42,6 +44,12 @@ class ListFragment : Fragment() {
 
     private fun toLyrics(title: String) {
         findNavController().navigate(ListFragmentDirections.actionListFragmentToSongsFragment(title))
+    }
+
+    fun hideKeyboard() {
+        val inputMethodManager =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 }
 

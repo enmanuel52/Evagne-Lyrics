@@ -73,7 +73,11 @@ fun PictureScreen(
                 modifier = Modifier.layoutId(TOP_APP_BAR_ID)
             )
             val pagerState = rememberPagerState(initialPage = page)
-            HorizontalPager(count = Items.images.size, state = pagerState, itemSpacing = MaterialTheme.dimen.verySmall) { index ->
+            HorizontalPager(
+                count = Items.images.size,
+                state = pagerState,
+                itemSpacing = MaterialTheme.dimen.verySmall
+            ) { index ->
                 Image(
                     painter = painterResource(Items.images[index]),
                     contentDescription = "image $index",
