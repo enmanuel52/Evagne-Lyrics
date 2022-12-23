@@ -14,21 +14,16 @@ import com.example.evagnelyrics.core.Dimen
 import com.example.evagnelyrics.core.LocalDimen
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Gold,
-    onSurface = Color.White,
-    surface = Color.Gray,
-    background = Color.Black,
+
 )
 
 private val LightColorPalette = lightColors(
-    primary = LightBluePurple,
-    primaryVariant = Purple700,
-    secondary = Gold,
-    onSurface = Color.White,
-    surface = LightBluePurple,
-    background = Purple100,
+    primary = Pink300,
+    onPrimary = Color.White,
+    primaryVariant = Pink300Dark,
+    secondary = Purple700,
+    surface = Pink300Light,
+    background = Pink100,
 
     /* Other default colors to override
     background = Color.White,

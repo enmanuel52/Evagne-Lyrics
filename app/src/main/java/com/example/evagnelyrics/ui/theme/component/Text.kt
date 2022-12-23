@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 fun EvText(
     @StringRes resource: Int,
     modifier: Modifier = Modifier,
-    color: Color = Color.Black,
+    color: Color = MaterialTheme.colors.onPrimary,
     style: EvTextStyle = EvTextStyle.Body
 ) {
     Text(
@@ -41,7 +41,7 @@ fun EvText(
 fun EvTextField(
     value: String,
     modifier: Modifier = Modifier,
-    color: Color = Color.Black,
+    color: Color = MaterialTheme.colors.onBackground,
     style: EvTextStyle = EvTextStyle.Body,
     @StringRes hint: Int,
     keyboardAction: EvKeyboardAction,
@@ -59,7 +59,7 @@ fun EvTextField(
             EvTextStyle.Body -> MaterialTheme.typography.body1
             EvTextStyle.Head -> MaterialTheme.typography.h1
         },
-        placeholder = { EvText(resource = hint) },
+        placeholder = { EvText(resource = hint, color = MaterialTheme.colors.onBackground) },
         colors = TextFieldDefaults.textFieldColors(
             textColor = color,
             backgroundColor = MaterialTheme.colors.background

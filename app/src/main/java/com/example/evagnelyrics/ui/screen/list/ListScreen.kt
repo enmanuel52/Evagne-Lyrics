@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,12 +55,10 @@ fun ListScreen(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     SlideFromRight(visible = !searchMode) {
                         EvText(
                             resource = R.string.songs,
-                            color = Color.White,
                             style = EvTextStyle.Head,
                         )
                     }
@@ -85,7 +84,6 @@ fun ListScreen(
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "back arrow",
-                            tint = Color.White
                         )
                     }
                 },
@@ -96,7 +94,7 @@ fun ListScreen(
                                 Icon(
                                     imageVector = Icons.Rounded.Favorite,
                                     contentDescription = "fav mode",
-                                    tint = if (favMode) Color.Red else Color.White
+                                    tint = if (favMode) Color.Red else MaterialTheme.colors.onPrimary
                                 )
                             }
                             Spacer(modifier = Modifier.width(6.dp))
@@ -106,7 +104,6 @@ fun ListScreen(
                                 Icon(
                                     imageVector = Icons.Rounded.Search,
                                     contentDescription = "search",
-                                    tint = Color.White
                                 )
                             }
 
@@ -167,6 +164,9 @@ fun SongItem(
     title: String,
     viewModel: ListViewModel = hiltViewModel()
 ) {
+    Card() {
+
+    }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -176,7 +176,8 @@ fun SongItem(
                 end = MaterialTheme.dimen.superSmall
             )
             .height(MaterialTheme.dimen.almostGiant)
-            .background(MaterialTheme.colors.primary, shape = RoundedCornerShape(20)),
+            .clip(shape = RoundedCornerShape(20))
+            .background(color = MaterialTheme.colors.primary, shape = RoundedCornerShape(20)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -185,10 +186,10 @@ fun SongItem(
             Icon(
                 imageVector = Icons.Rounded.PlaylistPlay,
                 contentDescription = null,
-                tint = Color.White
+                tint = MaterialTheme.colors.onPrimary
             )
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-            Text(text = title, color = Color.White)
+            Text(text = title, color = MaterialTheme.colors.onPrimary)
         }
         //collect favs list
         val favTitles by viewModel.favorites.collectAsState(emptyList())
@@ -204,7 +205,7 @@ fun FavIcon(title: String, favTitles: List<String> = emptyList(), favAction: (St
         Icon(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = "fav button",
-            tint = if (favTitles.contains(title)) Color.Red else Color.White
+            tint = if (favTitles.contains(title)) Color.Red else MaterialTheme.colors.onPrimary
         )
     }
 }

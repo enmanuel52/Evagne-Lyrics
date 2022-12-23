@@ -2,12 +2,18 @@ package com.example.evagnelyrics.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+//lights
+val Pink300 = Color(0xFFF06292)
+val Pink300Light = Color(0xFFFF94C2)
+val Pink300Dark = Color(0xFFBA2D65)
+val Pink100 = Color(0xFFF8BBD0)
 
-val LightBluePurple = Color(0xFF9183E0)
-val Gold = Color(0xFFFFA000)
-val Purple100 = Color(0xFFE1BEE7)
-val LightBlue = Color(0xFF64B5F6)
+val Amber500 = Color(0xFFFFC107)
+val Amber500Light = Color(0xFFFFF350)
+val Amber500Dark = Color(0xFFC79100)
+
+val Purple700 = Color(0xFF7B1FA2)
+
+
+
+//dark

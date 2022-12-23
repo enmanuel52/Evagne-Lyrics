@@ -15,7 +15,6 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
@@ -37,7 +36,6 @@ fun GalleryScreen(
                 EvText(
                     resource = R.string.title_wallpapers,
                     style = EvTextStyle.Head,
-                    color = Color.White
                 )
             },
             navigationIcon = {

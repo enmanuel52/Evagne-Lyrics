@@ -60,7 +60,7 @@ fun MainScreen(
                     .size(300.dp)
                     .border(
                         MaterialTheme.dimen.verySmall,
-                        MaterialTheme.colors.secondary,
+                        MaterialTheme.colors.primaryVariant,
                         RoundedCornerShape(50)
                     )
                     .clip(RoundedCornerShape(50)),
@@ -70,7 +70,7 @@ fun MainScreen(
             EvText(
                 resource = R.string.app_name,
                 style = EvTextStyle.Head,
-                color = MaterialTheme.colors.secondary
+                color = MaterialTheme.colors.primaryVariant
             )
             Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
             LazyRow(
@@ -111,7 +111,7 @@ fun MainScreen(
         ) {
             EvText(
                 resource = R.string.by_dev,
-                color = MaterialTheme.colors.secondary,
+                color = MaterialTheme.colors.primaryVariant,
                 modifier = Modifier
                     .layoutId(BY_DEV_ID)
                     .padding(MaterialTheme.dimen.large)
@@ -136,7 +136,6 @@ fun MainCard(
             .padding(vertical = MaterialTheme.dimen.small)
             .padding(start = MaterialTheme.dimen.small)
             .clip(RoundedCornerShape(8))
-            .background(MaterialTheme.colors.primary)
             .clickable { navigate() }
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -151,7 +150,6 @@ fun MainCard(
             )
             EvText(
                 resource = title,
-                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier
                     .padding(vertical = MaterialTheme.dimen.small)
                     .weight(1f)
