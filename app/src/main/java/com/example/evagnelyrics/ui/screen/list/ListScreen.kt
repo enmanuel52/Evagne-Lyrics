@@ -164,9 +164,6 @@ fun SongItem(
     title: String,
     viewModel: ListViewModel = hiltViewModel()
 ) {
-    Card() {
-
-    }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -177,7 +174,7 @@ fun SongItem(
             )
             .height(MaterialTheme.dimen.almostGiant)
             .clip(shape = RoundedCornerShape(20))
-            .background(color = MaterialTheme.colors.primary, shape = RoundedCornerShape(20)),
+            .background(color = MaterialTheme.colors.surface, shape = RoundedCornerShape(20)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

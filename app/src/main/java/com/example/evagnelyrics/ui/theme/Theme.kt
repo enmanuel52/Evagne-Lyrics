@@ -14,7 +14,11 @@ import com.example.evagnelyrics.core.Dimen
 import com.example.evagnelyrics.core.LocalDimen
 
 private val DarkColorPalette = darkColors(
-
+    primary = Pink300Light,
+    onPrimary = Color.White,
+    primaryVariant = Pink100,
+    secondary = Grey800,
+    surface = Grey900,
 )
 
 private val LightColorPalette = lightColors(

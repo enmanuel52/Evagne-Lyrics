@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavHostController
@@ -36,26 +37,6 @@ import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 fun MainScreen(
     navController: NavHostController = LocalNavController.current!!
 ) {
-
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Column(
-//            modifier = Modifier.weight(6f),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//
-//            Spacer(modifier = Modifier.height(MaterialTheme.dimen.large))
-//
-//            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
-//
-//            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
-//
-//
-//        }
-//    }
 
     val smallDimen = MaterialTheme.dimen.small
     val mediumDimen = MaterialTheme.dimen.medium
