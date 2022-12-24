@@ -1,5 +1,8 @@
 package com.example.evagnelyrics.ui.screen.list
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,12 +28,15 @@ class ListViewModel @Inject constructor(
 
     private val allLyricsFlow: Flow<List<Lyric>> = getAllLyricsUC()
     private val _allLyrics: MutableStateFlow<List<Lyric>> = MutableStateFlow(emptyList())
-    val allLyrics get() = _allLyrics.asStateFlow()
+    private val allLyrics get() = _allLyrics.asStateFlow()
 
-    val favorites: Flow<List<Lyric>> = getFavoritesUC()
+    val favoritesFlow: Flow<List<Lyric>> = getFavoritesUC()
+    private val _favorites: MutableStateFlow<List<Lyric>> = MutableStateFlow(emptyList())
+    private val favorites get() = _favorites.asStateFlow()
 
-    private val _favMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val favMode = _favMode.asStateFlow()
+    //I just wanna use a State
+    private val _favState: MutableState<Boolean> = mutableStateOf(false)
+    val favState: State<Boolean> get() = _favState
 
     private val _titles: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val titles get() = _titles.asStateFlow()
@@ -61,6 +67,13 @@ class ListViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            favoritesFlow.collectLatest { lyrics ->
+                _favorites.update {
+                    lyrics
+                }
+            }
+        }
     }
 
     fun initValuesForTesting(
@@ -68,13 +81,13 @@ class ListViewModel @Inject constructor(
         fav: Boolean = false,
     ) {
 //        _songs.value = songs
-        _favMode.value = fav
+//        _favMode.value = fav
     }
 
     /**
      * if it is not on fav mode*/
     fun favAction(title: String) = viewModelScope.launch {
-        if (!_favMode.value) {
+        if (!_favState.value) {
             val lyric: Lyric = getLyricsByTitleUC(title)
             //update db
             favoriteUC(lyric)
@@ -85,18 +98,20 @@ class ListViewModel @Inject constructor(
     }
 
     fun onFavMode() = viewModelScope.launch {
-        _favMode.value = _favMode.value != true
-        val newTitlesFlow = if (favMode.value) favorites else allLyricsFlow
-        newTitlesFlow.collectLatest { lyrics ->
-            _titles.update {
-                lyrics.map { it.title }
+        _favState.value = _favState.value != true
+
+        _titles.update {
+            if (favState.value) {
+                favorites.value.map { it.title }
+            } else {
+                allLyrics.value.map { it.title }
             }
         }
     }
 
     fun toggleSearchMode() = viewModelScope.launch {
         //when i try to turn on the search
-        if (favMode.value && !searchMode.value) {
+        if (favState.value && !searchMode.value) {
             _uiState.send(Resource.Error("It is not allowed on fav mode"))
         } else {
             _searchMode.update { !searchMode.value }

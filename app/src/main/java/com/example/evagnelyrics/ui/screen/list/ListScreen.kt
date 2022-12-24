@@ -46,7 +46,7 @@ fun ListScreen(
     val scaffoldState = rememberScaffoldState()
 
     //viewModel states
-    val favMode by viewModel.favMode.collectAsState()
+    val favMode by viewModel.favState
     val searchMode by viewModel.searchMode.collectAsState(false)
     val text by viewModel.searchField.observeAsState()
     val titles by viewModel.titles.collectAsState()
@@ -189,7 +189,7 @@ fun SongItem(
             Text(text = title, color = MaterialTheme.colors.onPrimary)
         }
         //collect favs list
-        val favTitles by viewModel.favorites.collectAsState(emptyList())
+        val favTitles by viewModel.favoritesFlow.collectAsState(emptyList())
         FavIcon(title, favTitles.map { it.title }) { viewModel.favAction(it) }
     }
 }
