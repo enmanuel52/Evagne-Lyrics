@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,9 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
@@ -35,88 +34,118 @@ import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
 
-    viewModel.setDatabase()
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Column(
+//            modifier = Modifier.weight(6f),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//
+//            Spacer(modifier = Modifier.height(MaterialTheme.dimen.large))
+//
+//            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
+//
+//            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
+//
+//
+//        }
+//    }
 
+    val smallDimen = MaterialTheme.dimen.small
+    val mediumDimen = MaterialTheme.dimen.medium
 
-    Column(
+    val constraints = ConstraintSet {
+        val byDevRef = createRefFor(BY_DEV_ID)
+        val photoRef = createRefFor(PHOTO_ID)
+        val listRef = createRefFor(LIST_ID)
+        val titleRef = createRefFor(TITLE_ID)
+        val topGuideLine35 = createGuidelineFromTop(0.35f)
+        val topGuideLine45 = createGuidelineFromTop(0.45f)
+
+        constrain(photoRef) {
+            top.linkTo(parent.top)
+            bottom.linkTo(topGuideLine35)
+            start.linkTo(parent.start, margin = mediumDimen)
+            end.linkTo(parent.end, margin = mediumDimen)
+        }
+
+        constrain(titleRef) {
+            top.linkTo(photoRef.bottom)
+            bottom.linkTo(listRef.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(listRef) {
+            top.linkTo(topGuideLine45, margin = smallDimen)
+            start.linkTo(parent.start, margin = smallDimen)
+            end.linkTo(parent.end, margin = smallDimen)
+        }
+
+        constrain(byDevRef) {
+            bottom.linkTo(parent.bottom, margin = mediumDimen)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+    }
+
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        constraintSet = constraints
     ) {
-        Column(
-            modifier = Modifier.weight(6f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Image(
+            painter = painterResource(R.drawable.img3_7228_crop),
+            contentDescription = "front",
+            modifier = Modifier
+                .width(280.dp)
+                .aspectRatio(1f)
+                .border(
+                    MaterialTheme.dimen.verySmall,
+                    MaterialTheme.colors.primaryVariant,
+                    RoundedCornerShape(50)
+                )
+                .clip(RoundedCornerShape(50))
+                .layoutId(PHOTO_ID),
+            contentScale = ContentScale.Crop
+        )
 
-            Spacer(modifier = Modifier.height(MaterialTheme.dimen.large))
-            Image(
-                painter = painterResource(R.drawable.img3_7228_crop),
-                contentDescription = "front",
-                modifier = Modifier
-                    .size(300.dp)
-                    .border(
-                        MaterialTheme.dimen.verySmall,
-                        MaterialTheme.colors.primaryVariant,
-                        RoundedCornerShape(50)
-                    )
-                    .clip(RoundedCornerShape(50)),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
-            EvText(
-                resource = R.string.app_name,
-                style = EvTextStyle.Head,
-                color = MaterialTheme.colors.primaryVariant
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.dimen.mediumSmall))
-            LazyRow(
-                modifier = Modifier
-                    .height(320.dp)
-                    .padding(end = MaterialTheme.dimen.verySmall)
-            ) {
-                val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
-                val titles = listOf(R.string.songs, R.string.title_wallpapers)
-                val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
-                items(count = 2) { index ->
-                    MainCard(image = pictures[index], title = titles[index]) {
-                        navController.navigate(destinations[index])
-                    }
+        EvText(
+            resource = R.string.app_name,
+            style = EvTextStyle.Head,
+            color = MaterialTheme.colors.primaryVariant,
+            modifier = Modifier.layoutId(TITLE_ID)
+        )
+
+        LazyRow(
+            modifier = Modifier
+                .height(320.dp)
+                .padding(end = MaterialTheme.dimen.verySmall)
+                .layoutId(LIST_ID)
+        ) {
+            val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
+            val titles = listOf(R.string.songs, R.string.title_wallpapers)
+            val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
+            items(count = 2) { index ->
+                MainCard(image = pictures[index], title = titles[index]) {
+                    navController.navigate(destinations[index])
                 }
             }
-
         }
 
-
-        val constraints = ConstraintSet {
-            val byDevRef = createRefFor(BY_DEV_ID)
-
-            constrain(byDevRef) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
-        }
-
-        ConstraintLayout(
+        EvText(
+            resource = R.string.by_dev,
+            color = MaterialTheme.colors.primaryVariant,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .weight(1f),
-            constraintSet = constraints
-        ) {
-            EvText(
-                resource = R.string.by_dev,
-                color = MaterialTheme.colors.primaryVariant,
-                modifier = Modifier
-                    .layoutId(BY_DEV_ID)
-                    .padding(MaterialTheme.dimen.large)
-            )
-        }
+                .layoutId(BY_DEV_ID)
+                .padding(MaterialTheme.dimen.large)
+        )
     }
 
 
@@ -159,6 +188,9 @@ fun MainCard(
 }
 
 const val BY_DEV_ID = "byDevId"
+const val PHOTO_ID = "photoId"
+const val LIST_ID = "listId"
+const val TITLE_ID = "titleId"
 
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
