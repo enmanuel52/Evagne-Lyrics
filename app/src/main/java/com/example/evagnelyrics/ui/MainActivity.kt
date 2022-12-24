@@ -19,7 +19,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //splash screen of android 12
+        initSplash()
+
+        setContent {
+            EvagneLyricsTheme {
+                AppNavigation()
+            }
+        }
+    }
+
+    /**
+     * splash screen of android 12
+     * */
+    private fun initSplash() {
         installSplashScreen().apply {
             setKeepOnScreenCondition keep@{
                 var notReady = true
@@ -29,12 +41,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 notReady
-            }
-        }
-
-        setContent {
-            EvagneLyricsTheme {
-                AppNavigation()
             }
         }
     }

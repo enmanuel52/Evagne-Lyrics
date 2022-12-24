@@ -2,8 +2,12 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="translucent">
 
-    <item>
-        <bitmap android:src="@drawable/img3_7228" />
+    <item
+        android:width="220dp"
+        android:height="220dp"
+        android:drawable="@drawable/img3_7228_crop"
+        android:gravity="center">
+
     </item>
 
 </layer-list>

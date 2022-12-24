@@ -2,11 +2,11 @@
     <!-- Base application theme. -->
     <style name="Theme.EvagneLyrics" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/pink_300_dark</item>
+        <item name="android:statusBarColor">@color/pink_gray</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/pink_100</item>
+        <item name="windowSplashScreenBackground">@color/pink_gray</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_background</item>
         <item name="postSplashScreenTheme">@style/Theme.EvagneLyrics</item>
     </style>
