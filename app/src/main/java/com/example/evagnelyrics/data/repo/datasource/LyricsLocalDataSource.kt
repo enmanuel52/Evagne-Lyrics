@@ -18,4 +18,6 @@ class LyricsLocalDataSource(
     suspend fun updateSong(lyricsEntity: LyricsEntity) = lyricsDao.updateSong(lyricsEntity)
 
     fun getAllFavorites() = lyricsDao.getAllFavorites()
+
+    fun deleteAllLyrics() = lyricsDao.deleteAll()
 }

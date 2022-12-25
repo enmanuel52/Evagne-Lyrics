@@ -175,7 +175,6 @@ fun SongItem(
         setOnCompletionListener {
             audioState = Audio.Start
         }
-        this.reset()
     }
 
     //To observe the lifecycle
@@ -245,7 +244,7 @@ fun SongItem(
                             when (audioState) {
                                 Audio.Start -> {
                                     audioState = Audio.End
-                                    if (mediaPlayer?.isPlaying==true) mediaPlayer.stop()
+                                    if (mediaPlayer?.isPlaying == true) mediaPlayer.stop()
 
                                     mediaPlayer?.start()
                                 }

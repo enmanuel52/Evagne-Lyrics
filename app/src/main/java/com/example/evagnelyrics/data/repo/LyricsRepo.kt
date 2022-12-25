@@ -12,6 +12,9 @@ class LyricsRepo(
     suspend fun insertAllLyrics(lyrics: List<Lyric>) =
         lyricsLocalDataSource.insertAllLyrics(lyrics.map { LyricsEntity(it) })
 
+    suspend fun deleteAllLyrics() =
+        lyricsLocalDataSource.deleteAllLyrics()
+
     fun getAllLyrics(): Flow<List<Lyric>> =
         lyricsLocalDataSource.getAllLyrics().map { lyrics: List<LyricsEntity> ->
             lyrics.map { it.toDomain() }

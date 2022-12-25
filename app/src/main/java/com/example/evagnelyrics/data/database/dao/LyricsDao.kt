@@ -25,4 +25,7 @@ interface LyricsDao {
 
     @Query("SELECT * FROM $LYRICS_TABLE_NAME WHERE favorite  ORDER BY title")
     fun getAllFavorites(): Flow<List<LyricsEntity>>
+
+    @Query("DELETE FROM $LYRICS_TABLE_NAME")
+    fun deleteAll()
 }
