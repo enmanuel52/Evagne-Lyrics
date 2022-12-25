@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.screen.list
 
+import android.media.MediaPlayer
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
@@ -10,27 +11,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.PlaylistPlay
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.core.primaryVariantPrimary
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
@@ -43,6 +43,7 @@ fun ListScreen(
     viewModel: ListViewModel = hiltViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
+    //composable
     val scaffoldState = rememberScaffoldState()
 
     //viewModel states
@@ -151,20 +152,49 @@ fun SongsList(
                     Modifier.clickable {
                         navTo(songs[index])
                     },
-                    title = songs[index]
+                    title = songs[index],
                 )
             }
         }
     }
 }
 
+enum class Audio { Start, End }
+
 @Composable
 fun SongItem(
     modifier: Modifier = Modifier,
     title: String,
-    viewModel: ListViewModel = hiltViewModel()
+    viewModel: ListViewModel = hiltViewModel(),
 ) {
-    Row(
+    val context = LocalContext.current
+
+    var audioState by remember { mutableStateOf(Audio.Start) }
+
+    var mediaPlayer: MediaPlayer? = MediaPlayer.create(context, getResourceSong(title)).apply {
+        setOnCompletionListener {
+            audioState = Audio.Start
+        }
+        this.reset()
+    }
+
+    //To observe the lifecycle
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                mediaPlayer?.release()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(
@@ -174,30 +204,84 @@ fun SongItem(
             )
             .height(MaterialTheme.dimen.almostGiant)
             .clip(shape = RoundedCornerShape(20))
-            .background(color = MaterialTheme.colors.surface, shape = RoundedCornerShape(20)),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .background(color = MaterialTheme.colors.surface, shape = RoundedCornerShape(20))
     ) {
-        Row {
-            Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-            Icon(
-                imageVector = Icons.Rounded.PlaylistPlay,
-                contentDescription = null,
-                tint = MaterialTheme.colors.onPrimary
+        SlideFromLeft(visible = audioState == Audio.End, mediaPlayer?.duration ?: 200) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        MaterialTheme.colors.primaryVariantPrimary,
+                        shape = RoundedCornerShape(20)
+                    )
             )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+            ) {
+                Icon(
+                    imageVector = when (audioState) {
+                        Audio.Start -> Icons.Rounded.PlayCircle
+                        Audio.End -> Icons.Rounded.Pause
+                    },
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(50))
+                        .padding(
+                            vertical = MaterialTheme.dimen.verySmall,
+                            horizontal = MaterialTheme.dimen.superSmall
+                        )
+                        .clickable {
+                            when (audioState) {
+                                Audio.Start -> {
+                                    audioState = Audio.End
+                                    if (mediaPlayer?.isPlaying==true) mediaPlayer.stop()
+
+                                    mediaPlayer?.start()
+                                }
+                                Audio.End -> {
+                                    audioState = Audio.Start
+                                    mediaPlayer?.stop()
+
+                                }
+                            }
+                        }
+                )
+            }
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
             Text(text = title, color = MaterialTheme.colors.onPrimary)
         }
+
         //collect favs list
         val favTitles by viewModel.favoritesFlow.collectAsState(emptyList())
-        FavIcon(title, favTitles.map { it.title }) { viewModel.favAction(it) }
+        FavIcon(
+            title,
+            favTitles.map { it.title },
+            Modifier.align(Alignment.CenterEnd)
+        ) { viewModel.favAction(it) }
+
     }
 }
 
 @Composable
-fun FavIcon(title: String, favTitles: List<String> = emptyList(), favAction: (String) -> Unit) {
+fun FavIcon(
+    title: String,
+    favTitles: List<String> = emptyList(),
+    modifier: Modifier,
+    favAction: (String) -> Unit
+) {
     IconButton(
-        modifier = Modifier.padding(end = MaterialTheme.dimen.mediumSmall),
+        modifier = modifier.padding(end = MaterialTheme.dimen.mediumSmall),
         onClick = { favAction(title) }) {
         Icon(
             imageVector = Icons.Rounded.Favorite,
@@ -278,6 +362,25 @@ fun SlideFromRight(
 }
 
 @Composable
+fun SlideFromLeft(
+    visible: Boolean,
+    durationMillis: Int,
+    content: @Composable () -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally(
+            tween(durationMillis)
+        ) { -it }, //+ fadeIn(tween(durationMillis))
+        exit = fadeOut(
+            tween(200)
+        ),
+    ) {
+        content()
+    }
+}
+
+@Composable
 @Preview(showSystemUi = true)
 fun ListScreenPreview() {
     ListScreen()
@@ -288,3 +391,8 @@ fun ListScreenPreview() {
 fun SongsListScreenPreview() {
     SongsList(songs = listOf("Hello"))
 }
+
+fun getResourceSong(title: String) =
+    when (title) {
+        else -> R.raw.stereo_love
+    }

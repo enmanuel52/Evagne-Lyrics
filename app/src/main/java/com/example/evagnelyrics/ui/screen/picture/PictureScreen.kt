@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -21,6 +20,7 @@ import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.theme.component.EvText
+import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -37,7 +37,8 @@ fun PictureScreen(
         TopAppBar(
             title = {
                 EvText(
-                    resource = R.string.picture_title
+                    resource = R.string.picture_title,
+                    style= EvTextStyle.Head,
                 )
             },
             navigationIcon = {
