@@ -171,10 +171,14 @@ fun SongItem(
 
     var audioState by remember { mutableStateOf(Audio.Start) }
 
-    var mediaPlayer: MediaPlayer? = MediaPlayer.create(context, getResourceSong(title)).apply {
-        setOnCompletionListener {
-            audioState = Audio.Start
-        }
+    val mediaPlayer: MediaPlayer by remember {
+        mutableStateOf(
+            MediaPlayer.create(context, getResourceSong(title)).apply {
+                setOnCompletionListener {
+                    audioState = Audio.Start
+                }
+            }
+        )
     }
 
     //To observe the lifecycle
@@ -183,7 +187,7 @@ fun SongItem(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
-                mediaPlayer?.release()
+                mediaPlayer.release()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -205,7 +209,7 @@ fun SongItem(
             .clip(shape = RoundedCornerShape(20))
             .background(color = MaterialTheme.colors.surface, shape = RoundedCornerShape(20))
     ) {
-        SlideFromLeft(visible = audioState == Audio.End, mediaPlayer?.duration ?: 200) {
+        SlideFromLeft(visible = audioState == Audio.End, mediaPlayer.duration) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -244,13 +248,13 @@ fun SongItem(
                             when (audioState) {
                                 Audio.Start -> {
                                     audioState = Audio.End
-                                    if (mediaPlayer?.isPlaying == true) mediaPlayer.stop()
 
-                                    mediaPlayer?.start()
+                                    mediaPlayer.start()
                                 }
                                 Audio.End -> {
                                     audioState = Audio.Start
-                                    mediaPlayer?.stop()
+                                    mediaPlayer.pause()
+                                    mediaPlayer.seekTo(0)
 
                                 }
                             }
@@ -303,22 +307,22 @@ fun SlideFromRight(
         visibleState = visibleState,
         enter = slideInHorizontally(
             tween(
-                durationMillis = 400,
+                durationMillis = durationMillis,
                 delayMillis = delayMillis
             )
         ) { it } + fadeIn(
             tween(
-                durationMillis = 400, delayMillis = delayMillis
+                durationMillis = durationMillis, delayMillis = delayMillis
             )
         ),
         exit = slideOutHorizontally(
             tween(
-                durationMillis = 400,
+                durationMillis = durationMillis,
                 delayMillis = delayMillis
             )
         ) { it } + fadeOut(
             tween(
-                durationMillis = 400, delayMillis = delayMillis
+                durationMillis = durationMillis, delayMillis = delayMillis
             )
         ),
     ) {
