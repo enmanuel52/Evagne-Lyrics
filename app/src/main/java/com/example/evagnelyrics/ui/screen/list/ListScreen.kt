@@ -27,10 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
-import com.example.evagnelyrics.core.LocalNavController
-import com.example.evagnelyrics.core.Resource
-import com.example.evagnelyrics.core.dimen
-import com.example.evagnelyrics.core.primaryVariantPrimary
+import com.example.evagnelyrics.core.*
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
@@ -149,33 +146,37 @@ fun SongsList(
                 durationMillis = 250
             ) {
                 SongItem(
-                    Modifier.clickable {
-                        navTo(songs[index])
-                    },
+                    Modifier,
                     title = songs[index],
-                )
+                ) {
+                    navTo(it)
+                }
             }
         }
     }
 }
 
-enum class Audio { Start, End }
+enum class Audio { Pause, Running }
 
 @Composable
 fun SongItem(
     modifier: Modifier = Modifier,
     title: String,
     viewModel: ListViewModel = hiltViewModel(),
+    navTo: (title: String) -> Unit = {},
 ) {
     val context = LocalContext.current
 
-    var audioState by remember { mutableStateOf(Audio.Start) }
+    val mainAudio by viewModel.audioState
 
-    val mediaPlayer: MediaPlayer by remember {
+    var audioState by remember { mutableStateOf(Audio.Pause) }
+
+    val mediaPlayer: MediaPlayer? by remember {
         mutableStateOf(
             MediaPlayer.create(context, getResourceSong(title)).apply {
                 setOnCompletionListener {
-                    audioState = Audio.Start
+                    audioState = Audio.Pause
+                    viewModel.pauseAudio()
                 }
             }
         )
@@ -187,7 +188,12 @@ fun SongItem(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
-                mediaPlayer.release()
+                audioState = Audio.Pause
+                viewModel.pauseAudio()
+                mediaPlayer?.pause()
+                mediaPlayer?.seekTo(0)
+            }else if (event == Lifecycle.Event.ON_DESTROY){
+                mediaPlayer?.release()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -208,8 +214,11 @@ fun SongItem(
             .height(MaterialTheme.dimen.almostGiant)
             .clip(shape = RoundedCornerShape(20))
             .background(color = MaterialTheme.colors.surface, shape = RoundedCornerShape(20))
+            .clickable {
+                navTo(title)
+            }
     ) {
-        SlideFromLeft(visible = audioState == Audio.End, mediaPlayer.duration) {
+        SlideFromLeft(visible = audioState == Audio.Running, mediaPlayer?.duration ?: 1000) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -232,8 +241,12 @@ fun SongItem(
             ) {
                 Icon(
                     imageVector = when (audioState) {
-                        Audio.Start -> Icons.Rounded.PlayCircle
-                        Audio.End -> Icons.Rounded.Pause
+                        Audio.Pause ->
+                            when (mainAudio) {
+                                Audio.Pause -> Icons.Rounded.PlayCircle
+                                Audio.Running -> Icons.Rounded.StopCircle
+                            }
+                        Audio.Running -> Icons.Rounded.Pause
                     },
                     contentDescription = null,
                     tint = MaterialTheme.colors.onPrimary,
@@ -245,17 +258,29 @@ fun SongItem(
                             horizontal = MaterialTheme.dimen.superSmall
                         )
                         .clickable {
-                            when (audioState) {
-                                Audio.Start -> {
-                                    audioState = Audio.End
+                            if (mainAudio == Audio.Pause) {
+                                when (audioState) {
+                                    Audio.Pause -> {
+                                        audioState = Audio.Running
 
-                                    mediaPlayer.start()
+                                        mediaPlayer?.start()
+                                        viewModel.toggleAudio()
+                                    }
+                                    Audio.Running -> {
+                                        //if viewModel audio is off this is also off
+                                    }
                                 }
-                                Audio.End -> {
-                                    audioState = Audio.Start
-                                    mediaPlayer.pause()
-                                    mediaPlayer.seekTo(0)
-
+                            } else if (mainAudio == Audio.Running) {
+                                when (audioState) {
+                                    Audio.Pause -> {
+                                        //there is another running
+                                    }
+                                    Audio.Running -> {
+                                        audioState = Audio.Pause
+                                        mediaPlayer?.pause()
+                                        mediaPlayer?.seekTo(0)
+                                        viewModel.toggleAudio()
+                                    }
                                 }
                             }
                         }
@@ -396,6 +421,7 @@ fun SongsListScreenPreview() {
 }
 
 fun getResourceSong(title: String) =
-    when (title) {
+    when {
+        Items.songs.map { it.title }.contains(title) -> R.raw.demo_morat
         else -> R.raw.stereo_love
     }

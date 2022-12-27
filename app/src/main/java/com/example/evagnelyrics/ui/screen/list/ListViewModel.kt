@@ -38,6 +38,9 @@ class ListViewModel @Inject constructor(
     private val _favState: MutableState<Boolean> = mutableStateOf(false)
     val favState: State<Boolean> get() = _favState
 
+    private val _audioState: MutableState<Audio> = mutableStateOf(Audio.Pause)
+    val audioState: State<Audio> get() = _audioState
+
     private val _titles: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val titles get() = _titles.asStateFlow()
 
@@ -137,5 +140,15 @@ class ListViewModel @Inject constructor(
                 lyrics.map { it.title }
             }
         }
+    }
+
+    fun toggleAudio() {
+        _audioState.value = when (_audioState.value) {
+            Audio.Pause -> Audio.Running
+            Audio.Running -> Audio.Pause
+        }
+    }
+    fun pauseAudio(){
+        _audioState.value = Audio.Pause
     }
 }
