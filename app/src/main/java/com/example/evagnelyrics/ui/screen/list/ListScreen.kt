@@ -2,9 +2,10 @@ package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
 import androidx.compose.animation.*
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,9 +18,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +33,8 @@ import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.*
 import com.example.evagnelyrics.ui.navigation.Route
+import com.example.evagnelyrics.ui.theme.Amber500
+import com.example.evagnelyrics.ui.theme.Grey800
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
@@ -111,9 +117,27 @@ fun ListScreen(
             )
         }
     ) {
-        SongsList(Modifier.padding(it), titles) { title: String ->
-            navController.navigate(Route.Song.toString() + "/$title")
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(it),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            SongsList(
+                modifier = Modifier,
+                songs = titles,
+            ) { title: String ->
+                navController.navigate(Route.Song.toString() + "/$title")
+            }
+
+            DiscJockeyContainer(
+                Modifier
+                    .padding(bottom = MaterialTheme.dimen.lessLarge)
+                    .size(120.dp)
+            )
         }
+
 
         //collect uiStates
         LaunchedEffect(key1 = true) {
@@ -130,12 +154,61 @@ fun ListScreen(
 }
 
 @Composable
+private fun DiscJockeyContainer(
+    modifier: Modifier = Modifier,
+    viewModel: ListViewModel = hiltViewModel(),
+) {
+    val playingSong by viewModel.playingSong
+    val audioState by viewModel.audioState
+
+    SlideFromLeft(
+        visible = when (audioState) {
+            Audio.Pause -> false
+            Audio.Running -> true
+        }, durationMillis = 1000
+    ) {
+        DiscJockey(
+            playingSong,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun DiscJockey(title: String, modifier: Modifier) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val degrees by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    val cover = getCover(title)
+    Image(
+        painter = painterResource(cover ?: R.drawable.img3_7228_crop),
+        contentDescription = "cover image",
+        modifier = modifier
+            .clip(RoundedCornerShape(percent = 50))
+            .border(
+                MaterialTheme.dimen.verySmall,
+                color = MaterialTheme.colors.primaryVariant,
+                RoundedCornerShape(percent = 50)
+            )
+            .rotate(degrees),
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
 fun SongsList(
     modifier: Modifier = Modifier,
     songs: List<String> = emptyList(),
     navTo: (title: String) -> Unit = {},
 ) {
-    LazyColumn {
+    LazyColumn(modifier) {
         items(songs.size) { index ->
             val visibleState = MutableTransitionState(false).apply {
                 targetState = true
@@ -176,7 +249,7 @@ fun SongItem(
             MediaPlayer.create(context, getResourceSong(title)).apply {
                 setOnCompletionListener {
                     audioState = Audio.Pause
-                    viewModel.pauseAudio()
+                    viewModel.setAudioState(Audio.Pause)
                 }
             }
         )
@@ -189,10 +262,10 @@ fun SongItem(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
                 audioState = Audio.Pause
-                viewModel.pauseAudio()
+                viewModel.setAudioState(Audio.Pause)
                 mediaPlayer?.pause()
                 mediaPlayer?.seekTo(0)
-            }else if (event == Lifecycle.Event.ON_DESTROY){
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
                 mediaPlayer?.release()
             }
         }
@@ -264,7 +337,7 @@ fun SongItem(
                                         audioState = Audio.Running
 
                                         mediaPlayer?.start()
-                                        viewModel.toggleAudio()
+                                        viewModel.setAudioState(Audio.Running, title = title)
                                     }
                                     Audio.Running -> {
                                         //if viewModel audio is off this is also off
@@ -279,7 +352,7 @@ fun SongItem(
                                         audioState = Audio.Pause
                                         mediaPlayer?.pause()
                                         mediaPlayer?.seekTo(0)
-                                        viewModel.toggleAudio()
+                                        viewModel.setAudioState(Audio.Pause)
                                     }
                                 }
                             }
@@ -424,4 +497,12 @@ fun getResourceSong(title: String) =
     when {
         Items.songs.map { it.title }.contains(title) -> R.raw.demo_morat
         else -> R.raw.stereo_love
+    }
+
+fun getCover(title: String) =
+    when (title) {
+        "Falsedad" -> R.drawable.cover_falsedad
+        "Tu perdón" -> R.drawable.cover_tu_perdon
+        "Tú" -> R.drawable.cover_tu
+        else -> null
     }

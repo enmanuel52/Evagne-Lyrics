@@ -53,6 +53,9 @@ class ListViewModel @Inject constructor(
     private val _searchField: MutableLiveData<String> = MutableLiveData("")
     val searchField: LiveData<String> get() = _searchField
 
+    private val _playingSong: MutableState<String> = mutableStateOf("")
+    val playingSong: State<String> get() = _playingSong
+
     private var initialized = false
 
     init {
@@ -67,6 +70,7 @@ class ListViewModel @Inject constructor(
                     _titles.update {
                         allLyrics.value.map { it.title }
                     }
+                    _playingSong.value = lyrics.first().title
                 }
             }
         }
@@ -142,13 +146,10 @@ class ListViewModel @Inject constructor(
         }
     }
 
-    fun toggleAudio() {
-        _audioState.value = when (_audioState.value) {
-            Audio.Pause -> Audio.Running
-            Audio.Running -> Audio.Pause
+    fun setAudioState(value: Audio, title: String? = null) {
+        if (value == Audio.Running && title != null) {
+            _playingSong.value = title
         }
-    }
-    fun pauseAudio(){
-        _audioState.value = Audio.Pause
+        _audioState.value = value
     }
 }
