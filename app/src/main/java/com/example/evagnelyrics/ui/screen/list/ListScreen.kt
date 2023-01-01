@@ -12,7 +12,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -33,8 +35,6 @@ import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.*
 import com.example.evagnelyrics.ui.navigation.Route
-import com.example.evagnelyrics.ui.theme.Amber500
-import com.example.evagnelyrics.ui.theme.Grey800
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
@@ -121,7 +121,6 @@ fun ListScreen(
             Modifier
                 .fillMaxSize()
                 .padding(it),
-            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             SongsList(
@@ -131,11 +130,6 @@ fun ListScreen(
                 navController.navigate(Route.Song.toString() + "/$title")
             }
 
-            DiscJockeyContainer(
-                Modifier
-                    .padding(bottom = MaterialTheme.dimen.lessLarge)
-                    .size(120.dp)
-            )
         }
 
 
@@ -154,28 +148,7 @@ fun ListScreen(
 }
 
 @Composable
-private fun DiscJockeyContainer(
-    modifier: Modifier = Modifier,
-    viewModel: ListViewModel = hiltViewModel(),
-) {
-    val playingSong by viewModel.playingSong
-    val audioState by viewModel.audioState
-
-    SlideFromLeft(
-        visible = when (audioState) {
-            Audio.Pause -> false
-            Audio.Running -> true
-        }, durationMillis = 1000
-    ) {
-        DiscJockey(
-            playingSong,
-            modifier = modifier
-        )
-    }
-}
-
-@Composable
-fun DiscJockey(title: String, modifier: Modifier) {
+fun DiscJockey(title: String, modifier: Modifier, isRunning: Boolean) {
     val infiniteTransition = rememberInfiniteTransition()
     val degrees by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -193,11 +166,11 @@ fun DiscJockey(title: String, modifier: Modifier) {
         modifier = modifier
             .clip(RoundedCornerShape(percent = 50))
             .border(
-                MaterialTheme.dimen.verySmall,
+                MaterialTheme.dimen.one,
                 color = MaterialTheme.colors.primaryVariant,
                 RoundedCornerShape(percent = 50)
             )
-            .rotate(degrees),
+            .rotate(if (isRunning) degrees else 0f),
         contentScale = ContentScale.Crop
     )
 }
@@ -312,17 +285,8 @@ fun SongItem(
                     .fillMaxHeight()
                     .aspectRatio(1f)
             ) {
-                Icon(
-                    imageVector = when (audioState) {
-                        Audio.Pause ->
-                            when (mainAudio) {
-                                Audio.Pause -> Icons.Rounded.PlayCircle
-                                Audio.Running -> Icons.Rounded.StopCircle
-                            }
-                        Audio.Running -> Icons.Rounded.Pause
-                    },
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.onPrimary,
+                DiscJockey(
+                    title,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(50))
@@ -356,7 +320,15 @@ fun SongItem(
                                     }
                                 }
                             }
-                        }
+                        },
+                    isRunning = when (audioState) {
+                        Audio.Pause ->
+                            when (mainAudio) {
+                                Audio.Pause -> false
+                                Audio.Running -> false
+                            }
+                        Audio.Running -> true
+                    },
                 )
             }
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))

@@ -105,6 +105,11 @@ class ListViewModel @Inject constructor(
     }
 
     fun onFavMode() = viewModelScope.launch {
+        if (audioState.value == Audio.Running) {
+            _uiState.send(Resource.Error("It is not allowed when you're playing the song"))
+            return@launch
+        }
+
         _favState.value = _favState.value != true
 
         _titles.update {
