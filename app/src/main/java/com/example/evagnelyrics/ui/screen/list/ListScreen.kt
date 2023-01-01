@@ -33,7 +33,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
-import com.example.evagnelyrics.core.*
+import com.example.evagnelyrics.core.LocalNavController
+import com.example.evagnelyrics.core.Resource
+import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.core.primaryVariantPrimary
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
@@ -213,19 +216,29 @@ fun SongItem(
 ) {
     val context = LocalContext.current
 
-    val mainAudio by viewModel.audioState
+    val mainAudio by viewModel.audioState.collectAsState()
 
     var audioState by remember { mutableStateOf(Audio.Pause) }
 
-    val mediaPlayer: MediaPlayer? by remember {
+    val mediaPlayer: MediaPlayer by remember {
         mutableStateOf(
-            MediaPlayer.create(context, getResourceSong(title)).apply {
-                setOnCompletionListener {
-                    audioState = Audio.Pause
-                    viewModel.setAudioState(Audio.Pause)
-                }
-            }
+            MediaPlayer.create(context, getResourceSong(title))
         )
+    }
+
+    val playingSong by viewModel.playingSong
+
+    //to collect a flow
+    LaunchedEffect(key1 = true) {
+        viewModel.audioState.collect {
+            when (it) {
+                Audio.Pause -> {
+                    if (audioState == Audio.Running)
+                        audioState = Audio.Pause
+                }
+                Audio.Running -> {}
+            }
+        }
     }
 
     //To observe the lifecycle
@@ -236,10 +249,10 @@ fun SongItem(
             if (event == Lifecycle.Event.ON_PAUSE) {
                 audioState = Audio.Pause
                 viewModel.setAudioState(Audio.Pause)
-                mediaPlayer?.pause()
-                mediaPlayer?.seekTo(0)
+                viewModel.onPlayer(PlayerAction.Pause)
             } else if (event == Lifecycle.Event.ON_DESTROY) {
-                mediaPlayer?.release()
+                viewModel.onPlayer(PlayerAction.Clean)
+                mediaPlayer.release()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -264,7 +277,10 @@ fun SongItem(
                 navTo(title)
             }
     ) {
-        SlideFromLeft(visible = audioState == Audio.Running, mediaPlayer?.duration ?: 1000) {
+        SlideFromLeft(
+            visible = audioState == Audio.Running && playingSong == title,
+            mediaPlayer.duration
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -300,7 +316,14 @@ fun SongItem(
                                     Audio.Pause -> {
                                         audioState = Audio.Running
 
-                                        mediaPlayer?.start()
+                                        viewModel.onPlayer(
+                                            action = PlayerAction.Play,
+                                            song = getResourceSong(title),
+                                            onComplete = {
+                                                audioState = Audio.Pause
+                                                viewModel.setAudioState(Audio.Pause)
+                                            }
+                                        )
                                         viewModel.setAudioState(Audio.Running, title = title)
                                     }
                                     Audio.Running -> {
@@ -311,24 +334,27 @@ fun SongItem(
                                 when (audioState) {
                                     Audio.Pause -> {
                                         //there is another running
+                                        viewModel.onPlayer(PlayerAction.Pause)
+
+                                        audioState = Audio.Running
+                                        viewModel.onPlayer(
+                                            action = PlayerAction.Play,
+                                            song = getResourceSong(title),
+                                            onComplete = {
+                                                audioState = Audio.Pause
+                                                viewModel.setAudioState(Audio.Pause)
+                                            }
+                                        )
+                                        viewModel.setAudioState(Audio.Running, title = title)
                                     }
                                     Audio.Running -> {
                                         audioState = Audio.Pause
-                                        mediaPlayer?.pause()
-                                        mediaPlayer?.seekTo(0)
-                                        viewModel.setAudioState(Audio.Pause)
+                                        viewModel.onPlayer(PlayerAction.Pause)
                                     }
                                 }
                             }
                         },
-                    isRunning = when (audioState) {
-                        Audio.Pause ->
-                            when (mainAudio) {
-                                Audio.Pause -> false
-                                Audio.Running -> false
-                            }
-                        Audio.Running -> true
-                    },
+                    isRunning = audioState == Audio.Running && playingSong == title,
                 )
             }
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
@@ -466,8 +492,10 @@ fun SongsListScreenPreview() {
 }
 
 fun getResourceSong(title: String) =
-    when {
-        Items.songs.map { it.title }.contains(title) -> R.raw.demo_morat
+    when (title) {
+        "Falsedad" -> R.raw.falsedad
+        "Tu perdón" -> R.raw.tu_perdon
+        "Tú" -> R.raw.tu
         else -> R.raw.stereo_love
     }
 

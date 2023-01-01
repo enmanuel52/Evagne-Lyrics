@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.screen.list
 
+import androidx.annotation.RawRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -11,8 +12,10 @@ import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 import com.example.evagnelyrics.domain.model.Lyric
 import com.example.evagnelyrics.domain.usecase.*
+import com.example.evagnelyrics.ui.player.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +27,7 @@ class ListViewModel @Inject constructor(
     private val searchByTitleUC: SearchByTitleUC,
     private val favoriteUC: FavoriteUC,
     private val getLyricsByTitleUC: GetLyricsByTitleUC,
+    private val player: Player
 ) : ViewModel() {
 
     private val allLyricsFlow: Flow<List<Lyric>> = getAllLyricsUC()
@@ -38,8 +42,8 @@ class ListViewModel @Inject constructor(
     private val _favState: MutableState<Boolean> = mutableStateOf(false)
     val favState: State<Boolean> get() = _favState
 
-    private val _audioState: MutableState<Audio> = mutableStateOf(Audio.Pause)
-    val audioState: State<Audio> get() = _audioState
+    private val _audioState: MutableStateFlow<Audio> = MutableStateFlow(Audio.Pause)
+    val audioState get() = _audioState.asStateFlow()
 
     private val _titles: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val titles get() = _titles.asStateFlow()
@@ -157,4 +161,21 @@ class ListViewModel @Inject constructor(
         }
         _audioState.value = value
     }
+
+    fun onPlayer(action: PlayerAction, @RawRes song: Int? = null, onComplete: () -> Unit = {}) = viewModelScope.launch{
+        when (action) {
+            PlayerAction.Play -> {
+                if (song != null) {
+                    player.play(song, onComplete)
+                }
+            }
+            PlayerAction.Pause -> {
+                _audioState.value = Audio.Pause
+                player.stop()
+            }
+            PlayerAction.Clean -> player.cleanUp()
+        }
+    }
 }
+
+enum class PlayerAction { Play, Pause, Clean }
