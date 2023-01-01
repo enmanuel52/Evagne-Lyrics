@@ -218,8 +218,6 @@ fun SongItem(
 
     val mainAudio by viewModel.audioState.collectAsState()
 
-    var audioState by remember { mutableStateOf(Audio.Pause) }
-
     val mediaPlayer: MediaPlayer by remember {
         mutableStateOf(
             MediaPlayer.create(context, getResourceSong(title))
@@ -228,26 +226,12 @@ fun SongItem(
 
     val playingSong by viewModel.playingSong
 
-    //to collect a flow
-    LaunchedEffect(key1 = true) {
-        viewModel.audioState.collect {
-            when (it) {
-                Audio.Pause -> {
-                    if (audioState == Audio.Running)
-                        audioState = Audio.Pause
-                }
-                Audio.Running -> {}
-            }
-        }
-    }
-
     //To observe the lifecycle
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
-                audioState = Audio.Pause
                 viewModel.setAudioState(Audio.Pause)
                 viewModel.onPlayer(PlayerAction.Pause)
             } else if (event == Lifecycle.Event.ON_DESTROY) {
@@ -278,7 +262,7 @@ fun SongItem(
             }
     ) {
         SlideFromLeft(
-            visible = audioState == Audio.Running && playingSong == title,
+            visible = mainAudio == Audio.Running && playingSong == title,
             mediaPlayer.duration
         ) {
             Box(
@@ -312,49 +296,37 @@ fun SongItem(
                         )
                         .clickable {
                             if (mainAudio == Audio.Pause) {
-                                when (audioState) {
-                                    Audio.Pause -> {
-                                        audioState = Audio.Running
 
-                                        viewModel.onPlayer(
-                                            action = PlayerAction.Play,
-                                            song = getResourceSong(title),
-                                            onComplete = {
-                                                audioState = Audio.Pause
-                                                viewModel.setAudioState(Audio.Pause)
-                                            }
-                                        )
-                                        viewModel.setAudioState(Audio.Running, title = title)
+                                viewModel.onPlayer(
+                                    action = PlayerAction.Play,
+                                    song = getResourceSong(title),
+                                    onComplete = {
+                                        viewModel.setAudioState(Audio.Pause)
                                     }
-                                    Audio.Running -> {
-                                        //if viewModel audio is off this is also off
-                                    }
-                                }
+                                )
+                                viewModel.setAudioState(Audio.Running, title = title)
                             } else if (mainAudio == Audio.Running) {
-                                when (audioState) {
-                                    Audio.Pause -> {
+                                when (playingSong) {
+                                    title -> {
+                                        viewModel.onPlayer(PlayerAction.Pause)
+                                    }
+                                    else -> {
                                         //there is another running
                                         viewModel.onPlayer(PlayerAction.Pause)
 
-                                        audioState = Audio.Running
                                         viewModel.onPlayer(
                                             action = PlayerAction.Play,
                                             song = getResourceSong(title),
                                             onComplete = {
-                                                audioState = Audio.Pause
                                                 viewModel.setAudioState(Audio.Pause)
                                             }
                                         )
                                         viewModel.setAudioState(Audio.Running, title = title)
-                                    }
-                                    Audio.Running -> {
-                                        audioState = Audio.Pause
-                                        viewModel.onPlayer(PlayerAction.Pause)
                                     }
                                 }
                             }
                         },
-                    isRunning = audioState == Audio.Running && playingSong == title,
+                    isRunning = mainAudio == Audio.Running && playingSong == title,
                 )
             }
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
