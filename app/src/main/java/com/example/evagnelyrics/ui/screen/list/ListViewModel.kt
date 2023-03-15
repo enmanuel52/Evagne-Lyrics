@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.screen.list
 
+import android.util.Log
 import androidx.annotation.RawRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -8,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 import com.example.evagnelyrics.domain.model.Lyric
@@ -68,13 +70,16 @@ class ListViewModel @Inject constructor(
                 _allLyrics.update {
                     lyrics
                 }
+                Log.d(TAG, "$lyrics")
                 if (!initialized) {
                     initialized = true
                     //update the first time
                     _titles.update {
                         allLyrics.value.map { it.title }
                     }
-                    _playingSong.value = lyrics.first().title
+                    try{ _playingSong.value = lyrics.first().title }catch (e: NoSuchElementException){
+                        Log.d(TAG, "empty list")
+                    }
                 }
             }
         }

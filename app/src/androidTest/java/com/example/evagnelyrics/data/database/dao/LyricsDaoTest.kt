@@ -47,7 +47,7 @@ class LyricsDaoTest {
 
         dao.insertAllLyrics(lyrics)
 
-        val db = dao.getAllLyrics()
+        val db = dao.getAllLyricsAsFlow()
 
         assert(db == lyrics)
     }
@@ -61,7 +61,7 @@ class LyricsDaoTest {
 
         dao.insertAllLyrics(lyrics)
 
-        val db = dao.getAllLyrics()
+        val db = dao.getAllLyricsAsFlow()
 
         assert(db == listOf(lyrics[1]))
     }

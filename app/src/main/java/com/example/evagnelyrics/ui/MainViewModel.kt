@@ -4,49 +4,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.domain.model.Lyric
-import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
-import com.example.evagnelyrics.domain.usecase.InsertAllLyricsUC
+import com.example.evagnelyrics.domain.usecase.SetUpDatabaseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val insertAllLyricsUC: InsertAllLyricsUC,
-    private val gellAllLyricsUC: GetAllLyricsUC
+    private val setUpDatabaseUseCase: SetUpDatabaseUseCase,
 ) : ViewModel() {
 
     private val _ready: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val ready get() = _ready.asStateFlow()
 
-    private val allLyricsUC = gellAllLyricsUC()
-    private val allLyricsState = MutableStateFlow<List<Lyric>>(emptyList())
-
     init {
-        setDatabase()
+        //this can be replaced by a apiCall
+        val updatedDb = Items.songs.map { it.toDomain() }
+        setDatabase(updatedDb)
     }
 
-    private fun setDatabase() = viewModelScope.launch {
-        allLyricsUC.collectLatest { lyrics ->
-            allLyricsState.update {
-                lyrics
-            }
-
-            Items.songs.map { it.toDomain() }.forEach { lyric ->
-                val safeTitles = allLyricsState.value.map { it.title }
-                if (!safeTitles.contains(lyric.title)) {
-                    insertAllLyricsUC(listOf(lyric))
-                }
-            }
-        }
-//        delay(1000)
-
-
+    private fun setDatabase(updatedDb: List<Lyric>) = viewModelScope.launch {
+        setUpDatabaseUseCase(updatedDb)
+        delay(1000)
 
         _ready.value = true
     }
