@@ -3,33 +3,38 @@ package com.example.evagnelyrics.data.repo
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 import com.example.evagnelyrics.data.repo.datasource.LyricsLocalDataSource
 import com.example.evagnelyrics.domain.model.Lyric
+import com.example.evagnelyrics.domain.repo.LyricRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class LyricsRepo(
+class LyricsRepoImpl(
     private val lyricsLocalDataSource: LyricsLocalDataSource,
-) {
-    suspend fun insertAllLyrics(lyrics: List<Lyric>) =
+) : LyricRepo {
+    override suspend fun insertAllLyrics(lyrics: List<Lyric>) =
         lyricsLocalDataSource.insertAllLyrics(lyrics.map { LyricsEntity(it) })
 
-    suspend fun deleteAllLyrics() =
+    override fun getAllLyrics(): List<Lyric> =
+        lyricsLocalDataSource.getAllLyrics().map { it.toDomain() }
+
+    override suspend fun deleteAllLyrics() =
         lyricsLocalDataSource.deleteAllLyrics()
 
-    fun getAllLyrics(): Flow<List<Lyric>> =
-        lyricsLocalDataSource.getAllLyrics().map { lyrics: List<LyricsEntity> ->
+    override fun getAllLyricsAsFlow(): Flow<List<Lyric>> =
+        lyricsLocalDataSource.getAllLyricsAsFlow().map { lyrics: List<LyricsEntity> ->
             lyrics.map { it.toDomain() }
         }
 
-    fun getAllFavorites(): Flow<List<Lyric>> =
+    override fun getAllFavorites(): Flow<List<Lyric>> =
         lyricsLocalDataSource.getAllFavorites().map { lyrics: List<LyricsEntity> ->
             lyrics.map { it.toDomain() }
         }
 
-    fun getLyricByTitle(title: String): Lyric =
+    override fun getLyricByTitle(title: String): Lyric =
         lyricsLocalDataSource.getLyricByTitle(title).toDomain()
 
-    fun searchByTitle(title: String): List<Lyric> =
+    override fun searchByTitle(title: String): List<Lyric> =
         lyricsLocalDataSource.searchByTitle(title).map { it.toDomain() }
 
-    suspend fun updateSong(lyric: Lyric) = lyricsLocalDataSource.updateSong(LyricsEntity(lyric))
+    override suspend fun updateSong(lyric: Lyric) =
+        lyricsLocalDataSource.updateSong(LyricsEntity(lyric))
 }

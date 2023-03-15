@@ -12,7 +12,10 @@ interface LyricsDao {
     suspend fun insertAllLyrics(lyrics: List<LyricsEntity>)
 
     @Query("SELECT * FROM $LYRICS_TABLE_NAME ORDER BY title")
-    fun getAllLyrics(): Flow<List<LyricsEntity>>
+    fun getAllLyricsAsFlow(): Flow<List<LyricsEntity>>
+
+    @Query("SELECT * FROM $LYRICS_TABLE_NAME ORDER BY title")
+    fun getAllLyrics(): List<LyricsEntity>
 
     @Query("SELECT * FROM $LYRICS_TABLE_NAME WHERE title LIKE :title")
     fun getLyricByTitle(title: String): LyricsEntity

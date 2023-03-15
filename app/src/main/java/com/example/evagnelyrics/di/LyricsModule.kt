@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.example.evagnelyrics.data.database.LyricsDataBase
 import com.example.evagnelyrics.data.database.dao.LyricsDao
-import com.example.evagnelyrics.data.repo.LyricsRepo
+import com.example.evagnelyrics.data.repo.LyricsRepoImpl
 import com.example.evagnelyrics.data.repo.datasource.LyricsLocalDataSource
+import com.example.evagnelyrics.domain.repo.LyricRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,6 @@ object LyricsModule {
 
     @Singleton
     @Provides
-    fun provideRepo(lyricsLocalDataSource: LyricsLocalDataSource): LyricsRepo =
-        LyricsRepo(lyricsLocalDataSource)
+    fun provideRepo(lyricsLocalDataSource: LyricsLocalDataSource): LyricRepo =
+        LyricsRepoImpl(lyricsLocalDataSource)
 }
