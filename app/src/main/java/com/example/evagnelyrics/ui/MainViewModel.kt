@@ -36,14 +36,16 @@ class MainViewModel @Inject constructor(
             allLyricsState.update {
                 lyrics
             }
-        }
-        delay(1000)
-        Items.songs.map { it.toDomain() }.forEach { lyric ->
-            val safeTitles = allLyricsState.value.map { it.title }
-            if (!safeTitles.contains(lyric.title)) {
-                insertAllLyricsUC(listOf(lyric))
+
+            Items.songs.map { it.toDomain() }.forEach { lyric ->
+                val safeTitles = allLyricsState.value.map { it.title }
+                if (!safeTitles.contains(lyric.title)) {
+                    insertAllLyricsUC(listOf(lyric))
+                }
             }
         }
+//        delay(1000)
+
 
 
         _ready.value = true
