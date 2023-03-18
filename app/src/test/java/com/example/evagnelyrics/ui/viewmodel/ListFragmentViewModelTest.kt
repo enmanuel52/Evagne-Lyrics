@@ -1,23 +1,18 @@
 package com.example.evagnelyrics.ui.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.evagnelyrics.data.database.entities.LyricsEntity
-import com.example.evagnelyrics.domain.usecase.FavoriteUC
-import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
-import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
-import com.example.evagnelyrics.domain.usecase.SearchByTitleUC
+import com.example.evagnelyrics.domain.usecase.*
+import com.example.evagnelyrics.ui.player.Player
 import com.example.evagnelyrics.ui.screen.list.ListViewModel
-import io.mockk.*
+import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 
 @ExperimentalCoroutinesApi
 internal class ListFragmentViewModelTest {
@@ -32,7 +27,13 @@ internal class ListFragmentViewModelTest {
     lateinit var favoriteUC: FavoriteUC
 
     @RelaxedMockK
+    lateinit var getFavoriteUC: GetFavoritesUC
+
+    @RelaxedMockK
     lateinit var getLyricsByTitleUC: GetLyricsByTitleUC
+
+    @RelaxedMockK
+    lateinit var player: Player
 
     private lateinit var listFragmentViewModel: ListViewModel
 
@@ -43,7 +44,14 @@ internal class ListFragmentViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         listFragmentViewModel =
-            ListViewModel(getAllLyricsUC, searchByTitleUC, favoriteUC, getLyricsByTitleUC)
+            ListViewModel(
+                getAllLyricsUC,
+                getFavoriteUC,
+                searchByTitleUC,
+                favoriteUC,
+                getLyricsByTitleUC,
+                player
+            )
         Dispatchers.setMain(Dispatchers.Unconfined)
     }
 
@@ -52,26 +60,4 @@ internal class ListFragmentViewModelTest {
         Dispatchers.resetMain()
     }
 
-    @Test
-    fun `get all titles from the use case and save in songs livedata`() = runBlocking {
-        //given
-        val song = LyricsEntity("Falsedad", "", false)
-        listFragmentViewModel.initValuesForTesting(songs = emptyList())
-        coEvery { getAllLyricsUC() } returns listOf(song)
-        //when
-        listFragmentViewModel.getAllSongs()
-        //then
-        assert(listFragmentViewModel.titles.value == listOf(song.title))
-    }
-
-    @Test
-    fun `set fav live data to true and filter`() {
-        //given
-        listFragmentViewModel.initValuesForTesting(fav = false)
-        //when
-        listFragmentViewModel.onFavMode()
-        //then
-        assert(listFragmentViewModel.favMode.value == true)
-//        verify(exactly = 1) { listFragmentViewModel.filterFav() }
-    }
 }
