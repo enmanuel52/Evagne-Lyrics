@@ -40,7 +40,7 @@ fun GalleryScreen(
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     var isOnStack by remember {
-        mutableStateOf(mainViewModel.isOnStack(Route.Main))
+        mutableStateOf(mainViewModel.isOnStack(Route.Gallery))
     }
     val visibleState = MutableTransitionState(isOnStack).apply {
         if (!isOnStack) {
@@ -57,12 +57,25 @@ fun GalleryScreen(
                 Log.d(TAG, "GalleryScreen: onDestroy")
                 mainViewModel.popScreenFromStack(Route.Gallery)
             }
+            if (event == Lifecycle.Event.ON_START) {
+                Log.d(TAG, "GalleryScreen: onStart")
+            }
+            if (event == Lifecycle.Event.ON_CREATE) {
+                Log.d(TAG, "GalleryScreen: onCreate")
+            }
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                Log.d(TAG, "GalleryScreen: onPause")
+            }
+            if (event == Lifecycle.Event.ON_STOP) {
+                Log.d(TAG, "GalleryScreen: onStop")
+            }
         }
 
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+            Log.d(TAG, "GalleryScreen: onDispose")
         }
     }
 
