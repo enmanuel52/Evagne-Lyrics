@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,9 +20,9 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
@@ -46,25 +44,31 @@ fun MainScreen(
         val photoRef = createRefFor(PHOTO_ID)
         val listRef = createRefFor(LIST_ID)
         val titleRef = createRefFor(TITLE_ID)
+        val topGuideLine10 = createGuidelineFromTop(0.10f)
         val topGuideLine35 = createGuidelineFromTop(0.35f)
         val topGuideLine45 = createGuidelineFromTop(0.45f)
+        val topGuideLine55 = createGuidelineFromTop(0.55f)
+        val topGuideLine90 = createGuidelineFromTop(0.90f)
 
         constrain(photoRef) {
-            top.linkTo(parent.top)
-            bottom.linkTo(topGuideLine35)
-            start.linkTo(parent.start, margin = mediumDimen)
-            end.linkTo(parent.end, margin = mediumDimen)
-        }
-
-        constrain(titleRef) {
-            top.linkTo(photoRef.bottom)
-            bottom.linkTo(listRef.top)
+            top.linkTo(parent.top, mediumDimen)
+            bottom.linkTo(topGuideLine35, margin = smallDimen)
+            height = Dimension.fillToConstraints
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         }
 
+        constrain(titleRef) {
+            top.linkTo(photoRef.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            bottom.linkTo(topGuideLine45)
+        }
+
         constrain(listRef) {
-            top.linkTo(topGuideLine45, margin = smallDimen)
+            top.linkTo(topGuideLine45)
+            bottom.linkTo(topGuideLine90)
+            height = Dimension.fillToConstraints
             start.linkTo(parent.start, margin = smallDimen)
             end.linkTo(parent.end, margin = smallDimen)
         }
@@ -85,7 +89,6 @@ fun MainScreen(
             painter = painterResource(R.drawable.img3_7228_crop),
             contentDescription = "front",
             modifier = Modifier
-                .width(280.dp)
                 .aspectRatio(1f)
                 .border(
                     MaterialTheme.dimen.verySmall,
@@ -106,7 +109,6 @@ fun MainScreen(
 
         LazyRow(
             modifier = Modifier
-                .height(320.dp)
                 .padding(end = MaterialTheme.dimen.verySmall)
                 .layoutId(LIST_ID)
         ) {
@@ -142,7 +144,7 @@ fun MainCard(
         elevation = MaterialTheme.dimen.verySmall,
         modifier = Modifier
             .fillMaxHeight()
-            .width(180.dp)
+            .aspectRatio(0.5625f)
             .padding(vertical = MaterialTheme.dimen.small)
             .padding(start = MaterialTheme.dimen.small)
             .clip(RoundedCornerShape(8))
