@@ -108,32 +108,6 @@ enum class Vertically { Top, Bottom }
 
 enum class Horizontally { Start, End }
 
-/**
- * AnimatedVisibility for slide from right and hide on right with the default exit*/
-@Composable
-fun JustSlideFromRight(
-    visibleState: MutableTransitionState<Boolean>,
-    delayMillis: Int = 0,
-    durationMillis: Int = 400,
-    content: @Composable () -> Unit,
-) {
-    AnimatedVisibility(
-        visibleState = visibleState,
-        enter = slideInHorizontally(
-            tween(
-                durationMillis = durationMillis,
-                delayMillis = delayMillis
-            )
-        ) { it } + fadeIn(
-            tween(
-                durationMillis = durationMillis, delayMillis = delayMillis
-            )
-        ),
-    ) {
-        content()
-    }
-}
-
 @Composable
 fun SlideFromRight(
     visible: Boolean,
