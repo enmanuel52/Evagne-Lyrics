@@ -6,12 +6,14 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 
 /**
  * AnimatedVisibility for slide from right and hide on right*/
 @Composable
 fun SlideFromRight(
+    modifier: Modifier = Modifier,
     visibleState: MutableTransitionState<Boolean>,
     delayMillis: Int = 0,
     durationMillis: Int = 400,
@@ -19,6 +21,7 @@ fun SlideFromRight(
 ) {
     AnimatedVisibility(
         visibleState = visibleState,
+        modifier = modifier,
         enter = slideInHorizontally(
             tween(
                 durationMillis = durationMillis,
@@ -127,14 +130,16 @@ fun SlideFromLeft(
 @Composable
 fun ScaleFromCenter(
     visibleState: MutableTransitionState<Boolean>,
+    modifier: Modifier = Modifier,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     AnimatedVisibility(
         visibleState = visibleState,
+        modifier = modifier,
         enter = scaleIn(
             spring(
-                Spring.DampingRatioHighBouncy,
-                stiffness = Spring.StiffnessVeryLow,
+                Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessHigh,
             )
         ) + fadeIn(tween(300)),
         exit = scaleOut() + fadeOut(),

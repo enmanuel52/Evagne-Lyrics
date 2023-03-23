@@ -3,6 +3,7 @@ package com.example.evagnelyrics.ui.screen.main
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,8 +12,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,19 +24,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
+import com.example.evagnelyrics.ui.util.ScaleFromCenter
+import com.example.evagnelyrics.ui.util.SlideFromRight
 
 @Composable
 fun MainScreen(
     keepSplash: () -> Unit,
-    navController: NavHostController = LocalNavController.current!!
+    navController: NavHostController = LocalNavController.current!!,
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
+    var isOnStack by remember {
+        mutableStateOf(mainViewModel.isOnStack(Route.Main))
+    }
+    val visibleState = MutableTransitionState(isOnStack).apply {
+        if (!isOnStack) {
+            targetState = true
+            mainViewModel.addScreenToStack(Route.Main)
+            isOnStack = true
+        }
+    }
 
     val smallDimen = MaterialTheme.dimen.small
     val mediumDimen = MaterialTheme.dimen.medium
@@ -46,10 +61,8 @@ fun MainScreen(
         val photoRef = createRefFor(PHOTO_ID)
         val listRef = createRefFor(LIST_ID)
         val titleRef = createRefFor(TITLE_ID)
-        val topGuideLine10 = createGuidelineFromTop(0.10f)
         val topGuideLine35 = createGuidelineFromTop(0.35f)
         val topGuideLine45 = createGuidelineFromTop(0.45f)
-        val topGuideLine55 = createGuidelineFromTop(0.55f)
         val topGuideLine90 = createGuidelineFromTop(0.90f)
 
         constrain(photoRef) {
@@ -88,20 +101,25 @@ fun MainScreen(
         constraintSet = constraints
     ) {
         SideEffect(keepSplash)
-        Image(
-            painter = painterResource(R.drawable.img3_7228_crop),
-            contentDescription = "front",
-            modifier = Modifier
-                .aspectRatio(1f)
-                .border(
-                    MaterialTheme.dimen.verySmall,
-                    MaterialTheme.colors.primaryVariant,
-                    RoundedCornerShape(50)
-                )
-                .clip(RoundedCornerShape(50))
-                .layoutId(PHOTO_ID),
-            contentScale = ContentScale.Crop
-        )
+
+        ScaleFromCenter(
+            modifier = Modifier.layoutId(PHOTO_ID),
+            visibleState = visibleState,
+        ) {
+            Image(
+                painter = painterResource(R.drawable.img3_7228_crop),
+                contentDescription = "front",
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .border(
+                        MaterialTheme.dimen.verySmall,
+                        MaterialTheme.colors.primaryVariant,
+                        RoundedCornerShape(50)
+                    )
+                    .clip(RoundedCornerShape(50)),
+                contentScale = ContentScale.Crop
+            )
+        }
 
         EvText(
             resource = R.string.app_name,
@@ -110,17 +128,24 @@ fun MainScreen(
             modifier = Modifier.layoutId(TITLE_ID)
         )
 
-        LazyRow(
+        SlideFromRight(
             modifier = Modifier
-                .padding(end = MaterialTheme.dimen.verySmall)
-                .layoutId(LIST_ID)
+                .layoutId(LIST_ID),
+            visibleState = visibleState,
+            durationMillis = 500,
+            delayMillis = 100,
         ) {
-            val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
-            val titles = listOf(R.string.songs, R.string.title_wallpapers)
-            val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
-            items(count = 2) { index ->
-                MainCard(image = pictures[index], title = titles[index]) {
-                    navController.navigate(destinations[index])
+            LazyRow(
+                modifier = Modifier
+                    .padding(end = MaterialTheme.dimen.verySmall)
+            ) {
+                val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
+                val titles = listOf(R.string.songs, R.string.title_wallpapers)
+                val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
+                items(count = 2) { index ->
+                    MainCard(image = pictures[index], title = titles[index]) {
+                        navController.navigate(destinations[index])
+                    }
                 }
             }
         }

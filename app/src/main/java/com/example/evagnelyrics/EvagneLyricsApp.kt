@@ -6,6 +6,6 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class EvagneLyricsApp : Application() {
     companion object {
-        const val TAG = "Evagne Lyrics"
+        const val TAG = "EvagneLyricsCommon"
     }
 }

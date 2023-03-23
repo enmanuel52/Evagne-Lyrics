@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.screen.song
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.ui.util.JustSlideFromRight
 
 @Composable
 fun SongScreen(
@@ -34,35 +36,45 @@ fun SongScreen(
     val song by viewModel.song.observeAsState()//= LyricsEntity("Hello", "is me")
 
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TopAppBar(
-            title = { Text(text = song?.title.orEmpty(), style = MaterialTheme.typography.h1) },
-            navigationIcon = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "back on song"
-                    )
-                }
-            }
-        )
-        Text(
-            text = song?.letter.orEmpty(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.dimen.medium)
-                .verticalScroll(rememberScrollState()),
-            color = if (MaterialTheme.colors.isLight) MaterialTheme.colors.primary
-            else MaterialTheme.colors.onBackground
-        )
+    val visibleState = MutableTransitionState(false).apply {
+        targetState = true
+    }
 
+    JustSlideFromRight(
+        visibleState = visibleState,
+        durationMillis = 400,
+        delayMillis = 100,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TopAppBar(
+                title = { Text(text = song?.title.orEmpty(), style = MaterialTheme.typography.h1) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "back on song"
+                        )
+                    }
+                }
+            )
+            Text(
+                text = song?.letter.orEmpty(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(MaterialTheme.dimen.medium)
+                    .verticalScroll(rememberScrollState()),
+                color = if (MaterialTheme.colors.isLight) MaterialTheme.colors.primary
+                else MaterialTheme.colors.onBackground
+            )
+
+        }
     }
 
 
