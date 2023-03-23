@@ -1,6 +1,10 @@
 package com.example.evagnelyrics.ui.screen.picture
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Icon
@@ -10,19 +14,24 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.JustSlideFromRight
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -32,16 +41,26 @@ import com.google.accompanist.pager.rememberPagerState
 fun PictureScreen(
     page: Int = 0,
     navController: NavHostController = LocalNavController.current!!,
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
 
     val visibleState = MutableTransitionState(false).apply {
         targetState = true
     }
+    val myBox by mainViewModel.myBoxState.collectAsState()
 
-    JustSlideFromRight(
+    AnimatedVisibility(
         visibleState = visibleState,
-        durationMillis = 400,
-        delayMillis = 100,
+        enter = expandIn(expandFrom = { _, _, _ ->
+            IntOffset(myBox.topLeftX, myBox.topLeftY)
+        }, animationSpec = tween(400)) {
+            IntSize(myBox.width, myBox.height)
+        },
+        exit = shrinkOut(shrinkTowards = { _, _, _ ->
+            IntOffset(myBox.topLeftX, myBox.topLeftY)
+        }, animationSpec = tween(400)) {
+            IntSize(myBox.width, myBox.height)
+        },
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (toolbar, pager) = createRefs()

@@ -17,6 +17,8 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +30,7 @@ import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.domain.model.MyBox
 import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
@@ -35,6 +38,7 @@ import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
 import com.example.evagnelyrics.ui.util.Vertically
 import com.example.evagnelyrics.ui.util.Where
+import kotlin.math.roundToInt
 
 @Composable
 fun GalleryScreen(
@@ -116,7 +120,8 @@ fun GalleryScreen(
 @Composable
 private fun PicturesList(
     navController: NavHostController,
-    visibleState: MutableTransitionState<Boolean>
+    visibleState: MutableTransitionState<Boolean>,
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
     LazyVerticalGrid(
         modifier = Modifier
@@ -133,6 +138,10 @@ private fun PicturesList(
                 delayMillis = index * 200 + 100,
                 durationMillis = 250
             ) {
+                var myBox by remember {
+                    mutableStateOf(MyBox())
+                }
+
                 Image(
                     painter = painterResource(
                         id = when (index) {
@@ -148,7 +157,17 @@ private fun PicturesList(
                     modifier = Modifier
                         .clip(RoundedCornerShape(5))
                         .clickable {
+                            mainViewModel.setBox(myBox)
                             navController.navigate(Route.Picture.toString() + "/$index")
+                        }
+                        .onGloballyPositioned {
+                            val rect = it.boundsInRoot()
+                            myBox = MyBox(
+                                topLeftX = rect.topLeft.x.roundToInt(),
+                                topLeftY = rect.topLeft.y.roundToInt(),
+                                width = rect.width.roundToInt(),
+                                height = rect.height.roundToInt()
+                            )
                         }
                 )
             }

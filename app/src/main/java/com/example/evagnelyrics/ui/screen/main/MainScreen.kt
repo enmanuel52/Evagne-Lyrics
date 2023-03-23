@@ -35,7 +35,10 @@ import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.*
+import com.example.evagnelyrics.ui.util.Horizontally
+import com.example.evagnelyrics.ui.util.ScaleFromCenter
+import com.example.evagnelyrics.ui.util.SlideInOutFrom
+import com.example.evagnelyrics.ui.util.Where
 
 @Composable
 fun MainScreen(
