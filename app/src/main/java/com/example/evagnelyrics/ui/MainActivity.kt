@@ -4,13 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
+import com.example.evagnelyrics.core.LocalActivity
 import com.example.evagnelyrics.ui.navigation.AppNavigation
 import com.example.evagnelyrics.ui.theme.EvagneLyricsTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -24,10 +23,18 @@ class MainActivity : ComponentActivity() {
         initSplash()
 
         setContent {
-            EvagneLyricsTheme {
-                AppNavigation { if (keepSplash) keepSplash = false }
+            CompositionLocalProvider(values = arrayOf(LocalActivity provides this)) {
+                EvagneLyricsTheme {
+                    AppNavigation {
+                        if (keepSplash) {
+                            viewModel.initViewModel()
+                            keepSplash = false
+                        }
+                    }
+                }
             }
         }
+
     }
 
     /**
