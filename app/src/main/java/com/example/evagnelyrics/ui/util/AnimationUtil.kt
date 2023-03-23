@@ -131,17 +131,15 @@ fun SlideFromLeft(
 fun ScaleFromCenter(
     visibleState: MutableTransitionState<Boolean>,
     modifier: Modifier = Modifier,
+    durationMillis: Int = 400,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     AnimatedVisibility(
         visibleState = visibleState,
         modifier = modifier,
         enter = scaleIn(
-            spring(
-                Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessHigh,
-            )
-        ) + fadeIn(tween(300)),
+            tween(durationMillis)
+        ) + fadeIn(tween(250)),
         exit = scaleOut() + fadeOut(),
         content = content
     )

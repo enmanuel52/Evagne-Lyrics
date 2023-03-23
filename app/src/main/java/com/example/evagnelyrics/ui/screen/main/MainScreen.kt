@@ -3,7 +3,9 @@ package com.example.evagnelyrics.ui.screen.main
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -104,6 +106,7 @@ fun MainScreen(
 
         ScaleFromCenter(
             modifier = Modifier.layoutId(PHOTO_ID),
+            durationMillis = 500,
             visibleState = visibleState,
         ) {
             Image(
@@ -121,12 +124,18 @@ fun MainScreen(
             )
         }
 
-        EvText(
-            resource = R.string.app_name,
-            style = EvTextStyle.Head,
-            color = MaterialTheme.colors.primaryVariant,
-            modifier = Modifier.layoutId(TITLE_ID)
-        )
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = fadeIn(tween(500)),
+            exit = fadeOut(),
+            modifier = Modifier.layoutId(TITLE_ID),
+        ) {
+            EvText(
+                resource = R.string.app_name,
+                style = EvTextStyle.Head,
+                color = MaterialTheme.colors.primaryVariant,
+            )
+        }
 
         SlideFromRight(
             modifier = Modifier
@@ -150,13 +159,20 @@ fun MainScreen(
             }
         }
 
-        EvText(
-            resource = R.string.by_dev,
-            color = MaterialTheme.colors.primaryVariant,
+        AnimatedVisibility(
+            visibleState = visibleState,
             modifier = Modifier
-                .layoutId(BY_DEV_ID)
-                .padding(MaterialTheme.dimen.large)
-        )
+                .layoutId(BY_DEV_ID),
+            enter = slideInVertically(tween(500)) { it },
+            exit = slideOutVertically { it }
+        ) {
+            EvText(
+                resource = R.string.by_dev,
+                color = MaterialTheme.colors.primaryVariant,
+                modifier = Modifier
+                    .padding(MaterialTheme.dimen.large)
+            )
+        }
     }
 
 
