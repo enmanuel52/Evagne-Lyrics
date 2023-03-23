@@ -42,6 +42,8 @@ import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
+import com.example.evagnelyrics.ui.util.SlideFromLeft
+import com.example.evagnelyrics.ui.util.SlideFromRight
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -362,94 +364,6 @@ fun FavIcon(
     }
 }
 
-/**
- * AnimatedVisibility for slide from right and hide on right*/
-@Composable
-fun SlideFromRight(
-    visibleState: MutableTransitionState<Boolean>,
-    delayMillis: Int = 0,
-    durationMillis: Int = 400,
-    content: @Composable () -> Unit,
-) {
-    AnimatedVisibility(
-        visibleState = visibleState,
-        enter = slideInHorizontally(
-            tween(
-                durationMillis = durationMillis,
-                delayMillis = delayMillis
-            )
-        ) { it } + fadeIn(
-            tween(
-                durationMillis = durationMillis, delayMillis = delayMillis
-            )
-        ),
-        exit = slideOutHorizontally(
-            tween(
-                durationMillis = durationMillis,
-                delayMillis = delayMillis
-            )
-        ) { it } + fadeOut(
-            tween(
-                durationMillis = durationMillis, delayMillis = delayMillis
-            )
-        ),
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun SlideFromRight(
-    visible: Boolean,
-    delayMillis: Int = 0,
-    durationMillis: Int = 400,
-    content: @Composable () -> Unit
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = slideInHorizontally(
-            tween(
-                durationMillis = durationMillis,
-                delayMillis = delayMillis
-            )
-        ) { it } + fadeIn(
-            tween(
-                durationMillis = durationMillis, delayMillis = delayMillis
-            )
-        ),
-        exit = slideOutHorizontally(
-            tween(
-                durationMillis = durationMillis,
-                delayMillis = delayMillis
-            )
-        ) { it } + fadeOut(
-            tween(
-                durationMillis = durationMillis, delayMillis = delayMillis
-            )
-        ),
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun SlideFromLeft(
-    visible: Boolean,
-    durationMillis: Int,
-    content: @Composable () -> Unit
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = slideInHorizontally(
-            tween(durationMillis)
-        ) { -it }, //+ fadeIn(tween(durationMillis))
-        exit = fadeOut(
-            tween(200)
-        ),
-    ) {
-        content()
-    }
-}
 
 @Composable
 @Preview(showSystemUi = true)

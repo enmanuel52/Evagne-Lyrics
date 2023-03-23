@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +34,7 @@ import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 
 @Composable
 fun MainScreen(
+    keepSplash: () -> Unit,
     navController: NavHostController = LocalNavController.current!!
 ) {
 
@@ -85,6 +87,7 @@ fun MainScreen(
             .fillMaxSize(),
         constraintSet = constraints
     ) {
+        SideEffect(keepSplash)
         Image(
             painter = painterResource(R.drawable.img3_7228_crop),
             contentDescription = "front",
@@ -178,5 +181,5 @@ const val TITLE_ID = "titleId"
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    MainScreen({})
 }

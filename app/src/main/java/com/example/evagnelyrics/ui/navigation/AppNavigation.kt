@@ -1,5 +1,10 @@
 package com.example.evagnelyrics.ui.navigation
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavType
@@ -15,7 +20,7 @@ import com.example.evagnelyrics.ui.screen.picture.PictureScreen
 import com.example.evagnelyrics.ui.screen.song.SongScreen
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(keepSplash: () -> Unit) {
     val navController = rememberNavController()
     CompositionLocalProvider(values = arrayOf(LocalNavController provides navController)) {
         NavHost(
@@ -23,7 +28,7 @@ fun AppNavigation() {
             startDestination = Route.Main.toString()
         ) {
             composable(route = Route.Main.toString()) {
-                MainScreen()
+                MainScreen(keepSplash)
             }
             composable(route = Route.List.toString()) {
                 ListScreen()

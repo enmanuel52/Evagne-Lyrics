@@ -15,7 +15,9 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
+
+    private var keepSplash = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EvagneLyricsTheme {
-                AppNavigation()
+                AppNavigation { if (keepSplash) keepSplash = false }
             }
         }
     }
@@ -34,13 +36,7 @@ class MainActivity : ComponentActivity() {
     private fun initSplash() {
         installSplashScreen().apply {
             setKeepOnScreenCondition keep@{
-                var notReady = true
-                lifecycleScope.launch {
-                    viewModel.ready.collectLatest {
-                        notReady = it
-                    }
-                }
-                notReady
+                keepSplash
             }
         }
     }
