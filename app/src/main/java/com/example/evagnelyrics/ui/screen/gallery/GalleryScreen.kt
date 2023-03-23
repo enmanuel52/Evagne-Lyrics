@@ -32,7 +32,9 @@ import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.JustSlideFromRight
+import com.example.evagnelyrics.ui.util.SlideInOutFrom
+import com.example.evagnelyrics.ui.util.Vertically
+import com.example.evagnelyrics.ui.util.Where
 
 @Composable
 fun GalleryScreen(
@@ -79,7 +81,8 @@ fun GalleryScreen(
         }
     }
 
-    JustSlideFromRight(
+    SlideInOutFrom(
+        where = Where.Vertical(Vertically.Top),
         visibleState = visibleState,
         durationMillis = 400,
         delayMillis = 100,
@@ -103,7 +106,7 @@ fun GalleryScreen(
                     }
                 }
             )
-            PicturesList(navController)
+            PicturesList(navController, visibleState)
         }
     }
 
@@ -111,7 +114,10 @@ fun GalleryScreen(
 }
 
 @Composable
-private fun PicturesList(navController: NavHostController) {
+private fun PicturesList(
+    navController: NavHostController,
+    visibleState: MutableTransitionState<Boolean>
+) {
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxWidth(),
@@ -121,24 +127,31 @@ private fun PicturesList(navController: NavHostController) {
         contentPadding = PaddingValues(all = MaterialTheme.dimen.verySmall)
     ) {
         items(Items.images.size) { index ->
-            Image(
-                painter = painterResource(
-                    id = when (index) {
-                        0 -> R.drawable.img1_7185
-                        1 -> R.drawable.img2_7190
-                        2 -> R.drawable.img3_7228
-                        3 -> R.drawable.img4_7236
-                        4 -> R.drawable.img5_7281
-                        else -> R.drawable.img1_7185
-                    }
-                ),
-                contentDescription = "image # $index",
-                modifier = Modifier
-                    .clip(RoundedCornerShape(5))
-                    .clickable {
-                        navController.navigate(Route.Picture.toString() + "/$index")
-                    }
-            )
+            SlideInOutFrom(
+                where = Where.Vertical(Vertically.Bottom),
+                visibleState = visibleState,
+                delayMillis = index * 200 + 100,
+                durationMillis = 250
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = when (index) {
+                            0 -> R.drawable.img1_7185
+                            1 -> R.drawable.img2_7190
+                            2 -> R.drawable.img3_7228
+                            3 -> R.drawable.img4_7236
+                            4 -> R.drawable.img5_7281
+                            else -> R.drawable.img1_7185
+                        }
+                    ),
+                    contentDescription = "image # $index",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5))
+                        .clickable {
+                            navController.navigate(Route.Picture.toString() + "/$index")
+                        }
+                )
+            }
         }
     }
 }

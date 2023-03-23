@@ -42,8 +42,7 @@ import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.SlideFromLeft
-import com.example.evagnelyrics.ui.util.SlideFromRight
+import com.example.evagnelyrics.ui.util.*
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -191,7 +190,8 @@ fun SongsList(
             val visibleState = MutableTransitionState(false).apply {
                 targetState = true
             }
-            SlideFromRight(
+            SlideInOutFrom(
+                where = Where.Horizontal(Horizontally.End),
                 visibleState = visibleState,
                 delayMillis = index * 200 + 100,
                 durationMillis = 250

@@ -35,8 +35,7 @@ import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.ScaleFromCenter
-import com.example.evagnelyrics.ui.util.SlideFromRight
+import com.example.evagnelyrics.ui.util.*
 
 @Composable
 fun MainScreen(
@@ -137,7 +136,8 @@ fun MainScreen(
             )
         }
 
-        SlideFromRight(
+        SlideInOutFrom(
+            where = Where.Horizontal(Horizontally.End),
             modifier = Modifier
                 .layoutId(LIST_ID),
             visibleState = visibleState,
