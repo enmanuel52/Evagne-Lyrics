@@ -1,10 +1,6 @@
 package com.example.evagnelyrics.ui.navigation
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavType
@@ -18,6 +14,7 @@ import com.example.evagnelyrics.ui.screen.list.ListScreen
 import com.example.evagnelyrics.ui.screen.main.MainScreen
 import com.example.evagnelyrics.ui.screen.picture.PictureScreen
 import com.example.evagnelyrics.ui.screen.song.SongScreen
+import com.example.evagnelyrics.ui.util.JustSlideFromRight
 
 @Composable
 fun AppNavigation(keepSplash: () -> Unit) {
@@ -31,6 +28,9 @@ fun AppNavigation(keepSplash: () -> Unit) {
                 MainScreen(keepSplash)
             }
             composable(route = Route.List.toString()) {
+                val visibleState = MutableTransitionState(false).apply {
+                    targetState = true
+                }
                 ListScreen()
             }
             composable(
@@ -44,7 +44,10 @@ fun AppNavigation(keepSplash: () -> Unit) {
             ) {
                 it.arguments?.getString("title")
                     ?.let { title ->
-                        SongScreen(title = title)
+                        SongScreen(
+                            title = title
+                        )
+
                     }
             }
             composable(route = Route.Gallery.toString()) {
@@ -59,7 +62,12 @@ fun AppNavigation(keepSplash: () -> Unit) {
                     }
                 )) {
                 it.arguments?.getInt("page")?.let { page ->
-                    PictureScreen(page = page)
+                    val visibleState = MutableTransitionState(false).apply {
+                        targetState = true
+                    }
+                        PictureScreen(
+                            page = page
+                        )
                 }
 
             }
