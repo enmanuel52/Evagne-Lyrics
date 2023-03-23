@@ -1,5 +1,7 @@
 package com.example.evagnelyrics.domain.usecase
 
+import android.util.Log
+import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.domain.model.Lyric
 import com.example.evagnelyrics.domain.repo.LyricRepo
 import javax.inject.Inject
@@ -20,6 +22,8 @@ class SetUpDatabaseUseCase @Inject constructor(
             }
         }
 
-        insertAllLyricsUC(newValues)
+        if(newValues.isNotEmpty()) {
+            insertAllLyricsUC(newValues)
+        }
     }
 }
