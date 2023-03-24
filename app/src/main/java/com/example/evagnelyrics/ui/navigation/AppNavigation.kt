@@ -14,7 +14,6 @@ import com.example.evagnelyrics.ui.screen.list.ListScreen
 import com.example.evagnelyrics.ui.screen.main.MainScreen
 import com.example.evagnelyrics.ui.screen.picture.PictureScreen
 import com.example.evagnelyrics.ui.screen.song.SongScreen
-import com.example.evagnelyrics.ui.util.JustSlideFromRight
 
 @Composable
 fun AppNavigation(keepSplash: () -> Unit) {

@@ -126,7 +126,7 @@ private fun PicturesList(
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxWidth(),
-        columns = GridCells.Fixed(count = 2),
+        columns = GridCells.Adaptive(MaterialTheme.dimen.giant * 3),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small),
         contentPadding = PaddingValues(all = MaterialTheme.dimen.verySmall)
@@ -155,6 +155,7 @@ private fun PicturesList(
                     ),
                     contentDescription = "image # $index",
                     modifier = Modifier
+                        .aspectRatio(0.6625f)
                         .clip(RoundedCornerShape(5))
                         .clickable {
                             mainViewModel.setBox(myBox)
