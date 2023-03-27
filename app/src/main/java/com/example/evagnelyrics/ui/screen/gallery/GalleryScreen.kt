@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.screen.gallery
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -56,14 +57,16 @@ fun GalleryScreen(
         }
     }
 
+    BackHandler(enabled = true) {
+        mainViewModel.popScreen()
+        navController.popBackStack()
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE) {
                 mainViewModel.pushScreen(Route.Gallery)
-            }
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                mainViewModel.popScreen()
             }
         }
 
@@ -88,6 +91,7 @@ fun GalleryScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
+                        mainViewModel.popScreen()
                         navController.popBackStack()
                     }) {
                         Icon(
@@ -97,7 +101,7 @@ fun GalleryScreen(
                     }
                 }
             )
-            PicturesList(navController, 200)
+            PicturesList(navController, 200, onBack)
         }
     }
 
@@ -108,6 +112,7 @@ fun GalleryScreen(
 private fun PicturesList(
     navController: NavHostController,
     delay: Int,
+    onBack: Boolean,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
 
@@ -127,8 +132,8 @@ private fun PicturesList(
     ) {
         items(Items.images.size) { index ->
             ScaleFromCenter(
-                visible = listVisibility[index],
-                hasBounce = true,
+                visible = if (onBack) true else listVisibility[index],
+                hasBounce = !onBack,
             ) {
                 var myBox by remember {
                     mutableStateOf(MyBox())

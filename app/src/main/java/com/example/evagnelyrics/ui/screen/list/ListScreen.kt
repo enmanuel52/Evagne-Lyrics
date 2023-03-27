@@ -1,6 +1,7 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.core.primaryVariantPrimary
+import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
@@ -48,8 +50,32 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
+    val onBack by remember {
+        mutableStateOf(mainViewModel.previous() == Route.Song)
+    }
+
+    BackHandler(enabled = true) {
+        mainViewModel.popScreen()
+        navController.popBackStack()
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                mainViewModel.pushScreen(Route.List)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     //composable
     val scaffoldState = rememberScaffoldState()
 
@@ -130,6 +156,7 @@ fun ListScreen(
             SongsList(
                 modifier = Modifier,
                 songs = titles,
+                onBack = onBack,
             ) { title: String ->
                 navController.navigate(Route.Song.toString() + "/$title")
             }
@@ -183,13 +210,15 @@ fun DiscJockey(title: String, modifier: Modifier, isRunning: Boolean) {
 fun SongsList(
     modifier: Modifier = Modifier,
     songs: List<String> = emptyList(),
+    onBack: Boolean,
     navTo: (title: String) -> Unit = {},
 ) {
     val listVisibility = remember {
         mutableStateListOf<Boolean>()
     }
     if (songs.isNotEmpty()) {
-        listVisibility.addAll((1..songs.size).map { false })
+        //all start as false is onBack is disabled
+        listVisibility.addAll((1..songs.size).map { onBack })
     }
 
     LazyColumn(modifier) {
@@ -198,9 +227,9 @@ fun SongsList(
                 where = Where.Vertical(Vertically.Top),
                 visible = listVisibility[index],
                 delayMillis = 0,
-                hasBounce = true,
-                durationMillis = 50,
-                dampingRatio = 1.1f - (index.toFloat() / (songs.size))
+                hasBounce = !onBack,
+                durationMillis = if (onBack) 0 else 50,
+                dampingRatio = if (onBack) 1f else 1.1f - (index.toFloat() / (songs.size))
             ) {
                 SongItem(
                     Modifier,
@@ -213,7 +242,7 @@ fun SongsList(
         }
     }
 
-    if (songs.isNotEmpty()) {
+    if (songs.isNotEmpty() && !onBack) {
         LaunchedEffect(key1 = true) {
             songs.indices.forEach { ind ->
                 delay(ind.toLong() * 50 + 50)
@@ -390,7 +419,7 @@ fun ListScreenPreview() {
 @Composable
 @Preview(showSystemUi = true)
 fun SongsListScreenPreview() {
-    SongsList(songs = listOf("Hello"))
+    SongsList(songs = listOf("Hello"), onBack = false)
 }
 
 fun getResourceSong(title: String) =

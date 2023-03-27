@@ -1,5 +1,7 @@
 package com.example.evagnelyrics.ui.screen.picture
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
+import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
@@ -47,14 +50,17 @@ fun PictureScreen(
         targetState = true
     }
 
+    BackHandler(enabled = true) {
+        Log.d(TAG, "PictureScreen: the fucking back pressed")
+        mainViewModel.popScreen()
+        navController.popBackStack()
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE) {
                 mainViewModel.pushScreen(Route.Picture)
-            }
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                mainViewModel.popScreen()
             }
         }
 
@@ -78,6 +84,7 @@ fun PictureScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
+                        mainViewModel.popScreen()
                         navController.popBackStack()
                     }) {
                         Icon(

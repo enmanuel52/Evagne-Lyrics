@@ -43,7 +43,6 @@ class MainViewModel @Inject constructor(
     fun previous() = screenStack.previous
 
     fun setBox(myBox: MyBox) {
-        Log.d(TAG, "setBox: $myBox")
         _myBoxState.update { myBox }
     }
 }

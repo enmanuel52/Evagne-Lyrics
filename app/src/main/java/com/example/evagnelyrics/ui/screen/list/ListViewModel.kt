@@ -70,7 +70,6 @@ class ListViewModel @Inject constructor(
                 _allLyrics.update {
                     lyrics
                 }
-                Log.d(TAG, "$lyrics")
                 if (!initialized) {
                     initialized = true
                     //update the first time

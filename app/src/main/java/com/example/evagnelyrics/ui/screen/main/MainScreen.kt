@@ -50,7 +50,7 @@ fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val onBack by remember {
-        mutableStateOf(mainViewModel.previous() == null || mainViewModel.previous() == Route.Main)
+        mutableStateOf(mainViewModel.previous() != null)
     }
 
     val visibleState = MutableTransitionState(onBack).apply {

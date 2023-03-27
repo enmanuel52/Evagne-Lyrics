@@ -1,7 +1,7 @@
 package com.example.evagnelyrics.ui.screen.song
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,19 +12,22 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.ui.MainViewModel
+import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.util.Horizontally
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
 import com.example.evagnelyrics.ui.util.Vertically
@@ -34,8 +37,28 @@ import com.example.evagnelyrics.ui.util.Where
 fun SongScreen(
     viewModel: SongViewModel = hiltViewModel(),
     title: String = "",
+    mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController = LocalNavController.current!!,
 ) {
+
+    BackHandler(enabled = true) {
+        mainViewModel.popScreen()
+        navController.popBackStack()
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                mainViewModel.pushScreen(Route.Song)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     //observe and fetch the song
     viewModel.fetch(title)
