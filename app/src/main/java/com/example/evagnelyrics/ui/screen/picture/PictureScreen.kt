@@ -9,21 +9,23 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.MainViewModel
+import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
@@ -44,6 +46,24 @@ fun PictureScreen(
     val visibleState = MutableTransitionState(false).apply {
         targetState = true
     }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                mainViewModel.pushScreen(Route.Picture)
+            }
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                mainViewModel.popScreen()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     val myBox by mainViewModel.myBoxState.collectAsState()
 
     SlideInOutFrom(where = Where.Vertical(Vertically.Bottom), visibleState = visibleState) {

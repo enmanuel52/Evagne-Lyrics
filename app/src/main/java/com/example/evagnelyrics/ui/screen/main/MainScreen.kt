@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
@@ -46,14 +49,27 @@ fun MainScreen(
     navController: NavHostController = LocalNavController.current!!,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    var isOnStack by remember {
-        mutableStateOf(mainViewModel.isOnStack(Route.Main))
+    val onBack by remember {
+        mutableStateOf(mainViewModel.previous() == null || mainViewModel.previous() == Route.Main)
     }
-    val visibleState = MutableTransitionState(isOnStack).apply {
-        if (!isOnStack) {
+
+    val visibleState = MutableTransitionState(onBack).apply {
+        if (!onBack) {
             targetState = true
-            mainViewModel.addScreenToStack(Route.Main)
-            isOnStack = true
+        }
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                mainViewModel.pushScreen(Route.Main)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

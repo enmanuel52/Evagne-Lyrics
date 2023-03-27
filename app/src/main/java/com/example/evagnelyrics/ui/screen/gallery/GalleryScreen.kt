@@ -1,6 +1,5 @@
 package com.example.evagnelyrics.ui.screen.gallery
 
-import android.util.Log
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -25,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
-import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
@@ -47,43 +45,31 @@ fun GalleryScreen(
     navController: NavHostController = LocalNavController.current!!,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    var isOnStack by remember {
-        mutableStateOf(mainViewModel.isOnStack(Route.Gallery))
+
+    val onBack by remember {
+        mutableStateOf(mainViewModel.previous() == Route.Picture)
     }
-    val visibleState = MutableTransitionState(isOnStack).apply {
-        if (!isOnStack) {
+
+    val visibleState = MutableTransitionState(onBack).apply {
+        if (!onBack) {
             targetState = true
-            mainViewModel.addScreenToStack(Route.Gallery)
-            isOnStack = true
         }
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                Log.d(TAG, "GalleryScreen: onDestroy")
-                mainViewModel.popScreenFromStack(Route.Gallery)
-            }
-            if (event == Lifecycle.Event.ON_START) {
-                Log.d(TAG, "GalleryScreen: onStart")
-            }
             if (event == Lifecycle.Event.ON_CREATE) {
-                Log.d(TAG, "GalleryScreen: onCreate")
+                mainViewModel.pushScreen(Route.Gallery)
             }
-            if (event == Lifecycle.Event.ON_PAUSE) {
-                Log.d(TAG, "GalleryScreen: onPause")
-            }
-            if (event == Lifecycle.Event.ON_STOP) {
-                Log.d(TAG, "GalleryScreen: onStop")
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                mainViewModel.popScreen()
             }
         }
 
         lifecycleOwner.lifecycle.addObserver(observer)
-
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
-            Log.d(TAG, "GalleryScreen: onDispose")
         }
     }
 

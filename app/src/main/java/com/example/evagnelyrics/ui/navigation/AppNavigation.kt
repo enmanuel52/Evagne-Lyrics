@@ -64,9 +64,9 @@ fun AppNavigation(keepSplash: () -> Unit) {
                     val visibleState = MutableTransitionState(false).apply {
                         targetState = true
                     }
-                        PictureScreen(
-                            page = page
-                        )
+                    PictureScreen(
+                        page = page
+                    )
                 }
 
             }
