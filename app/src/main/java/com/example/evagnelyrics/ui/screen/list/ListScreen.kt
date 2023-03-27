@@ -1,7 +1,6 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +42,7 @@ import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import com.example.evagnelyrics.ui.util.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -185,23 +185,39 @@ fun SongsList(
     songs: List<String> = emptyList(),
     navTo: (title: String) -> Unit = {},
 ) {
+    val listVisibility = remember {
+        mutableStateListOf<Boolean>()
+    }
+    if (songs.isNotEmpty()) {
+        listVisibility.addAll((1..songs.size).map { false })
+    }
+
     LazyColumn(modifier) {
         items(songs.size) { index ->
-            val visibleState = MutableTransitionState(false).apply {
-                targetState = true
-            }
             SlideInOutFrom(
-                where = Where.Horizontal(Horizontally.End),
-                visibleState = visibleState,
-                delayMillis = index * 200 + 100,
-                durationMillis = 250
+                where = Where.Vertical(Vertically.Top),
+                visible = listVisibility[index],
+                delayMillis = 0,
+                hasBounce = true,
+                durationMillis = 50,
+                dampingRatio = 1.1f - (index.toFloat() / (songs.size))
             ) {
                 SongItem(
                     Modifier,
                     title = songs[index],
                 ) {
                     navTo(it)
+                    //something about add the screen to nav stack
                 }
+            }
+        }
+    }
+
+    if (songs.isNotEmpty()) {
+        LaunchedEffect(key1 = true) {
+            songs.indices.forEach { ind ->
+                delay(ind.toLong() * 50 + 50)
+                listVisibility[ind] = true
             }
         }
     }

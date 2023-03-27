@@ -101,7 +101,8 @@ fun SlideInOutFrom(
 
 /**
  * AnimatedVisibility for slide from where edge and hide from where edge to
- * @param visible [Boolean]*/
+ * @param visible [Boolean]
+ * @param dampingRatio [Float] must be between 0 and 1, the more closer of 0 more bounce*/
 @Composable
 fun SlideInOutFrom(
     where: Where,
@@ -110,6 +111,7 @@ fun SlideInOutFrom(
     delayMillis: Int = 0,
     durationMillis: Int = 400,
     hasBounce: Boolean = false,
+    dampingRatio: Float = 1f,
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
@@ -118,7 +120,7 @@ fun SlideInOutFrom(
         enter = when (where) {
             is Where.Horizontal -> {
                 slideInHorizontally(
-                    if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+                    if (hasBounce) spring(dampingRatio, Spring.StiffnessLow)
                     else tween(durationMillis, delayMillis)
                 ) {
                     when (where.edge) {
@@ -133,7 +135,7 @@ fun SlideInOutFrom(
             }
             is Where.Vertical -> {
                 slideInVertically(
-                    if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+                    if (hasBounce) spring(dampingRatio, Spring.StiffnessLow)
                     else tween(durationMillis, delayMillis)
                 ) {
                     when (where.edge) {
