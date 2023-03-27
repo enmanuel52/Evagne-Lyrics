@@ -35,9 +35,11 @@ import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
+import com.example.evagnelyrics.ui.util.Horizontally
+import com.example.evagnelyrics.ui.util.ScaleFromCenter
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
-import com.example.evagnelyrics.ui.util.Vertically
 import com.example.evagnelyrics.ui.util.Where
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
@@ -86,10 +88,9 @@ fun GalleryScreen(
     }
 
     SlideInOutFrom(
-        where = Where.Vertical(Vertically.Top),
+        where = Where.Horizontal(Horizontally.End),
         visibleState = visibleState,
-        durationMillis = 400,
-        delayMillis = 100,
+        durationMillis = 200
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -110,7 +111,7 @@ fun GalleryScreen(
                     }
                 }
             )
-            PicturesList(navController, visibleState)
+            PicturesList(navController, 200)
         }
     }
 
@@ -120,9 +121,16 @@ fun GalleryScreen(
 @Composable
 private fun PicturesList(
     navController: NavHostController,
-    visibleState: MutableTransitionState<Boolean>,
+    delay: Int,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
+
+    val listVisibility = remember {
+        mutableStateListOf<Boolean>()
+    }.apply {
+        addAll((1..5).map { false })
+    }
+
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxWidth(),
@@ -132,11 +140,9 @@ private fun PicturesList(
         contentPadding = PaddingValues(all = MaterialTheme.dimen.verySmall)
     ) {
         items(Items.images.size) { index ->
-            SlideInOutFrom(
-                where = Where.Vertical(Vertically.Bottom),
-                visibleState = visibleState,
-                delayMillis = index * 200 + 100,
-                durationMillis = 250
+            ScaleFromCenter(
+                visible = listVisibility[index],
+                hasBounce = true,
             ) {
                 var myBox by remember {
                     mutableStateOf(MyBox())
@@ -172,6 +178,13 @@ private fun PicturesList(
                         }
                 )
             }
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        (0..4).forEach {
+            delay(if (it == 0) 100 + delay.toLong() else 200)
+            listVisibility[it] = true
         }
     }
 }

@@ -2,13 +2,15 @@ package com.example.evagnelyrics.ui.util
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
 
 /**
- * AnimatedVisibility for slide from where edge and hide from where edge to*/
+ * AnimatedVisibility for slide from where edge and hide from where edge to
+ * @param visibleState [MutableTransitionState] of type [Boolean]*/
 @Composable
 fun SlideInOutFrom(
     where: Where,
@@ -16,6 +18,7 @@ fun SlideInOutFrom(
     visibleState: MutableTransitionState<Boolean>,
     delayMillis: Int = 0,
     durationMillis: Int = 400,
+    hasBounce: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
@@ -24,6 +27,40 @@ fun SlideInOutFrom(
         enter = when (where) {
             is Where.Horizontal -> {
                 slideInHorizontally(
+                    if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+                    else tween(durationMillis, delayMillis)
+                ) {
+                    when (where.edge) {
+                        Horizontally.Start -> -it
+                        Horizontally.End -> it
+                    }
+                } /*+ fadeIn(
+                    tween(
+                        durationMillis = durationMillis, delayMillis = delayMillis
+                    )
+                )*/
+            }
+            is Where.Vertical -> {
+                slideInVertically(
+                    tween(
+                        durationMillis = durationMillis,
+                        delayMillis = delayMillis
+                    )
+                ) {
+                    when (where.edge) {
+                        Vertically.Top -> -it
+                        Vertically.Bottom -> it
+                    }
+                } + fadeIn(
+                    tween(
+                        durationMillis = durationMillis, delayMillis = delayMillis
+                    )
+                )
+            }
+        },
+        exit = when (where) {
+            is Where.Horizontal -> {
+                slideOutHorizontally(
                     tween(
                         durationMillis = durationMillis,
                         delayMillis = delayMillis
@@ -33,18 +70,71 @@ fun SlideInOutFrom(
                         Horizontally.Start -> -it
                         Horizontally.End -> it
                     }
-                } + fadeIn(
+                } + fadeOut(
                     tween(
                         durationMillis = durationMillis, delayMillis = delayMillis
                     )
                 )
             }
             is Where.Vertical -> {
-                slideInVertically(
+                slideOutVertically(
                     tween(
                         durationMillis = durationMillis,
                         delayMillis = delayMillis
                     )
+                ) {
+                    when (where.edge) {
+                        Vertically.Top -> -it
+                        Vertically.Bottom -> it
+                    }
+                } + fadeOut(
+                    tween(
+                        durationMillis = durationMillis, delayMillis = delayMillis
+                    )
+                )
+            }
+        },
+    ) {
+        content()
+    }
+}
+
+/**
+ * AnimatedVisibility for slide from where edge and hide from where edge to
+ * @param visible [Boolean]*/
+@Composable
+fun SlideInOutFrom(
+    where: Where,
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    delayMillis: Int = 0,
+    durationMillis: Int = 400,
+    hasBounce: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        enter = when (where) {
+            is Where.Horizontal -> {
+                slideInHorizontally(
+                    if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+                    else tween(durationMillis, delayMillis)
+                ) {
+                    when (where.edge) {
+                        Horizontally.Start -> -it
+                        Horizontally.End -> it
+                    }
+                } /*+ fadeIn(
+                    tween(
+                        durationMillis = durationMillis, delayMillis = delayMillis
+                    )
+                )*/
+            }
+            is Where.Vertical -> {
+                slideInVertically(
+                    if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+                    else tween(durationMillis, delayMillis)
                 ) {
                     when (where.edge) {
                         Vertically.Top -> -it
@@ -167,14 +257,39 @@ fun ScaleFromCenter(
     visibleState: MutableTransitionState<Boolean>,
     modifier: Modifier = Modifier,
     durationMillis: Int = 400,
+    hasBounce: Boolean = false,
+    delayMillis: Int = 0,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     AnimatedVisibility(
         visibleState = visibleState,
         modifier = modifier,
         enter = scaleIn(
-            tween(durationMillis)
-        ) + fadeIn(tween(250)),
+            if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            else tween(durationMillis, delayMillis)
+        ),
+        exit = scaleOut() + fadeOut(),
+        content = content
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun ScaleFromCenter(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    durationMillis: Int = 400,
+    hasBounce: Boolean = false,
+    delayMillis: Int = 0,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible,
+        modifier = modifier,
+        enter = scaleIn(
+            if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+            else tween(durationMillis, delayMillis)
+        ),
         exit = scaleOut() + fadeOut(),
         content = content
     )

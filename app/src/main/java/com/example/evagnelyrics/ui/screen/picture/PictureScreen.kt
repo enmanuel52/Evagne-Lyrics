@@ -1,10 +1,6 @@
 package com.example.evagnelyrics.ui.screen.picture
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Icon
@@ -19,8 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +26,9 @@ import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
+import com.example.evagnelyrics.ui.util.SlideInOutFrom
+import com.example.evagnelyrics.ui.util.Vertically
+import com.example.evagnelyrics.ui.util.Where
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -49,19 +46,7 @@ fun PictureScreen(
     }
     val myBox by mainViewModel.myBoxState.collectAsState()
 
-    AnimatedVisibility(
-        visibleState = visibleState,
-        enter = expandIn(expandFrom = { _, _, _ ->
-            IntOffset(myBox.topLeftX, myBox.topLeftY)
-        }, animationSpec = tween(400)) {
-            IntSize(myBox.width, myBox.height)
-        },
-        exit = shrinkOut(shrinkTowards = { _, _, _ ->
-            IntOffset(myBox.topLeftX, myBox.topLeftY)
-        }, animationSpec = tween(400)) {
-            IntSize(myBox.width, myBox.height)
-        },
-    ) {
+    SlideInOutFrom(where = Where.Vertical(Vertically.Bottom), visibleState = visibleState) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (toolbar, pager) = createRefs()
             TopAppBar(

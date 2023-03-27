@@ -23,4 +23,11 @@ class KotlinAbilitiesTest {
         val match = names.all(String::matchName)
         assert(match)
     }
+
+    @Test
+    fun `this reduce have to work`() {
+        val sum = (1 ..5).reduce { x, y -> x + y }
+        println("Sum is $sum")
+        assert(sum == 15)
+    }
 }
