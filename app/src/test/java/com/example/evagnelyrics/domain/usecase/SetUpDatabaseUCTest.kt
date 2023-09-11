@@ -13,9 +13,9 @@ import org.junit.Test
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class SetUpDatabaseUseCaseTest {
+internal class SetUpDatabaseUCTest {
 
-    private lateinit var setUpUC: SetUpDatabaseUseCase
+    private lateinit var setUpUC: SetUpDatabaseUC
 
     @RelaxedMockK
     private lateinit var insertUC: InsertAllLyricsUC
@@ -26,7 +26,7 @@ internal class SetUpDatabaseUseCaseTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        setUpUC = SetUpDatabaseUseCase(insertUC, repo)
+        setUpUC = SetUpDatabaseUC(insertUC, repo)
     }
 
     @Test

@@ -4,11 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.evagnelyrics.domain.model.Lyric
 import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
-class SongViewModel @Inject constructor(
+class SongViewModel  (
     private val getLyricsByTitleUC: GetLyricsByTitleUC,
 ) : ViewModel() {
 

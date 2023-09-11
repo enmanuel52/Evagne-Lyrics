@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
@@ -20,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
@@ -32,12 +35,13 @@ import com.example.evagnelyrics.ui.util.Horizontally
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
 import com.example.evagnelyrics.ui.util.Vertically
 import com.example.evagnelyrics.ui.util.Where
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SongScreen(
-    viewModel: SongViewModel = hiltViewModel(),
+    viewModel: SongViewModel = koinViewModel(),
     title: String = "",
-    mainViewModel: MainViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
     navController: NavHostController = LocalNavController.current!!,
 ) {
 

@@ -1,25 +1,20 @@
 package com.example.evagnelyrics.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.domain.model.Lyric
 import com.example.evagnelyrics.domain.model.MyBox
 import com.example.evagnelyrics.domain.repo.ScreenStack
-import com.example.evagnelyrics.domain.usecase.SetUpDatabaseUseCase
+import com.example.evagnelyrics.domain.usecase.SetUpDatabaseUC
 import com.example.evagnelyrics.ui.navigation.Route
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class MainViewModel @Inject constructor(
-    private val setUpDatabaseUseCase: SetUpDatabaseUseCase,
+class MainViewModel (
+    private val setUpDatabaseUC: SetUpDatabaseUC,
     private val screenStack: ScreenStack,
 ) : ViewModel() {
 
@@ -33,7 +28,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun setDatabase(updatedDb: List<Lyric>) = viewModelScope.launch {
-        setUpDatabaseUseCase(updatedDb)
+        setUpDatabaseUC(updatedDb)
     }
 
     fun pushScreen(screen: Route) = screenStack.push(screen)

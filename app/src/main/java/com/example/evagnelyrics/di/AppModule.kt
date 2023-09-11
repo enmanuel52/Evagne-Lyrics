@@ -1,21 +1,17 @@
 package com.example.evagnelyrics.di
 
-import android.content.Context
+import com.example.evagnelyrics.data.database.di.dbModule
+import com.example.evagnelyrics.domain.usecase.di.ucModule
+import com.example.evagnelyrics.ui.di.uiModule
+import com.example.evagnelyrics.ui.di.vmModule
 import com.example.evagnelyrics.ui.player.Player
 import com.example.evagnelyrics.ui.player.PlayerImpl
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.loadKoinModules
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AppModule {
+val appModule = module {
+    single<Player> { PlayerImpl(androidContext()) }
 
-    @Provides
-    @Singleton
-    fun providePlayer(@ApplicationContext context: Context): Player =
-        PlayerImpl(context)
+    loadKoinModules(listOf(vmModule, uiModule, dbModule, ucModule ))
 }
