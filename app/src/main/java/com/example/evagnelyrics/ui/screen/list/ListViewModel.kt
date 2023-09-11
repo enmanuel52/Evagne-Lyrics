@@ -13,17 +13,22 @@ import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
 import com.example.evagnelyrics.domain.model.Lyric
-import com.example.evagnelyrics.domain.usecase.*
+import com.example.evagnelyrics.domain.usecase.FavoriteUC
+import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
+import com.example.evagnelyrics.domain.usecase.GetFavoritesUC
+import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
+import com.example.evagnelyrics.domain.usecase.SearchByTitleUC
 import com.example.evagnelyrics.ui.player.Player
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ListViewModel @Inject constructor(
+class ListViewModel (
     private val getAllLyricsUC: GetAllLyricsUC,
     private val getFavoritesUC: GetFavoritesUC,
     private val searchByTitleUC: SearchByTitleUC,

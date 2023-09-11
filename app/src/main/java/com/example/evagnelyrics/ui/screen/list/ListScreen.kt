@@ -2,21 +2,49 @@ package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.runtime.*
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +56,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
@@ -43,14 +70,19 @@ import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.*
+import com.example.evagnelyrics.ui.util.SlideFromLeft
+import com.example.evagnelyrics.ui.util.SlideFromRight
+import com.example.evagnelyrics.ui.util.SlideInOutFrom
+import com.example.evagnelyrics.ui.util.Vertically
+import com.example.evagnelyrics.ui.util.Where
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ListScreen(
-    viewModel: ListViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    viewModel: ListViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
     val onBack by remember {
@@ -171,6 +203,7 @@ fun ListScreen(
                     is Resource.Error -> {
                         scaffoldState.snackbarHostState.showSnackbar(state.msg)
                     }
+
                     is Resource.Success -> {}
                 }
             }
@@ -258,7 +291,7 @@ enum class Audio { Pause, Running }
 fun SongItem(
     modifier: Modifier = Modifier,
     title: String,
-    viewModel: ListViewModel = hiltViewModel(),
+    viewModel: ListViewModel = koinViewModel(),
     navTo: (title: String) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -357,6 +390,7 @@ fun SongItem(
                                     title -> {
                                         viewModel.onPlayer(PlayerAction.Pause)
                                     }
+
                                     else -> {
                                         //there is another running
                                         viewModel.onPlayer(PlayerAction.Pause)

@@ -18,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
@@ -37,13 +36,14 @@ import com.example.evagnelyrics.ui.util.Where
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PictureScreen(
     page: Int = 0,
     navController: NavHostController = LocalNavController.current!!,
-    mainViewModel: MainViewModel = hiltViewModel()
+    mainViewModel: MainViewModel = koinViewModel()
 ) {
 
     val visibleState = MutableTransitionState(false).apply {
