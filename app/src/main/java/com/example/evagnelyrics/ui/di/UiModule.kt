@@ -5,7 +5,7 @@ import com.example.evagnelyrics.domain.repo.ScreenStack
 import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.screen.list.ListViewModel
 import com.example.evagnelyrics.ui.screen.song.SongViewModel
-import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val uiModule = module {
@@ -13,7 +13,7 @@ val uiModule = module {
 }
 
 val vmModule = module {
-    singleOf(::ListViewModel)
-    singleOf(::SongViewModel)
-    singleOf(::MainViewModel)
+    factoryOf(::ListViewModel)
+    factoryOf(::SongViewModel)
+    factoryOf(::MainViewModel)
 }
