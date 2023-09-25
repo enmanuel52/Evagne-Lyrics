@@ -27,9 +27,6 @@ fun AppNavigation(keepSplash: () -> Unit) {
                 MainScreen(keepSplash)
             }
             composable(route = Route.List.toString()) {
-                val visibleState = MutableTransitionState(false).apply {
-                    targetState = true
-                }
                 ListScreen()
             }
             composable(
@@ -61,9 +58,6 @@ fun AppNavigation(keepSplash: () -> Unit) {
                     }
                 )) {
                 it.arguments?.getInt("page")?.let { page ->
-                    val visibleState = MutableTransitionState(false).apply {
-                        targetState = true
-                    }
                     PictureScreen(
                         page = page
                     )

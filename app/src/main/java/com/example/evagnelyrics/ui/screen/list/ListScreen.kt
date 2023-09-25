@@ -1,19 +1,19 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -42,7 +43,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -64,7 +64,6 @@ import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.core.primaryVariantPrimary
-import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
@@ -75,39 +74,14 @@ import com.example.evagnelyrics.ui.util.SlideFromRight
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
 import com.example.evagnelyrics.ui.util.Vertically
 import com.example.evagnelyrics.ui.util.Where
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = koinViewModel(),
-    mainViewModel: MainViewModel = koinViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
-    val onBack by remember {
-        mutableStateOf(mainViewModel.previous() == Route.Song)
-    }
-
-    BackHandler(enabled = true) {
-        mainViewModel.popScreen()
-        navController.popBackStack()
-    }
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(key1 = lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
-                mainViewModel.pushScreen(Route.List)
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     //composable
     val scaffoldState = rememberScaffoldState()
 
@@ -179,20 +153,13 @@ fun ListScreen(
             )
         }
     ) {
-        Column(
-            Modifier
+        SongsList(
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            SongsList(
-                modifier = Modifier,
-                songs = titles,
-                onBack = onBack,
-            ) { title: String ->
-                navController.navigate(Route.Song.toString() + "/$title")
-            }
-
+            songs = titles,
+        ) { title: String ->
+            navController.navigate(Route.Song.toString() + "/$title")
         }
 
 
@@ -243,43 +210,28 @@ fun DiscJockey(title: String, modifier: Modifier, isRunning: Boolean) {
 fun SongsList(
     modifier: Modifier = Modifier,
     songs: List<String> = emptyList(),
-    onBack: Boolean,
     navTo: (title: String) -> Unit = {},
 ) {
-    val listVisibility = remember {
-        mutableStateListOf<Boolean>()
-    }
-    if (songs.isNotEmpty()) {
-        //all start as false is onBack is disabled
-        listVisibility.addAll((1..songs.size).map { onBack })
+    val mutableTransition = MutableTransitionState(false).apply {
+        targetState = true
     }
 
     LazyColumn(modifier) {
-        items(songs.size) { index ->
+        itemsIndexed(songs) { index, item ->
             SlideInOutFrom(
                 where = Where.Vertical(Vertically.Top),
-                visible = listVisibility[index],
+                visibleState = mutableTransition,
                 delayMillis = 0,
-                hasBounce = !onBack,
-                durationMillis = if (onBack) 0 else 50,
-                dampingRatio = if (onBack) 1f else 1.1f - (index.toFloat() / (songs.size))
+                hasBounce = true,
+                durationMillis = 50,
+                dampingRatio = 1.1f - (index.toFloat() / (songs.size - 1))
             ) {
                 SongItem(
-                    Modifier,
-                    title = songs[index],
+                    title = item,
                 ) {
                     navTo(it)
                     //something about add the screen to nav stack
                 }
-            }
-        }
-    }
-
-    if (songs.isNotEmpty() && !onBack) {
-        LaunchedEffect(key1 = true) {
-            songs.indices.forEach { ind ->
-                delay(ind.toLong() * 50 + 50)
-                listVisibility[ind] = true
             }
         }
     }
@@ -453,7 +405,7 @@ fun ListScreenPreview() {
 @Composable
 @Preview(showSystemUi = true)
 fun SongsListScreenPreview() {
-    SongsList(songs = listOf("Hello"), onBack = false)
+    SongsList(songs = listOf("Hello"))
 }
 
 fun getResourceSong(title: String) =

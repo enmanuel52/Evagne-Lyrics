@@ -19,6 +19,7 @@ fun SlideInOutFrom(
     delayMillis: Int = 0,
     durationMillis: Int = 400,
     hasBounce: Boolean = false,
+    dampingRatio: Float = 1f,
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
@@ -27,7 +28,7 @@ fun SlideInOutFrom(
         enter = when (where) {
             is Where.Horizontal -> {
                 slideInHorizontally(
-                    if (hasBounce) spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+                    if (hasBounce) spring(dampingRatio, Spring.StiffnessLow)
                     else tween(durationMillis, delayMillis)
                 ) {
                     when (where.edge) {
@@ -42,10 +43,8 @@ fun SlideInOutFrom(
             }
             is Where.Vertical -> {
                 slideInVertically(
-                    tween(
-                        durationMillis = durationMillis,
-                        delayMillis = delayMillis
-                    )
+                    if (hasBounce) spring(dampingRatio, Spring.StiffnessLow)
+                    else tween(durationMillis, delayMillis)
                 ) {
                     when (where.edge) {
                         Vertically.Top -> -it
