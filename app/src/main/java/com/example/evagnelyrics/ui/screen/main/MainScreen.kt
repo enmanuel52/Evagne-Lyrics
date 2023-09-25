@@ -3,13 +3,6 @@ package com.example.evagnelyrics.ui.screen.main
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,69 +17,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
-import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
-import com.example.evagnelyrics.ui.util.Horizontally
-import com.example.evagnelyrics.ui.util.ScaleFromCenter
-import com.example.evagnelyrics.ui.util.SlideInOutFrom
-import com.example.evagnelyrics.ui.util.Where
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainScreen(
     keepSplash: () -> Unit,
     navController: NavHostController = LocalNavController.current!!,
-    mainViewModel: MainViewModel = koinViewModel()
 ) {
-    val onBack by remember {
-        mutableStateOf(mainViewModel.previous() != null)
-    }
-
-    val visibleState = MutableTransitionState(onBack).apply {
-        if (!onBack) {
-            targetState = true
-        }
-    }
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(key1 = lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
-                mainViewModel.pushScreen(Route.Main)
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     val smallDimen = MaterialTheme.dimen.small
     val mediumDimen = MaterialTheme.dimen.medium
 
@@ -136,76 +91,50 @@ fun MainScreen(
     ) {
         SideEffect(keepSplash)
 
-        ScaleFromCenter(
-            modifier = Modifier.layoutId(PHOTO_ID),
-            durationMillis = 500,
-            visibleState = visibleState,
-        ) {
-            Image(
-                painter = painterResource(R.drawable.img3_7228_crop),
-                contentDescription = "front",
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .border(
-                        MaterialTheme.dimen.verySmall,
-                        MaterialTheme.colors.primaryVariant,
-                        RoundedCornerShape(50)
-                    )
-                    .clip(RoundedCornerShape(50)),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        AnimatedVisibility(
-            visibleState = visibleState,
-            enter = fadeIn(tween(500)),
-            exit = fadeOut(),
-            modifier = Modifier.layoutId(TITLE_ID),
-        ) {
-            EvText(
-                resource = R.string.app_name,
-                style = EvTextStyle.Head,
-                color = MaterialTheme.colors.primaryVariant,
-            )
-        }
-
-        SlideInOutFrom(
-            where = Where.Horizontal(Horizontally.End),
+        Image(
+            painter = painterResource(R.drawable.img3_7228_crop),
+            contentDescription = "front",
             modifier = Modifier
-                .layoutId(LIST_ID),
-            visibleState = visibleState,
-            durationMillis = 500,
-            delayMillis = 100,
+                .layoutId(PHOTO_ID)
+                .aspectRatio(1f)
+                .border(
+                    MaterialTheme.dimen.verySmall,
+                    MaterialTheme.colors.primaryVariant,
+                    RoundedCornerShape(50)
+                )
+                .clip(RoundedCornerShape(50)),
+            contentScale = ContentScale.Crop
+        )
+
+        EvText(
+            resource = R.string.app_name,
+            style = EvTextStyle.Head,
+            color = MaterialTheme.colors.primaryVariant,
+            modifier = Modifier.layoutId(TITLE_ID)
+        )
+
+        LazyRow(
+            modifier = Modifier
+                .padding(end = MaterialTheme.dimen.verySmall)
+                .layoutId(LIST_ID)
         ) {
-            LazyRow(
-                modifier = Modifier
-                    .padding(end = MaterialTheme.dimen.verySmall)
-            ) {
-                val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
-                val titles = listOf(R.string.songs, R.string.title_wallpapers)
-                val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
-                items(count = 2) { index ->
-                    MainCard(image = pictures[index], title = titles[index]) {
-                        navController.navigate(destinations[index])
-                    }
+            val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
+            val titles = listOf(R.string.songs, R.string.title_wallpapers)
+            val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
+            items(count = 2) { index ->
+                MainCard(image = pictures[index], title = titles[index]) {
+                    navController.navigate(destinations[index])
                 }
             }
         }
 
-        AnimatedVisibility(
-            visibleState = visibleState,
+        EvText(
+            resource = R.string.by_dev,
+            color = MaterialTheme.colors.primaryVariant,
             modifier = Modifier
+                .padding(MaterialTheme.dimen.large)
                 .layoutId(BY_DEV_ID),
-            enter = slideInVertically(tween(500)) { it },
-            exit = slideOutVertically { it }
-        ) {
-            EvText(
-                resource = R.string.by_dev,
-                color = MaterialTheme.colors.primaryVariant,
-                modifier = Modifier
-                    .padding(MaterialTheme.dimen.large)
-            )
-        }
+        )
     }
 
 
