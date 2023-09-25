@@ -16,7 +16,7 @@ import com.example.evagnelyrics.ui.screen.picture.PictureScreen
 import com.example.evagnelyrics.ui.screen.song.SongScreen
 
 @Composable
-fun AppNavigation(keepSplash: () -> Unit) {
+fun AppNavigation() {
     val navController = rememberNavController()
     CompositionLocalProvider(values = arrayOf(LocalNavController provides navController)) {
         NavHost(
@@ -24,7 +24,7 @@ fun AppNavigation(keepSplash: () -> Unit) {
             startDestination = Route.Main.toString()
         ) {
             composable(route = Route.Main.toString()) {
-                MainScreen(keepSplash)
+                MainScreen()
             }
             composable(route = Route.List.toString()) {
                 ListScreen()

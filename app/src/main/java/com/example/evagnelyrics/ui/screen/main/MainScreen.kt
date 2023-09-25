@@ -3,6 +3,15 @@ package com.example.evagnelyrics.ui.screen.main
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,12 +24,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ModeNight
+import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
@@ -33,15 +49,20 @@ import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.domain.model.SystemMode
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
+import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(
-    keepSplash: () -> Unit,
     navController: NavHostController = LocalNavController.current!!,
 ) {
+    val viewModel = koinViewModel<MainVM>()
+    val darkMode by viewModel.darkMode.collectAsState(initial = SystemMode.Dark)
+
     val smallDimen = MaterialTheme.dimen.small
     val mediumDimen = MaterialTheme.dimen.medium
 
@@ -50,9 +71,15 @@ fun MainScreen(
         val photoRef = createRefFor(PHOTO_ID)
         val listRef = createRefFor(LIST_ID)
         val titleRef = createRefFor(TITLE_ID)
+        val darkModeRef = createRefFor(DARK_MODE_SWITCHER_ID)
         val topGuideLine35 = createGuidelineFromTop(0.35f)
         val topGuideLine45 = createGuidelineFromTop(0.45f)
         val topGuideLine90 = createGuidelineFromTop(0.90f)
+
+        constrain(darkModeRef) {
+            top.linkTo(parent.top, margin = smallDimen)
+            end.linkTo(parent.end, margin = smallDimen)
+        }
 
         constrain(photoRef) {
             top.linkTo(parent.top, mediumDimen)
@@ -89,7 +116,32 @@ fun MainScreen(
             .fillMaxSize(),
         constraintSet = constraints
     ) {
-        SideEffect(keepSplash)
+        IconButton(
+            onClick = { viewModel.switchDarkMode() },
+            modifier = Modifier.layoutId(DARK_MODE_SWITCHER_ID)
+        ) {
+            AnimatedContent(
+                targetState = darkMode,
+                transitionSpec = {
+                    slideInVertically(spring(Spring.DampingRatioHighBouncy)) { it } with
+                            fadeOut() + slideOutVertically { it }
+                }
+            ) {
+                if (it == SystemMode.Light) {
+                    Icon(
+                        imageVector = Icons.Rounded.ModeNight,
+                        contentDescription = "night icon",
+                        tint = Color.Black
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Rounded.WbSunny,
+                        contentDescription = "light icon",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
 
         Image(
             painter = painterResource(R.drawable.img3_7228_crop),
@@ -180,9 +232,10 @@ const val BY_DEV_ID = "byDevId"
 const val PHOTO_ID = "photoId"
 const val LIST_ID = "listId"
 const val TITLE_ID = "titleId"
+const val DARK_MODE_SWITCHER_ID = "dark_mode_switcher"
 
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun MainScreenPreview() {
-    MainScreen({})
+    MainScreen()
 }

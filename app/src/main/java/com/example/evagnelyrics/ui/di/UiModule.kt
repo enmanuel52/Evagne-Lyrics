@@ -3,6 +3,7 @@ package com.example.evagnelyrics.ui.di
 import com.example.evagnelyrics.ui.MainViewModel
 import com.example.evagnelyrics.ui.screen.list.ListViewModel
 import com.example.evagnelyrics.ui.screen.song.SongViewModel
+import com.example.evagnelyrics.ui.screen.main.MainVM
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -14,4 +15,5 @@ val vmModule = module {
     factoryOf(::ListViewModel)
     factoryOf(::SongViewModel)
     factoryOf(::MainViewModel)
+    factoryOf(::MainVM)
 }

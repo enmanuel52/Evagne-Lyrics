@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.theme
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -8,8 +9,12 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import com.example.evagnelyrics.core.Dimen
 import com.example.evagnelyrics.core.LocalDimen
 
@@ -50,17 +55,21 @@ fun EvagneLyricsTheme(
         LightColorPalette
     }
 
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colors.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
+    }
+
     CompositionLocalProvider(values = arrayOf(LocalDimen provides Dimen())) {
         MaterialTheme(
             colors = colors,
             typography = Typography,
             shapes = Shapes,
-            content = {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.background)
-                ) { content() }
-            }
+            content = content
         )
     }
 }

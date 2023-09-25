@@ -3,7 +3,7 @@ package com.example.evagnelyrics.domain.usecase.di
 import com.example.evagnelyrics.domain.usecase.EraseDatabaseUC
 import com.example.evagnelyrics.domain.usecase.FavoriteUC
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
-import com.example.evagnelyrics.domain.usecase.GetCurrentDarkMode
+import com.example.evagnelyrics.domain.usecase.GetCurrentDarkModeUC
 import com.example.evagnelyrics.domain.usecase.GetFavoritesUC
 import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
 import com.example.evagnelyrics.domain.usecase.InsertAllLyricsUC
@@ -22,6 +22,6 @@ val ucModule = module {
     singleOf(::InsertAllLyricsUC)
     singleOf(::SearchByTitleUC)
     singleOf(::SetUpDatabaseUC)
-    singleOf(::GetCurrentDarkMode)
+    singleOf(::GetCurrentDarkModeUC)
     singleOf(::SwitchDarkModeUC)
 }
