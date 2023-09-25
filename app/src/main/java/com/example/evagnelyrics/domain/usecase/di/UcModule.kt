@@ -3,11 +3,13 @@ package com.example.evagnelyrics.domain.usecase.di
 import com.example.evagnelyrics.domain.usecase.EraseDatabaseUC
 import com.example.evagnelyrics.domain.usecase.FavoriteUC
 import com.example.evagnelyrics.domain.usecase.GetAllLyricsUC
+import com.example.evagnelyrics.domain.usecase.GetCurrentDarkMode
 import com.example.evagnelyrics.domain.usecase.GetFavoritesUC
 import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
 import com.example.evagnelyrics.domain.usecase.InsertAllLyricsUC
 import com.example.evagnelyrics.domain.usecase.SearchByTitleUC
 import com.example.evagnelyrics.domain.usecase.SetUpDatabaseUC
+import com.example.evagnelyrics.domain.usecase.SwitchDarkModeUC
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -20,4 +22,6 @@ val ucModule = module {
     singleOf(::InsertAllLyricsUC)
     singleOf(::SearchByTitleUC)
     singleOf(::SetUpDatabaseUC)
+    singleOf(::GetCurrentDarkMode)
+    singleOf(::SwitchDarkModeUC)
 }

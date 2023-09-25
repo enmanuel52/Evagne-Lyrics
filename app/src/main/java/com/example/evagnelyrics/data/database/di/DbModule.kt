@@ -2,8 +2,10 @@ package com.example.evagnelyrics.data.database.di
 
 import androidx.room.Room
 import com.example.evagnelyrics.data.database.LyricsDataBase
+import com.example.evagnelyrics.data.preference.PreferenceDSImpl
 import com.example.evagnelyrics.data.repo.LyricsRepoImpl
 import com.example.evagnelyrics.data.repo.datasource.LyricsLocalDataSource
+import com.example.evagnelyrics.domain.datasource.PreferenceDS
 import com.example.evagnelyrics.domain.repo.LyricRepo
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -19,7 +21,9 @@ val dbModule = module {
 
     single { get<LyricsDataBase>().getLyricsDao() }
 
-    single <LyricsLocalDataSource>{  LyricsLocalDataSource(get())}
+    single<LyricsLocalDataSource> { LyricsLocalDataSource(get()) }
+
+    single<PreferenceDS> { PreferenceDSImpl(androidContext()) }
 
     single<LyricRepo> { LyricsRepoImpl(get()) }
 }
