@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.example.evagnelyrics.data.database.LyricsDataBase
 import com.example.evagnelyrics.data.database.entities.LyricsEntity
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -45,7 +46,7 @@ class LyricsDaoTest {
             LyricsEntity("hello2", ""),
         )
 
-        dao.insertAllLyrics(lyrics)
+        runBlocking{ dao.insertAllLyrics(lyrics) }
 
         val db = dao.getAllLyricsAsFlow()
 
@@ -59,7 +60,7 @@ class LyricsDaoTest {
             LyricsEntity("hello", "2"),
         )
 
-        dao.insertAllLyrics(lyrics)
+        runBlocking { dao.insertAllLyrics(lyrics) }
 
         val db = dao.getAllLyricsAsFlow()
 
@@ -73,7 +74,7 @@ class LyricsDaoTest {
             LyricsEntity("hello2", "2"),
         )
 
-        dao.insertAllLyrics(lyrics)
+       runBlocking { dao.insertAllLyrics(lyrics) }
 
         val lyric = dao.getLyricByTitle("hello2")
 
@@ -88,7 +89,7 @@ class LyricsDaoTest {
             LyricsEntity("helilo2", "2"),
         )
 
-        dao.insertAllLyrics(lyrics)
+        runBlocking{ dao.insertAllLyrics(lyrics) }
 
         val response = dao.searchByTitle("ello")
 
