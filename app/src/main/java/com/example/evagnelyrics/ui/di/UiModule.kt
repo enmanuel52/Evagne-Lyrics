@@ -10,9 +10,7 @@ import org.koin.core.module.dsl.withOptions
 import org.koin.dsl.module
 
 val uiModule = module {
-    single<ScreenStack> { ScreenStackImpl() } withOptions {
-
-    }
+    single<ScreenStack> { ScreenStackImpl() }
 }
 
 val vmModule = module {
