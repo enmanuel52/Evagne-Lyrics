@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -65,6 +65,7 @@ import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.core.primaryVariantPrimary
 import com.example.evagnelyrics.ui.navigation.Route
+import com.example.evagnelyrics.ui.theme.component.DiscJockeyBehaviour
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
 import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextField
@@ -308,26 +309,35 @@ fun SongItem(
         }
 
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-            Box(
+            DiscJockeyBehaviour(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-            ) {
-                DiscJockey(
-                    title,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(50))
-                        .padding(
-                            vertical = MaterialTheme.dimen.verySmall,
-                            horizontal = MaterialTheme.dimen.superSmall
+                    .fillMaxHeight(),
+                isPlaying = mainAudio == Audio.Running && playingSong == title,
+                onClick = {
+                    if (mainAudio == Audio.Pause) {
+
+                        viewModel.onPlayer(
+                            action = PlayerAction.Play,
+                            song = getResourceSong(title),
+                            onComplete = {
+                                viewModel.setAudioState(Audio.Pause)
+                            }
                         )
-                        .clickable {
-                            if (mainAudio == Audio.Pause) {
+                        viewModel.setAudioState(Audio.Running, title = title)
+                    } else if (mainAudio == Audio.Running) {
+                        when (playingSong) {
+                            title -> {
+                                viewModel.onPlayer(PlayerAction.Pause)
+                            }
+
+                            else -> {
+                                //there is another running
+                                viewModel.onPlayer(PlayerAction.Pause)
 
                                 viewModel.onPlayer(
                                     action = PlayerAction.Play,
@@ -337,29 +347,19 @@ fun SongItem(
                                     }
                                 )
                                 viewModel.setAudioState(Audio.Running, title = title)
-                            } else if (mainAudio == Audio.Running) {
-                                when (playingSong) {
-                                    title -> {
-                                        viewModel.onPlayer(PlayerAction.Pause)
-                                    }
-
-                                    else -> {
-                                        //there is another running
-                                        viewModel.onPlayer(PlayerAction.Pause)
-
-                                        viewModel.onPlayer(
-                                            action = PlayerAction.Play,
-                                            song = getResourceSong(title),
-                                            onComplete = {
-                                                viewModel.setAudioState(Audio.Pause)
-                                            }
-                                        )
-                                        viewModel.setAudioState(Audio.Running, title = title)
-                                    }
-                                }
                             }
-                        },
-                    isRunning = mainAudio == Audio.Running && playingSong == title,
+                        }
+                    }
+                }
+            ) {
+                Image(
+                    painter = painterResource(id = getCover(title) ?: R.drawable.img3_7228),
+                    contentDescription = "cover image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                    .padding(all = MaterialTheme.dimen.verySmall)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
                 )
             }
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))

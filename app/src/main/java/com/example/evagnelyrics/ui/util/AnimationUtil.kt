@@ -1,6 +1,7 @@
 package com.example.evagnelyrics.ui.util
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -242,7 +243,7 @@ fun SlideFromLeft(
     AnimatedVisibility(
         visible = visible,
         enter = slideInHorizontally(
-            tween(durationMillis)
+            tween(durationMillis, easing = LinearEasing)
         ) { -it }, //+ fadeIn(tween(durationMillis))
         exit = fadeOut(
             tween(200)

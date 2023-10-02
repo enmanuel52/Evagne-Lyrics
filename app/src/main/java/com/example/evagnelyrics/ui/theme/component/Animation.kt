@@ -1,15 +1,17 @@
 package com.example.evagnelyrics.ui.theme.component
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -37,12 +39,16 @@ fun DiscJockeyBehaviour(
         mutableStateOf(0f)
     }
 
-    val stoppedAnimation by animateFloatAsState(targetValue = if(!isPlaying) 0f else stoppedDegree)
+    val stoppedAnimation by animateFloatAsState(
+        targetValue = if (!isPlaying) 0f else stoppedDegree,
+        spring(Spring.DampingRatioMediumBouncy)
+    )
 
-    Box {
+    Box(
+        modifier = modifier
+    ) {
         Box(
             modifier = modifier
-                .clip(CircleShape)
                 .rotate(stoppedAnimation)
                 .clickable { onClick() }
         ) {
@@ -53,7 +59,7 @@ fun DiscJockeyBehaviour(
 
             val unstoppableDegrees by infiniteTransition.animateFloat(
                 initialValue = 0f,
-                targetValue =  360f,
+                targetValue = 360f,
                 animationSpec = infiniteRepeatable(
                     tween(durationMillis = 2500, easing = LinearEasing),
                 )
@@ -61,13 +67,8 @@ fun DiscJockeyBehaviour(
 
             Box(
                 modifier = modifier
-                    .clip(CircleShape)
                     .rotate(unstoppableDegrees)
                     .clickable {
-                        Log.d(
-                            "disc jockey",
-                            "DiscJockeyBehaviour: stopped at $unstoppableDegrees degrees"
-                        )
                         stoppedDegree = unstoppableDegrees
                         onClick()
                     }
