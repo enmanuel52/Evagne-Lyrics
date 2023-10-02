@@ -2,12 +2,10 @@ package com.example.evagnelyrics.ui.theme.component
 
 import android.util.Log
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -39,10 +37,7 @@ fun DiscJockeyBehaviour(
         mutableStateOf(0f)
     }
 
-    val stoppedAnimation by animateFloatAsState(
-        targetValue = if (!isPlaying) 0f else stoppedDegree,
-        spring(Spring.DampingRatioMediumBouncy)
-    )
+    val stoppedAnimation by animateFloatAsState(targetValue = if(!isPlaying) 0f else stoppedDegree)
 
     Box {
         Box(
@@ -58,7 +53,7 @@ fun DiscJockeyBehaviour(
 
             val unstoppableDegrees by infiniteTransition.animateFloat(
                 initialValue = 0f,
-                targetValue = 360f,
+                targetValue =  360f,
                 animationSpec = infiniteRepeatable(
                     tween(durationMillis = 2500, easing = LinearEasing),
                 )
@@ -69,7 +64,10 @@ fun DiscJockeyBehaviour(
                     .clip(CircleShape)
                     .rotate(unstoppableDegrees)
                     .clickable {
-                        Log.d("disc jockey", "DiscJockeyBehaviour: stopped at $unstoppableDegrees degrees")
+                        Log.d(
+                            "disc jockey",
+                            "DiscJockeyBehaviour: stopped at $unstoppableDegrees degrees"
+                        )
                         stoppedDegree = unstoppableDegrees
                         onClick()
                     }

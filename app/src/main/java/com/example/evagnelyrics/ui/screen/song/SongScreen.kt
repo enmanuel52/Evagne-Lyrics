@@ -76,26 +76,6 @@ fun SongScreen(
         )
 
     }
-
-    Box(modifier = Modifier.fillMaxSize()){
-        val (play, onPlay) = remember {
-            mutableStateOf(false)
-        }
-
-        DiscJockeyBehaviour(
-            isPlaying = play,
-            onClick = { onPlay(!play) },
-            modifier = Modifier.size(200.dp).align(Alignment.Center)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.avicii_cover),
-                contentDescription = "music cover",
-                contentScale = ContentScale.Crop
-            )
-        }
-    }
-
-
 }
 
 @Composable
