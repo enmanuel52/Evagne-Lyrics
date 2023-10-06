@@ -1,16 +1,9 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,17 +19,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -64,7 +58,6 @@ import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
-import com.example.evagnelyrics.core.primaryVariantPrimary
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.DiscJockeyBehaviour
 import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
@@ -79,13 +72,14 @@ import com.example.evagnelyrics.ui.util.Where
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = koinViewModel(),
     navController: NavHostController = LocalNavController.current!!
 ) {
     //composable
-    val scaffoldState = rememberScaffoldState()
+    val snackBarState = SnackbarHostState()
 
     //viewModel states
     val favMode by viewModel.favState
@@ -94,7 +88,6 @@ fun ListScreen(
     val titles by viewModel.titles.collectAsState()
 
     Scaffold(
-        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = {
@@ -136,7 +129,7 @@ fun ListScreen(
                                 Icon(
                                     imageVector = Icons.Rounded.Favorite,
                                     contentDescription = "fav mode",
-                                    tint = if (favMode) Color.Red else MaterialTheme.colors.onPrimary
+                                    tint = if (favMode) Color.Red else MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                             Spacer(modifier = Modifier.width(6.dp))
@@ -153,7 +146,8 @@ fun ListScreen(
                     }
                 },
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackBarState) }
     ) {
         SongsList(
             modifier = Modifier
@@ -170,7 +164,7 @@ fun ListScreen(
             viewModel.uiState.collectLatest { state ->
                 when (state) {
                     is Resource.Error -> {
-                        scaffoldState.snackbarHostState.showSnackbar(state.msg)
+                        snackBarState.showSnackbar(state.msg)
                     }
 
                     is Resource.Success -> {}
@@ -178,34 +172,6 @@ fun ListScreen(
             }
         }
     }
-}
-
-@Composable
-fun DiscJockey(title: String, modifier: Modifier, isRunning: Boolean) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val degrees by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2500, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-
-    val cover = getCover(title)
-    Image(
-        painter = painterResource(cover ?: R.drawable.img3_7228_crop),
-        contentDescription = "cover image",
-        modifier = modifier
-            .clip(RoundedCornerShape(percent = 50))
-            .border(
-                MaterialTheme.dimen.one,
-                color = MaterialTheme.colors.primaryVariant,
-                RoundedCornerShape(percent = 50)
-            )
-            .rotate(if (isRunning) degrees else 0f),
-        contentScale = ContentScale.Crop
-    )
 }
 
 @Composable
@@ -290,7 +256,7 @@ fun SongItem(
             )
             .height(MaterialTheme.dimen.almostGiant)
             .clip(shape = RoundedCornerShape(20))
-            .background(color = MaterialTheme.colors.surface, shape = RoundedCornerShape(20))
+            .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20))
             .clickable {
                 navTo(title)
             }
@@ -303,7 +269,7 @@ fun SongItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        MaterialTheme.colors.primaryVariantPrimary,
+                        MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(20)
                     )
             )
@@ -364,7 +330,7 @@ fun SongItem(
                 )
             }
             Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-            Text(text = title, color = MaterialTheme.colors.onPrimary)
+            Text(text = title)
         }
 
         //collect favs list
@@ -391,7 +357,7 @@ fun FavIcon(
         Icon(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = "fav button",
-            tint = if (favTitles.contains(title)) Color.Red else MaterialTheme.colors.onPrimary
+            tint = if (favTitles.contains(title)) Color.Red else MaterialTheme.colorScheme.onPrimary
         )
     }
 }
