@@ -5,8 +5,6 @@ import androidx.annotation.RawRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
@@ -28,7 +26,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ListViewModel (
+class ListViewModel(
     private val getAllLyricsUC: GetAllLyricsUC,
     private val getFavoritesUC: GetFavoritesUC,
     private val searchByTitleUC: SearchByTitleUC,
@@ -61,8 +59,8 @@ class ListViewModel (
     private val _searchMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val searchMode get() = _searchMode.asStateFlow()
 
-    private val _searchField: MutableLiveData<String> = MutableLiveData("")
-    val searchField: LiveData<String> get() = _searchField
+    private val _searchState = MutableStateFlow("")
+    val searchState get() = _searchState.asStateFlow()
 
     private val _playingSong: MutableState<String> = mutableStateOf("")
     val playingSong: State<String> get() = _playingSong
@@ -81,7 +79,9 @@ class ListViewModel (
                     _titles.update {
                         allLyrics.value.map { it.title }
                     }
-                    try{ _playingSong.value = lyrics.first().title }catch (e: NoSuchElementException){
+                    try {
+                        _playingSong.value = lyrics.first().title
+                    } catch (e: NoSuchElementException) {
                         Log.d(TAG, "empty list")
                     }
                 }
@@ -149,7 +149,7 @@ class ListViewModel (
     /**
      * set the searchField to empty and shows the all list*/
     fun searching(title: String) = viewModelScope.launch {
-        _searchField.value = title
+        _searchState.update{ title }
 
         if (title.isEmpty()) {
             _titles.update {
@@ -171,20 +171,23 @@ class ListViewModel (
         _audioState.value = value
     }
 
-    fun onPlayer(action: PlayerAction, @RawRes song: Int? = null, onComplete: () -> Unit = {}) = viewModelScope.launch{
-        when (action) {
-            PlayerAction.Play -> {
-                if (song != null) {
-                    player.play(song, onComplete)
+    fun onPlayer(action: PlayerAction, @RawRes song: Int? = null, onComplete: () -> Unit = {}) =
+        viewModelScope.launch {
+            when (action) {
+                PlayerAction.Play -> {
+                    if (song != null) {
+                        player.play(song, onComplete)
+                    }
                 }
+
+                PlayerAction.Pause -> {
+                    _audioState.value = Audio.Pause
+                    player.stop()
+                }
+
+                PlayerAction.Clean -> player.cleanUp()
             }
-            PlayerAction.Pause -> {
-                _audioState.value = Audio.Pause
-                player.stop()
-            }
-            PlayerAction.Clean -> player.cleanUp()
         }
-    }
 }
 
 enum class PlayerAction { Play, Pause, Clean }

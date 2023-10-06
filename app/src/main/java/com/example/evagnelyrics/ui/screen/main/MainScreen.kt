@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ModeNight
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -189,6 +190,7 @@ fun MainScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainCard(
     @DrawableRes image: Int,
@@ -199,8 +201,8 @@ fun MainCard(
         modifier = Modifier
             .fillMaxHeight()
             .aspectRatio(0.5625f)
-            .padding(all = MaterialTheme.dimen.small)
-            .clickable { navigate() }
+            .padding(all = MaterialTheme.dimen.small),
+        onClick = navigate
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             Image(

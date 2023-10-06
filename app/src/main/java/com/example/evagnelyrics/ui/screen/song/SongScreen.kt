@@ -15,8 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +36,7 @@ fun SongScreen(
     //observe and fetch the song
     viewModel.fetch(title)
     //here i should observe when i download the dependencies
-    val song by viewModel.song.observeAsState()//= LyricsEntity("Hello", "is me")
+    val song by viewModel.songState.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
