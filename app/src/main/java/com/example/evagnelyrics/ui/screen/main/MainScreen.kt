@@ -4,14 +4,12 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,13 +21,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ModeNight
 import androidx.compose.material.icons.rounded.WbSunny
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,7 +53,6 @@ import com.example.evagnelyrics.ui.theme.component.EvText
 import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(
     navController: NavHostController = LocalNavController.current!!,
@@ -123,9 +120,9 @@ fun MainScreen(
             AnimatedContent(
                 targetState = darkMode,
                 transitionSpec = {
-                    slideInVertically(spring(Spring.DampingRatioHighBouncy)) { it } with
+                    slideInVertically(spring(Spring.DampingRatioHighBouncy)) { it } togetherWith
                             fadeOut() + slideOutVertically { it }
-                }
+                }, label = "dark mode"
             ) {
                 if (it == SystemMode.Light) {
                     Icon(
@@ -151,7 +148,7 @@ fun MainScreen(
                 .aspectRatio(1f)
                 .border(
                     MaterialTheme.dimen.verySmall,
-                    MaterialTheme.colors.primaryVariant,
+                    MaterialTheme.colorScheme.secondary,
                     RoundedCornerShape(50)
                 )
                 .clip(RoundedCornerShape(50)),
@@ -161,7 +158,7 @@ fun MainScreen(
         EvText(
             resource = R.string.app_name,
             style = EvTextStyle.Head,
-            color = MaterialTheme.colors.primaryVariant,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.layoutId(TITLE_ID)
         )
 
@@ -182,7 +179,7 @@ fun MainScreen(
 
         EvText(
             resource = R.string.by_dev,
-            color = MaterialTheme.colors.primaryVariant,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier
                 .padding(MaterialTheme.dimen.large)
                 .layoutId(BY_DEV_ID),
@@ -199,13 +196,10 @@ fun MainCard(
     navigate: () -> Unit
 ) {
     Card(
-        elevation = MaterialTheme.dimen.verySmall,
         modifier = Modifier
             .fillMaxHeight()
             .aspectRatio(0.5625f)
-            .padding(vertical = MaterialTheme.dimen.small)
-            .padding(start = MaterialTheme.dimen.small)
-            .clip(RoundedCornerShape(8))
+            .padding(all = MaterialTheme.dimen.small)
             .clickable { navigate() }
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
