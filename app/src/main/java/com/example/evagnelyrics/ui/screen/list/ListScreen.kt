@@ -58,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
@@ -88,7 +89,7 @@ fun ListScreen(
 
     //viewModel states
     val favMode by viewModel.favState
-    val searchMode by viewModel.searchMode.collectAsState(false)
+    val searchMode by viewModel.searchMode.collectAsStateWithLifecycle()
     val text by viewModel.searchField.observeAsState()
     val titles by viewModel.titles.collectAsState()
 
@@ -357,7 +358,7 @@ fun SongItem(
                     contentDescription = "cover image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                    .padding(all = MaterialTheme.dimen.verySmall)
+                        .padding(all = MaterialTheme.dimen.verySmall)
                         .aspectRatio(1f)
                         .clip(CircleShape)
                 )
