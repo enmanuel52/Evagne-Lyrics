@@ -3,8 +3,8 @@ package com.example.evagnelyrics.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(values = arrayOf(LocalActivity provides this)) {
                 EvagneLyricsTheme(darkTheme = darkMode == SystemMode.Dark) {
-                    Surface(color = MaterialTheme.colors.background){ AppNavigation() }
+                    Surface(color = MaterialTheme.colorScheme.background){ AppNavigation() }
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.example.evagnelyrics.ui.navigation
 
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavType
