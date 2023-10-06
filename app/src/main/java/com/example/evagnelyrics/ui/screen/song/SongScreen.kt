@@ -58,7 +58,7 @@ fun SongScreen(
         Text(
             text = song?.letter.orEmpty(),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(MaterialTheme.dimen.medium)

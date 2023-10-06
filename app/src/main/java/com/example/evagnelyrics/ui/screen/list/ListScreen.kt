@@ -1,10 +1,11 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
@@ -26,7 +27,10 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -47,6 +51,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -59,10 +65,6 @@ import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.DiscJockeyBehaviour
-import com.example.evagnelyrics.ui.theme.component.EvKeyboardAction
-import com.example.evagnelyrics.ui.theme.component.EvText
-import com.example.evagnelyrics.ui.theme.component.EvTextField
-import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import com.example.evagnelyrics.ui.util.SlideFromLeft
 import com.example.evagnelyrics.ui.util.SlideFromRight
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
@@ -86,35 +88,35 @@ fun ListScreen(
     val text by viewModel.searchState.collectAsStateWithLifecycle()
     val titles by viewModel.titles.collectAsState()
 
+    val onBack: () -> Unit = {
+        if (searchMode) {
+            viewModel.toggleSearchMode()
+        } else {
+            navController.popBackStack()
+        }
+    }
+
+    BackHandler(onBack = onBack)
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     SlideFromRight(visible = !searchMode) {
-                        EvText(
-                            resource = R.string.songs,
-                            style = EvTextStyle.Head,
-                        )
+                        Text(text = stringResource(id = R.string.songs))
                     }
                     SlideFromRight(visible = searchMode) {
-                        EvTextField(
-                            value = text.orEmpty(),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            style = EvTextStyle.Head,
-                            hint = R.string.search_song_hint,
-                            keyboardAction = EvKeyboardAction.Go,
-                        ) { viewModel.searching(it) }
+                        OutlinedTextField(
+                            value = text,
+                            onValueChange = { viewModel.searching(it) },
+                            label = { Text(text = stringResource(id = R.string.search_song_hint)) },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (searchMode) {
-                            viewModel.toggleSearchMode()
-                        } else {
-                            navController.popBackStack()
-                        }
-                    }) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "back arrow",
@@ -197,7 +199,6 @@ fun SongsList(
                     title = item,
                 ) {
                     navTo(it)
-                    //something about add the screen to nav stack
                 }
             }
         }
@@ -206,6 +207,7 @@ fun SongsList(
 
 enum class Audio { Pause, Running }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongItem(
     modifier: Modifier = Modifier,
@@ -245,20 +247,14 @@ fun SongItem(
         }
     }
 
-    Box(
+    OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                top = MaterialTheme.dimen.verySmall,
-                start = MaterialTheme.dimen.superSmall,
-                end = MaterialTheme.dimen.superSmall
+                horizontal = MaterialTheme.dimen.verySmall,
             )
-            .height(MaterialTheme.dimen.almostGiant)
-            .clip(shape = RoundedCornerShape(20))
-            .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20))
-            .clickable {
-                navTo(title)
-            }
+            .height(MaterialTheme.dimen.almostGiant),
+        onClick = { navTo(title) }
     ) {
         SlideFromLeft(
             visible = mainAudio == Audio.Running && playingSong == title,
@@ -269,76 +265,79 @@ fun SongItem(
                     .fillMaxSize()
                     .background(
                         MaterialTheme.colorScheme.secondary,
-                        shape = RoundedCornerShape(20)
                     )
             )
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-            DiscJockeyBehaviour(
+            Row(
                 modifier = Modifier
-                    .fillMaxHeight(),
-                isPlaying = mainAudio == Audio.Running && playingSong == title,
-                onClick = {
-                    if (mainAudio == Audio.Pause) {
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
+                DiscJockeyBehaviour(
+                    modifier = Modifier
+                        .fillMaxHeight(),
+                    isPlaying = mainAudio == Audio.Running && playingSong == title,
+                    onClick = {
+                        if (mainAudio == Audio.Pause) {
 
-                        viewModel.onPlayer(
-                            action = PlayerAction.Play,
-                            song = getResourceSong(title),
-                            onComplete = {
-                                viewModel.setAudioState(Audio.Pause)
-                            }
-                        )
-                        viewModel.setAudioState(Audio.Running, title = title)
-                    } else if (mainAudio == Audio.Running) {
-                        when (playingSong) {
-                            title -> {
-                                viewModel.onPlayer(PlayerAction.Pause)
-                            }
+                            viewModel.onPlayer(
+                                action = PlayerAction.Play,
+                                song = getResourceSong(title),
+                                onComplete = {
+                                    viewModel.setAudioState(Audio.Pause)
+                                }
+                            )
+                            viewModel.setAudioState(Audio.Running, title = title)
+                        } else if (mainAudio == Audio.Running) {
+                            when (playingSong) {
+                                title -> {
+                                    viewModel.onPlayer(PlayerAction.Pause)
+                                }
 
-                            else -> {
-                                //there is another running
-                                viewModel.onPlayer(PlayerAction.Pause)
+                                else -> {
+                                    //there is another running
+                                    viewModel.onPlayer(PlayerAction.Pause)
 
-                                viewModel.onPlayer(
-                                    action = PlayerAction.Play,
-                                    song = getResourceSong(title),
-                                    onComplete = {
-                                        viewModel.setAudioState(Audio.Pause)
-                                    }
-                                )
-                                viewModel.setAudioState(Audio.Running, title = title)
+                                    viewModel.onPlayer(
+                                        action = PlayerAction.Play,
+                                        song = getResourceSong(title),
+                                        onComplete = {
+                                            viewModel.setAudioState(Audio.Pause)
+                                        }
+                                    )
+                                    viewModel.setAudioState(Audio.Running, title = title)
+                                }
                             }
                         }
                     }
+                ) {
+                    Image(
+                        painter = painterResource(id = getCover(title) ?: R.drawable.img3_7228),
+                        contentDescription = "cover image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(all = MaterialTheme.dimen.verySmall)
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                    )
                 }
-            ) {
-                Image(
-                    painter = painterResource(id = getCover(title) ?: R.drawable.img3_7228),
-                    contentDescription = "cover image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(all = MaterialTheme.dimen.verySmall)
-                        .aspectRatio(1f)
-                        .clip(CircleShape)
-                )
+                Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
+                Text(text = title)
             }
-            Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-            Text(text = title)
-        }
 
-        //collect favs list
-        val favTitles by viewModel.favoritesFlow.collectAsState(emptyList())
-        FavIcon(
-            title,
-            favTitles.map { it.title },
-            Modifier.align(Alignment.CenterEnd)
-        ) { viewModel.favAction(it) }
+            //collect favs list
+            val favTitles by viewModel.favoritesFlow.collectAsState(emptyList())
+            FavIcon(
+                title,
+                favTitles = favTitles.map { it.title },
+            ) { viewModel.favAction(it) }
+        }
 
     }
 }
@@ -346,8 +345,8 @@ fun SongItem(
 @Composable
 fun FavIcon(
     title: String,
+    modifier: Modifier = Modifier,
     favTitles: List<String> = emptyList(),
-    modifier: Modifier,
     favAction: (String) -> Unit
 ) {
     IconButton(
@@ -356,7 +355,7 @@ fun FavIcon(
         Icon(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = "fav button",
-            tint = if (favTitles.contains(title)) Color.Red else MaterialTheme.colorScheme.onPrimary
+            tint = if (favTitles.contains(title)) Color.Red else LocalContentColor.current
         )
     }
 }

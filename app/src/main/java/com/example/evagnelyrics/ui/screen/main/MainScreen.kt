@@ -2,7 +2,6 @@ package com.example.evagnelyrics.ui.screen.main
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -12,7 +11,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,8 +49,6 @@ import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.domain.model.SystemMode
 import com.example.evagnelyrics.ui.navigation.Route
-import com.example.evagnelyrics.ui.theme.component.EvText
-import com.example.evagnelyrics.ui.theme.component.EvTextStyle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -156,11 +153,10 @@ fun MainScreen(
             contentScale = ContentScale.Crop
         )
 
-        EvText(
-            resource = R.string.app_name,
-            style = EvTextStyle.Head,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.layoutId(TITLE_ID)
+        Text(
+            text = stringResource(id = R.string.app_name),
+            modifier = Modifier.layoutId(TITLE_ID),
+            style = MaterialTheme.typography.headlineMedium
         )
 
         LazyRow(
@@ -172,18 +168,18 @@ fun MainScreen(
             val titles = listOf(R.string.songs, R.string.title_wallpapers)
             val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
             items(count = 2) { index ->
-                MainCard(image = pictures[index], title = titles[index]) {
+                MainCard(image = pictures[index], title = stringResource(titles[index])) {
                     navController.navigate(destinations[index])
                 }
             }
         }
 
-        EvText(
-            resource = R.string.by_dev,
-            color = MaterialTheme.colorScheme.secondary,
+        Text(
+            text = stringResource(id = R.string.by_dev),
             modifier = Modifier
                 .padding(MaterialTheme.dimen.large)
                 .layoutId(BY_DEV_ID),
+            style = MaterialTheme.typography.labelMedium
         )
     }
 
@@ -194,7 +190,7 @@ fun MainScreen(
 @Composable
 fun MainCard(
     @DrawableRes image: Int,
-    @StringRes title: Int,
+    title: String,
     navigate: () -> Unit
 ) {
     Card(
@@ -207,18 +203,19 @@ fun MainCard(
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = image),
-                contentDescription = stringResource(id = title) + "image",
+                contentDescription = "$title image",
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(6f)
                     .clip(RoundedCornerShape(8)),
                 contentScale = ContentScale.Crop,
             )
-            EvText(
-                resource = title,
+            Text(
+                text = title,
                 modifier = Modifier
                     .padding(vertical = MaterialTheme.dimen.small)
-                    .weight(1f)
+                    .weight(1f),
+                style = MaterialTheme.typography.titleMedium,
             )
         }
     }
