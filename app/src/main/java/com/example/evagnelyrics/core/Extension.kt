@@ -6,7 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
+typealias Material3 = androidx.compose.material3.MaterialTheme
+
 val MaterialTheme.dimen: Dimen
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalDimen.current
+
+val Material3.dimen: Dimen
     @Composable
     @ReadOnlyComposable
     get() = LocalDimen.current
