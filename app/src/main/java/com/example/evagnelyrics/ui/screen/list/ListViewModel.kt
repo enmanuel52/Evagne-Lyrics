@@ -96,14 +96,6 @@ class ListViewModel(
         }
     }
 
-    fun initValuesForTesting(
-        songs: List<LyricsEntity> = emptyList(),
-        fav: Boolean = false,
-    ) {
-//        _songs.value = songs
-//        _favMode.value = fav
-    }
-
     /**
      * if it is not on fav mode*/
     fun favAction(title: String) = viewModelScope.launch {

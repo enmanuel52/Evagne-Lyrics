@@ -238,6 +238,7 @@ fun SlideFromRight(
 fun SlideFromLeft(
     visible: Boolean,
     durationMillis: Int,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     AnimatedVisibility(
@@ -248,6 +249,7 @@ fun SlideFromLeft(
         exit = fadeOut(
             tween(200)
         ),
+        modifier = modifier
     ) {
         content()
     }
