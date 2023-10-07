@@ -1,16 +1,17 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +28,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -40,9 +41,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,13 +63,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.theme.component.DiscJockeyBehaviour
-import com.example.evagnelyrics.ui.util.SlideFromLeft
 import com.example.evagnelyrics.ui.util.SlideFromRight
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
 import com.example.evagnelyrics.ui.util.Vertically
@@ -111,7 +115,8 @@ fun ListScreen(
                             onValueChange = { viewModel.searching(it) },
                             label = { Text(text = stringResource(id = R.string.search_song_hint)) },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = MaterialTheme.typography.bodyLarge
                         )
                     }
                 },
@@ -130,7 +135,7 @@ fun ListScreen(
                                 Icon(
                                     imageVector = Icons.Rounded.Favorite,
                                     contentDescription = "fav mode",
-                                    tint = if (favMode) Color.Red else MaterialTheme.colorScheme.onPrimary
+                                    tint = if (favMode) Color.Red else MaterialTheme.colorScheme.onBackground
                                 )
                             }
                             Spacer(modifier = Modifier.width(6.dp))
@@ -152,7 +157,6 @@ fun ListScreen(
     ) {
         SongsList(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(it),
             songs = titles,
         ) { title: String ->
@@ -185,7 +189,11 @@ fun SongsList(
         targetState = true
     }
 
-    LazyColumn(modifier) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small)
+    ) {
         itemsIndexed(songs) { index, item ->
             SlideInOutFrom(
                 where = Where.Vertical(Vertically.Top),
@@ -253,35 +261,24 @@ fun SongItem(
             .padding(
                 horizontal = MaterialTheme.dimen.verySmall,
             )
-            .height(MaterialTheme.dimen.almostGiant),
+            .animateContentSize(),
         onClick = { navTo(title) }
     ) {
-        SlideFromLeft(
-            visible = mainAudio == Audio.Running && playingSong == title,
-            mediaPlayer.duration
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        MaterialTheme.colorScheme.secondary,
-                    )
-            )
-        }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth(),
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
                 DiscJockeyBehaviour(
                     modifier = Modifier
-                        .fillMaxHeight(),
+                        .padding(all = MaterialTheme.dimen.verySmall)
+                        .height(MaterialTheme.dimen.almostGiant),
                     isPlaying = mainAudio == Audio.Running && playingSong == title,
                     onClick = {
                         if (mainAudio == Audio.Pause) {
@@ -321,10 +318,6 @@ fun SongItem(
                         painter = painterResource(id = getCover(title) ?: R.drawable.img3_7228),
                         contentDescription = "cover image",
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .padding(all = MaterialTheme.dimen.verySmall)
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
                     )
                 }
                 Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
@@ -339,7 +332,43 @@ fun SongItem(
             ) { viewModel.favAction(it) }
         }
 
+        val isPlaying by remember(mainAudio, playingSong) {
+            derivedStateOf { mainAudio == Audio.Running && playingSong == title }
+        }
+
+        if (isPlaying) {
+            LaunchedEffect(key1 = Unit, block = { Log.d(TAG, "SongItem: isRunning") })
+            LinearAnimatedProgress(mediaPlayer.duration)
+        }
     }
+}
+
+@Composable
+private fun LinearAnimatedProgress(millis: Int) {
+    var progress by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        label = "song progress",
+        animationSpec = tween(millis, easing = LinearEasing)
+    )
+
+    LinearProgressIndicator(
+        progress = animatedProgress,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = MaterialTheme.dimen.verySmall,
+                horizontal = MaterialTheme.dimen.small
+            )
+            .height(MaterialTheme.dimen.small)
+            .clip(CircleShape)
+
+    )
+
+    LaunchedEffect(key1 = Unit, block = { progress = 1f })
 }
 
 @Composable
@@ -350,12 +379,12 @@ fun FavIcon(
     favAction: (String) -> Unit
 ) {
     IconButton(
-        modifier = modifier.padding(end = MaterialTheme.dimen.mediumSmall),
+        modifier = modifier,
         onClick = { favAction(title) }) {
         Icon(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = "fav button",
-            tint = if (favTitles.contains(title)) Color.Red else LocalContentColor.current
+            tint = if (favTitles.contains(title)) Color.Red else MaterialTheme.colorScheme.onBackground
         )
     }
 }

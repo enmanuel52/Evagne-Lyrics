@@ -11,11 +11,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,37 +40,41 @@ fun DiscJockeyBehaviour(
     coverImage: @Composable () -> Unit
 ) {
     var stoppedDegree by remember {
-        mutableStateOf(0f)
+        mutableFloatStateOf(0f)
     }
 
     val stoppedAnimation by animateFloatAsState(
         targetValue = if (!isPlaying) 0f else stoppedDegree,
-        spring(Spring.DampingRatioMediumBouncy)
+        spring(Spring.DampingRatioMediumBouncy), label = "stop animation"
     )
 
     Box(
         modifier = modifier
+            .aspectRatio(1f)
+            .clip(CircleShape)
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
+                .fillMaxSize()
                 .rotate(stoppedAnimation)
                 .clickable { onClick() }
         ) {
             coverImage()
         }
         if (isPlaying) {
-            val infiniteTransition = rememberInfiniteTransition()
+            val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
 
             val unstoppableDegrees by infiniteTransition.animateFloat(
                 initialValue = 0f,
                 targetValue = 360f,
                 animationSpec = infiniteRepeatable(
                     tween(durationMillis = 2500, easing = LinearEasing),
-                )
+                ), label = "infinite rotation"
             )
 
             Box(
-                modifier = modifier
+                modifier = Modifier
+                    .fillMaxSize()
                     .rotate(unstoppableDegrees)
                     .clickable {
                         stoppedDegree = unstoppableDegrees
@@ -84,18 +92,22 @@ fun DiscJockeyBehaviour(
 fun DiscJokerPrev() {
 
     val (play, onPlay) = remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
-    DiscJockeyBehaviour(
-        isPlaying = play,
-        onClick = { onPlay(!play) },
-        modifier = Modifier.size(200.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.avicii_cover),
-            contentDescription = "music cover",
-            contentScale = ContentScale.Crop
-        )
+    Row(Modifier.fillMaxWidth()) {
+        DiscJockeyBehaviour(
+            isPlaying = play,
+            onClick = { onPlay(!play) },
+            modifier = Modifier
+                .height(200.dp)
+                .aspectRatio(1f)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.avicii_cover),
+                contentDescription = "music cover",
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
