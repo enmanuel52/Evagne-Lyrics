@@ -1,9 +1,6 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import androidx.annotation.RawRes
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.evagnelyrics.core.Resource
@@ -15,6 +12,7 @@ import com.example.evagnelyrics.domain.usecase.GetLyricsByTitleUC
 import com.example.evagnelyrics.ui.player.Player
 import com.example.evagnelyrics.ui.screen.list.model.ListFilter
 import com.example.evagnelyrics.ui.screen.list.model.ListFilterEvent
+import com.example.evagnelyrics.ui.screen.list.model.PlayerUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,11 +39,8 @@ class ListViewModel(
     private val _filterState = MutableStateFlow(ListFilter())
     val filterState get() = _filterState.asStateFlow()
 
-    private val _audioState: MutableStateFlow<Audio> = MutableStateFlow(Audio.Pause)
-    val audioState get() = _audioState.asStateFlow()
-
-    private val _playingSong: MutableState<String> = mutableStateOf("")
-    val playingSong: State<String> get() = _playingSong
+    private val _playerState = MutableStateFlow(PlayerUi())
+    val playerState get() = _playerState.asStateFlow()
 
     fun favAction(title: String) = viewModelScope.launch {
         val lyric: Lyric = getLyricsByTitleUC(title)
@@ -69,24 +64,21 @@ class ListViewModel(
         }
     }
 
-    fun setAudioState(value: Audio, title: String? = null) {
-        if (value == Audio.Running && title != null) {
-            _playingSong.value = title
-        }
-        _audioState.value = value
-    }
-
-    fun onPlayer(action: PlayerAction, @RawRes song: Int? = null) =
+    /**
+     * @param lyric to update the song that is playing*/
+    fun onPlayer(action: PlayerAction, @RawRes rawSong: Int? = null, lyric: Lyric? = null) =
         viewModelScope.launch {
             val stopPlaying = {
-                _audioState.update { Audio.Pause }
+                _playerState.update { it.copy(audio = Audio.Pause) }
                 player.stop()
             }
 
             when (action) {
                 PlayerAction.Play -> {
-                    if (song != null) {
-                        player.play(song, onComplete = stopPlaying)
+                    if (rawSong != null) {
+                        player.play(rawSong, onComplete = stopPlaying)
+
+                        _playerState.update { PlayerUi(Audio.Running, lyric) }
                     }
                 }
 
@@ -98,3 +90,9 @@ class ListViewModel(
 }
 
 enum class PlayerAction { Play, Pause, Clean }
+
+data class PlayerActionData(
+    val action: PlayerAction,
+    @RawRes val rawSong: Int? = null,
+    val lyric: Lyric? = null
+)
