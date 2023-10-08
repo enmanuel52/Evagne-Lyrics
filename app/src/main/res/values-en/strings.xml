@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Evagne Lyrics</string>
+    <string name="songs">Songs</string>
+    <string name="albums_title">Albums</string>
+    <string name="title_wallpapers">Wallpapers</string>
+    <string name="picture_title">Picture</string>
+    <string name="empty_fav_songs">Yo do not have favorite songs</string>
+    <string name="by_dev">by Enmanuel Bergling</string>
+    <string name="search_song_hint">Search for a song</string>
+</resources>

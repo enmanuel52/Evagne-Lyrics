@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Evagne Lyrics</string>
-    <string name="hello_world">Hello World</string>
-    <string name="bye_world">Bye World</string>
-    <string name="see_you_world">See you World</string>
+    <string name="songs">Canciones</string>
+    <string name="albums_title">Albumes</string>
+    <string name="title_wallpapers">Fotografías</string>
+    <string name="picture_title">Imagen</string>
+    <string name="empty_fav_songs">No tiene canciones favoritas</string>
+    <string name="by_dev">by Enmanuel Bergling</string>
+    <string name="search_song_hint">Busque una canción</string>
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>

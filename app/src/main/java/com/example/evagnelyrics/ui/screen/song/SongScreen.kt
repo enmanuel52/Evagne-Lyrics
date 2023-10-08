@@ -1,0 +1,83 @@
+package com.example.evagnelyrics.ui.screen.song
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import com.example.evagnelyrics.core.LocalNavController
+import com.example.evagnelyrics.core.dimen
+import org.koin.androidx.compose.koinViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SongScreen(
+    viewModel: SongViewModel = koinViewModel(),
+    title: String = "",
+    navController: NavHostController = LocalNavController.current!!,
+) {
+    //observe and fetch the song
+    viewModel.fetch(title)
+    //here i should observe when i download the dependencies
+    val song by viewModel.songState.collectAsState()
+
+    val scrollBehaviour = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        topBar = {
+        TopAppBar(
+            title = { Text(text = song?.title.orEmpty()) },
+            navigationIcon = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = "back on song"
+                    )
+                }
+            },
+            scrollBehavior = scrollBehaviour
+        )
+    }) {
+        LazyColumn(
+            Modifier
+                .padding(it)
+                .nestedScroll(scrollBehaviour.nestedScrollConnection),
+        ) {
+            item {
+                Text(
+                    text = song?.letter.orEmpty(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(MaterialTheme.dimen.medium),
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+@Preview("Song screen", showSystemUi = true)
+fun SongScreenPreview() {
+    SongScreen(title = "Hello")
+}
