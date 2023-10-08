@@ -1,6 +1,6 @@
 package com.example.evagnelyrics.ui.screen.main
 
-import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
@@ -25,7 +25,6 @@ import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
@@ -35,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
@@ -51,6 +49,7 @@ import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.domain.model.SystemMode
 import com.example.evagnelyrics.ui.navigation.Route
+import com.example.evagnelyrics.ui.theme.EvagneLyricsTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -60,6 +59,20 @@ fun MainScreen(
     val viewModel = koinViewModel<MainVM>()
     val darkMode by viewModel.darkMode.collectAsState(initial = SystemMode.Dark)
 
+    MainScreen(
+        onSwitchDarkMode = viewModel::switchDarkMode,
+        darkMode = darkMode
+    ) { route -> navController.navigate(route) }
+
+
+}
+
+@Composable
+private fun MainScreen(
+    darkMode: SystemMode,
+    onSwitchDarkMode: () -> Unit,
+    onNavigate: (route: String) -> Unit,
+) {
     val smallDimen = MaterialTheme.dimen.small
     val mediumDimen = MaterialTheme.dimen.medium
 
@@ -113,47 +126,13 @@ fun MainScreen(
             .fillMaxSize(),
         constraintSet = constraints
     ) {
-        OutlinedIconButton(
-            onClick = { viewModel.switchDarkMode() },
+        DarkModeIconButton(
+            darkMode = darkMode,
+            onSwitchDarkMode = onSwitchDarkMode,
             modifier = Modifier.layoutId(DARK_MODE_SWITCHER_ID)
-        ) {
-            AnimatedContent(
-                targetState = darkMode,
-                transitionSpec = {
-                    slideInVertically(spring(Spring.DampingRatioHighBouncy)) { it } togetherWith
-                            fadeOut() + slideOutVertically { it }
-                }, label = "dark mode"
-            ) {
-                if (it == SystemMode.Light) {
-                    Icon(
-                        imageVector = Icons.Rounded.ModeNight,
-                        contentDescription = "night icon",
-                        tint = Color.Black
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Rounded.WbSunny,
-                        contentDescription = "light icon",
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-
-        Image(
-            painter = painterResource(R.drawable.img3_7228_crop),
-            contentDescription = "front",
-            modifier = Modifier
-                .layoutId(PHOTO_ID)
-                .aspectRatio(1f)
-                .border(
-                    MaterialTheme.dimen.verySmall,
-                    MaterialTheme.colorScheme.secondary,
-                    RoundedCornerShape(50)
-                )
-                .clip(RoundedCornerShape(50)),
-            contentScale = ContentScale.Crop
         )
+
+        MainImage(Modifier.layoutId(PHOTO_ID))
 
         Text(
             text = stringResource(id = R.string.app_name),
@@ -161,20 +140,7 @@ fun MainScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        LazyRow(
-            modifier = Modifier
-                .padding(end = MaterialTheme.dimen.verySmall)
-                .layoutId(LIST_ID)
-        ) {
-            val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
-            val titles = listOf(R.string.songs, R.string.title_wallpapers)
-            val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
-            items(count = 2) { index ->
-                MainCard(image = pictures[index], title = stringResource(titles[index])) {
-                    navController.navigate(destinations[index])
-                }
-            }
-        }
+        MainCards(onNavigate = onNavigate, modifier = Modifier.layoutId(LIST_ID))
 
         Text(
             text = stringResource(id = R.string.by_dev),
@@ -184,8 +150,72 @@ fun MainScreen(
             style = MaterialTheme.typography.bodyMedium
         )
     }
+}
 
+@Composable
+private fun MainCards(onNavigate: (route: String) -> Unit, modifier: Modifier = Modifier) {
+    LazyRow(
+        modifier = modifier
+            .padding(end = MaterialTheme.dimen.verySmall),
+    ) {
+        val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
+        val titles = listOf(R.string.songs, R.string.title_wallpapers)
+        val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
+        items(count = 2) { index ->
+            MainCard(image = pictures[index], title = stringResource(titles[index])) {
+                onNavigate(destinations[index])
+            }
+        }
+    }
+}
 
+@Composable
+private fun MainImage(modifier: Modifier = Modifier) {
+    Image(
+        painter = painterResource(R.drawable.img3_7228_crop),
+        contentDescription = "front",
+        modifier = modifier
+            .aspectRatio(1f)
+            .border(
+                MaterialTheme.dimen.verySmall,
+                MaterialTheme.colorScheme.secondary,
+                RoundedCornerShape(50)
+            )
+            .clip(RoundedCornerShape(50)),
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+private fun DarkModeIconButton(
+    darkMode: SystemMode,
+    onSwitchDarkMode: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedIconButton(
+        onClick = onSwitchDarkMode,
+        modifier = modifier
+    ) {
+        AnimatedContent(
+            targetState = darkMode,
+            transitionSpec = {
+                slideInVertically(spring(Spring.DampingRatioHighBouncy)) { it } togetherWith
+                        fadeOut() + slideOutVertically { it }
+            }, label = "dark mode"
+        ) {
+            if (it == SystemMode.Light) {
+                Icon(
+                    imageVector = Icons.Rounded.ModeNight,
+                    contentDescription = "night icon",
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.WbSunny,
+                    contentDescription = "light icon",
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -229,8 +259,10 @@ const val LIST_ID = "listId"
 const val TITLE_ID = "titleId"
 const val DARK_MODE_SWITCHER_ID = "dark_mode_switcher"
 
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    EvagneLyricsTheme(darkTheme = true) {
+        MainScreen(SystemMode.Dark, {}) {}
+    }
 }
