@@ -84,12 +84,12 @@ fun ListScreen(
     navController: NavHostController = LocalNavController.current!!
 ) {
     //composable
-    val snackBarState = SnackbarHostState()
+    val snackBarState = remember{ SnackbarHostState() }
 
     //viewModel states
     val favMode by viewModel.favState
     val searchMode by viewModel.searchMode.collectAsStateWithLifecycle()
-    val text by viewModel.searchState.collectAsStateWithLifecycle()
+    val searchText by viewModel.searchState.collectAsStateWithLifecycle()
     val titles by viewModel.titles.collectAsState()
 
     val onBack: () -> Unit = {
@@ -111,7 +111,7 @@ fun ListScreen(
                     }
                     SlideFromRight(visible = searchMode) {
                         OutlinedTextField(
-                            value = text,
+                            value = searchText,
                             onValueChange = { viewModel.searching(it) },
                             label = { Text(text = stringResource(id = R.string.search_song_hint)) },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
