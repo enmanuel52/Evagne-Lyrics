@@ -30,8 +30,17 @@ import com.google.accompanist.pager.rememberPagerState
 @Composable
 fun PictureScreen(
     page: Int = 0,
-    navController: NavHostController = LocalNavController.current!!,
 ) {
+
+    val navController: NavHostController = LocalNavController.current!!
+
+    PictureScreen(navController::popBackStack, page)
+
+}
+
+@Composable
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+private fun PictureScreen(onBack: ()->Unit, page: Int) {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (toolbar, pager) = createRefs()
         TopAppBar(
@@ -39,9 +48,7 @@ fun PictureScreen(
                 Text(text = stringResource(id = R.string.picture_title))
             },
             navigationIcon = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
+                IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.Rounded.ArrowBack,
                         contentDescription = "back arrow"
@@ -78,11 +85,10 @@ fun PictureScreen(
             )
         }
     }
-
 }
 
 @Preview(showSystemUi = true)
 @Composable
 fun PictureScreenPreview() {
-    PictureScreen()
+    PictureScreen({}, 2)
 }

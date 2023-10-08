@@ -1,7 +1,6 @@
 package com.example.evagnelyrics.ui.screen.list
 
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -29,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -40,7 +40,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -57,18 +56,20 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.evagnelyrics.EvagneLyricsApp.Companion.TAG
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.domain.model.Lyric
 import com.example.evagnelyrics.ui.navigation.Route
+import com.example.evagnelyrics.ui.screen.list.model.ListFilter
+import com.example.evagnelyrics.ui.screen.list.model.ListFilterEvent
+import com.example.evagnelyrics.ui.screen.list.model.PlayerUi
 import com.example.evagnelyrics.ui.theme.component.DiscJockeyBehaviour
 import com.example.evagnelyrics.ui.util.SlideFromRight
 import com.example.evagnelyrics.ui.util.SlideInOutFrom
@@ -79,22 +80,31 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen(
-    viewModel: ListViewModel = koinViewModel(),
-    navController: NavHostController = LocalNavController.current!!
-) {
+fun ListScreen() {
+    val viewModel: ListViewModel = koinViewModel()
+    val navController: NavHostController = LocalNavController.current!!
     //composable
-    val snackBarState = SnackbarHostState()
+    val snackBarState = remember { SnackbarHostState() }
 
     //viewModel states
-    val favMode by viewModel.favState
-    val searchMode by viewModel.searchMode.collectAsStateWithLifecycle()
-    val text by viewModel.searchState.collectAsStateWithLifecycle()
-    val titles by viewModel.titles.collectAsState()
+    val filterState by viewModel.filterState.collectAsStateWithLifecycle()
+    val lyrics by viewModel.allLyricsFlow.collectAsStateWithLifecycle(initialValue = emptyList())
+    val favoriteLyrics by viewModel.favoritesFlow.collectAsStateWithLifecycle(initialValue = emptyList())
+    val player by viewModel.playerState.collectAsStateWithLifecycle()
+
+    val lyricsState by remember {
+        derivedStateOf {
+            val filtered = if (filterState.favorite) favoriteLyrics
+            else lyrics
+
+            filtered.filter { it.title.contains(filterState.searchText, true) }
+        }
+    }
 
     val onBack: () -> Unit = {
-        if (searchMode) {
-            viewModel.toggleSearchMode()
+        if (filterState.searchMode) {
+            viewModel.onFilterEvent(ListFilterEvent.SearchMode)
+            viewModel.onFilterEvent(ListFilterEvent.SearchText(""))
         } else {
             navController.popBackStack()
         }
@@ -104,53 +114,11 @@ fun ListScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    SlideFromRight(visible = !searchMode) {
-                        Text(text = stringResource(id = R.string.songs))
-                    }
-                    SlideFromRight(visible = searchMode) {
-                        OutlinedTextField(
-                            value = text,
-                            onValueChange = { viewModel.searching(it) },
-                            label = { Text(text = stringResource(id = R.string.search_song_hint)) },
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = "back arrow",
-                        )
-                    }
-                },
-                actions = {
-                    SlideFromRight(visible = !searchMode) {
-                        Row {
-                            IconButton(onClick = { viewModel.onFavMode() }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Favorite,
-                                    contentDescription = "fav mode",
-                                    tint = if (favMode) Color.Red else MaterialTheme.colorScheme.onBackground
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            IconButton(onClick = {
-                                viewModel.toggleSearchMode()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Search,
-                                    contentDescription = "search",
-                                )
-                            }
-
-                        }
-                    }
-                },
+            ListTopAppBar(
+                isPlaying = player.audio == Audio.Running,
+                filterState = filterState,
+                onFilterEvent = viewModel::onFilterEvent,
+                onBack = onBack
             )
         },
         snackbarHost = { SnackbarHost(snackBarState) }
@@ -158,7 +126,11 @@ fun ListScreen(
         SongsList(
             modifier = Modifier
                 .padding(it),
-            songs = titles,
+            songs = lyricsState,
+            favoriteMode = filterState.favorite,
+            playerUi = player,
+            onPlayer = { data -> viewModel.onPlayer(data.action, data.rawSong, data.lyric) },
+            onFavAction = viewModel::favAction
         ) { title: String ->
             navController.navigate(Route.Song.toString() + "/$title")
         }
@@ -180,13 +152,83 @@ fun ListScreen(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun ListTopAppBar(
+    isPlaying: Boolean,
+    filterState: ListFilter,
+    onFilterEvent: (ListFilterEvent) -> Unit,
+    onBack: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            SlideFromRight(visible = !filterState.searchMode) {
+                Text(text = stringResource(id = R.string.songs))
+            }
+            SlideFromRight(visible = filterState.searchMode) {
+                OutlinedTextField(
+                    value = filterState.searchText,
+                    onValueChange = { onFilterEvent(ListFilterEvent.SearchText(it)) },
+                    label = { Text(text = stringResource(id = R.string.search_song_hint)) },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge
+                )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBack,
+                    contentDescription = "back arrow",
+                )
+            }
+        },
+        actions = {
+            SlideFromRight(visible = !filterState.searchMode) {
+                Row {
+                    IconButton(
+                        onClick = { onFilterEvent(ListFilterEvent.Favorite) },
+                        enabled = !isPlaying,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Favorite,
+                            contentDescription = "fav mode",
+                            tint = if (filterState.favorite) Color.Red else LocalContentColor.current
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    IconButton(
+                        onClick = {
+                            onFilterEvent(ListFilterEvent.SearchMode)
+                        },
+                        enabled = !isPlaying,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Search,
+                            contentDescription = "search",
+                        )
+                    }
+
+                }
+            }
+        },
+    )
+}
+
+@Composable
 fun SongsList(
     modifier: Modifier = Modifier,
-    songs: List<String> = emptyList(),
+    songs: List<Lyric> = emptyList(),
+    favoriteMode: Boolean,
+    playerUi: PlayerUi,
+    onPlayer: (PlayerActionData) -> Unit,
+    onFavAction: (title: String) -> Unit,
     navTo: (title: String) -> Unit = {},
 ) {
-    val mutableTransition = MutableTransitionState(false).apply {
-        targetState = true
+    val mutableTransition = remember(favoriteMode){
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
     }
 
     LazyColumn(
@@ -194,7 +236,7 @@ fun SongsList(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small)
     ) {
-        itemsIndexed(songs) { index, item ->
+        itemsIndexed(songs, key = {index, item ->item.title}) { index, item ->
             SlideInOutFrom(
                 where = Where.Vertical(Vertically.Top),
                 visibleState = mutableTransition,
@@ -204,7 +246,11 @@ fun SongsList(
                 dampingRatio = 1.1f - (index.toFloat() / (songs.size - 1))
             ) {
                 SongItem(
-                    title = item,
+                    lyric = item,
+                    favoriteMode = favoriteMode,
+                    playerUi = playerUi,
+                    onPlayer = onPlayer,
+                    onFavAction = onFavAction,
                 ) {
                     navTo(it)
                 }
@@ -218,22 +264,21 @@ enum class Audio { Pause, Running }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongItem(
+    lyric: Lyric,
     modifier: Modifier = Modifier,
-    title: String,
-    viewModel: ListViewModel = koinViewModel(),
+    favoriteMode: Boolean,
+    playerUi: PlayerUi,
+    onPlayer: (PlayerActionData) -> Unit,
+    onFavAction: (title: String) -> Unit,
     navTo: (title: String) -> Unit = {},
 ) {
     val context = LocalContext.current
 
-    val mainAudio by viewModel.audioState.collectAsState()
-
     val mediaPlayer: MediaPlayer by remember {
         mutableStateOf(
-            MediaPlayer.create(context, getResourceSong(title))
+            MediaPlayer.create(context, getResourceSong(lyric.title))
         )
     }
-
-    val playingSong by viewModel.playingSong
 
     //To observe the lifecycle
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -241,10 +286,9 @@ fun SongItem(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
-                viewModel.setAudioState(Audio.Pause)
-                viewModel.onPlayer(PlayerAction.Pause)
+                onPlayer(PlayerActionData(PlayerAction.Pause))
             } else if (event == Lifecycle.Event.ON_DESTROY) {
-                viewModel.onPlayer(PlayerAction.Clean)
+                onPlayer(PlayerActionData(PlayerAction.Clean))
                 mediaPlayer.release()
             }
         }
@@ -262,7 +306,7 @@ fun SongItem(
                 horizontal = MaterialTheme.dimen.verySmall,
             )
             .animateContentSize(),
-        onClick = { navTo(title) }
+        onClick = { navTo(lyric.title) }
     ) {
 
         Row(
@@ -279,65 +323,62 @@ fun SongItem(
                     modifier = Modifier
                         .padding(all = MaterialTheme.dimen.verySmall)
                         .height(MaterialTheme.dimen.almostGiant),
-                    isPlaying = mainAudio == Audio.Running && playingSong == title,
+                    isPlaying = playerUi isPlaying lyric,
                     onClick = {
-                        if (mainAudio == Audio.Pause) {
+                        if (playerUi.isPlaying()) {
 
-                            viewModel.onPlayer(
-                                action = PlayerAction.Play,
-                                song = getResourceSong(title),
-                                onComplete = {
-                                    viewModel.setAudioState(Audio.Pause)
-                                }
-                            )
-                            viewModel.setAudioState(Audio.Running, title = title)
-                        } else if (mainAudio == Audio.Running) {
-                            when (playingSong) {
-                                title -> {
-                                    viewModel.onPlayer(PlayerAction.Pause)
-                                }
+                            onPlayer(PlayerActionData(PlayerAction.Pause))
 
-                                else -> {
-                                    //there is another running
-                                    viewModel.onPlayer(PlayerAction.Pause)
-
-                                    viewModel.onPlayer(
+                            if (playerUi.playingSong != lyric) {
+                                //new song running
+                                onPlayer(
+                                    PlayerActionData(
                                         action = PlayerAction.Play,
-                                        song = getResourceSong(title),
-                                        onComplete = {
-                                            viewModel.setAudioState(Audio.Pause)
-                                        }
+                                        rawSong = getResourceSong(lyric.title),
+                                        lyric = lyric
                                     )
-                                    viewModel.setAudioState(Audio.Running, title = title)
-                                }
+                                )
                             }
+                        } else {
+
+                            onPlayer(
+                                PlayerActionData(
+                                    action = PlayerAction.Play,
+                                    rawSong = getResourceSong(lyric.title),
+                                    lyric = lyric
+                                )
+                            )
                         }
                     }
                 ) {
                     Image(
-                        painter = painterResource(id = getCover(title) ?: R.drawable.img3_7228),
+                        painter = painterResource(
+                            id = getCover(lyric.title) ?: R.drawable.img3_7228
+                        ),
                         contentDescription = "cover image",
                         contentScale = ContentScale.Crop,
                     )
                 }
                 Spacer(modifier = Modifier.width(MaterialTheme.dimen.mediumSmall))
-                Text(text = title)
+                Text(text = lyric.title)
             }
 
-            //collect favs list
-            val favTitles by viewModel.favoritesFlow.collectAsState(emptyList())
-            FavIcon(
-                title,
-                favTitles = favTitles.map { it.title },
-            ) { viewModel.favAction(it) }
+            if (!favoriteMode) {//collect favs list
+                IconButton(onClick = { onFavAction(lyric.title) }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Favorite,
+                        contentDescription = "favorite icon",
+                        tint = if (lyric.favorite) Color.Red else LocalContentColor.current
+                    )
+                }
+            }
         }
 
-        val isPlaying by remember(mainAudio, playingSong) {
-            derivedStateOf { mainAudio == Audio.Running && playingSong == title }
+        val isPlaying by remember(playerUi) {
+            derivedStateOf { playerUi isPlaying lyric }
         }
 
         if (isPlaying) {
-            LaunchedEffect(key1 = Unit, block = { Log.d(TAG, "SongItem: isRunning") })
             LinearAnimatedProgress(mediaPlayer.duration)
         }
     }
@@ -369,37 +410,6 @@ private fun LinearAnimatedProgress(millis: Int) {
     )
 
     LaunchedEffect(key1 = Unit, block = { progress = 1f })
-}
-
-@Composable
-fun FavIcon(
-    title: String,
-    modifier: Modifier = Modifier,
-    favTitles: List<String> = emptyList(),
-    favAction: (String) -> Unit
-) {
-    IconButton(
-        modifier = modifier,
-        onClick = { favAction(title) }) {
-        Icon(
-            imageVector = Icons.Rounded.Favorite,
-            contentDescription = "fav button",
-            tint = if (favTitles.contains(title)) Color.Red else MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-
-@Composable
-@Preview(showSystemUi = true)
-fun ListScreenPreview() {
-    ListScreen()
-}
-
-@Composable
-@Preview(showSystemUi = true)
-fun SongsListScreenPreview() {
-    SongsList(songs = listOf("Hello"))
 }
 
 fun getResourceSong(title: String) =

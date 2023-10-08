@@ -1,5 +1,6 @@
 package com.example.evagnelyrics.ui.screen.song
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,39 +25,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
+import com.example.evagnelyrics.domain.model.Lyric
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    viewModel: SongViewModel = koinViewModel(),
     title: String = "",
-    navController: NavHostController = LocalNavController.current!!,
 ) {
+    val viewModel: SongViewModel = koinViewModel()
+    val navController: NavHostController = LocalNavController.current!!
     //observe and fetch the song
-    viewModel.fetch(title)
+    LaunchedEffect(key1 = Unit) { viewModel.fetch(title) }
     //here i should observe when i download the dependencies
     val song by viewModel.songState.collectAsState()
 
+    SongScreen(song = song, onBack = navController::popBackStack)
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun SongScreen(
+    song: Lyric?,
+    onBack: () -> Unit,
+) {
     val scrollBehaviour = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
-        TopAppBar(
-            title = { Text(text = song?.title.orEmpty()) },
-            navigationIcon = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "back on song"
-                    )
-                }
-            },
-            scrollBehavior = scrollBehaviour
-        )
-    }) {
+            TopAppBar(
+                title = { Text(text = song?.title.orEmpty()) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "back on song"
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehaviour
+            )
+        }) {
         LazyColumn(
             Modifier
                 .padding(it)
@@ -79,5 +89,5 @@ fun SongScreen(
 @Composable
 @Preview("Song screen", showSystemUi = true)
 fun SongScreenPreview() {
-    SongScreen(title = "Hello")
+    SongScreen(song = Lyric("Hello", letter = "Hello, it's me")) {}
 }
