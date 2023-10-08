@@ -225,7 +225,7 @@ fun SongsList(
     onFavAction: (title: String) -> Unit,
     navTo: (title: String) -> Unit = {},
 ) {
-    val mutableTransition = remember{
+    val mutableTransition = remember(favoriteMode){
         MutableTransitionState(false).apply {
             targetState = true
         }
@@ -236,7 +236,7 @@ fun SongsList(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small)
     ) {
-        itemsIndexed(songs) { index, item ->
+        itemsIndexed(songs, key = {index, item ->item.title}) { index, item ->
             SlideInOutFrom(
                 where = Where.Vertical(Vertically.Top),
                 visibleState = mutableTransition,
