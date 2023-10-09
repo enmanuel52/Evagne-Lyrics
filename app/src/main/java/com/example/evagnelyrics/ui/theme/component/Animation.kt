@@ -43,7 +43,7 @@ fun DiscJockeyBehaviour(
         mutableFloatStateOf(0f)
     }
 
-    val stoppedAnimation by animateFloatAsState(
+    val stopAnimation by animateFloatAsState(
         targetValue = if (!isPlaying) 0f else stoppedDegree,
         spring(Spring.DampingRatioMediumBouncy), label = "stop animation"
     )
@@ -56,7 +56,7 @@ fun DiscJockeyBehaviour(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .rotate(stoppedAnimation)
+                .rotate(stopAnimation)
                 .clickable { onClick() }
         ) {
             coverImage()
