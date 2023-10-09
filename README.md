@@ -21,7 +21,7 @@ This is a personal project about my sister´s career as singer😘, i hope you l
 
 <div style="margin: 10px;">
   <img src="https://github.com/enmanuel52/Evagne-Lyrics/blob/feat/app/src/main/res/drawable/main_screen_shot.png" style="display: flex; width: 30%; padding: 0% 3%;">
-  <img src="https://github.com/enmanuel52/Evagne-Lyrics/blob/feat/app/src/main/res/drawable/list_screen_shot.png" style="display: flex; width: 30%; padding: 0% 3%;">
+  <img src="https://github.com/enmanuel52/Evagne-Lyrics/blob/master/app/src/main/res/drawable/list_screen_shot.png" style="display: flex; width: 30%; padding: 0% 3%;">
   <img src="https://github.com/enmanuel52/Evagne-Lyrics/blob/feat/app/src/main/res/drawable/song_screen_shot.png" style="display: flex; width: 30%; padding: 0% 3%;">
 </div>
 
