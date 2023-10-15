@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -136,7 +137,7 @@ private fun MainScreen(
 
         Text(
             text = stringResource(id = R.string.app_name),
-            modifier = Modifier.layoutId(TITLE_ID),
+            modifier = Modifier.layoutId(TITLE_ID).testTag("app title"),
             style = MaterialTheme.typography.headlineMedium
         )
 
