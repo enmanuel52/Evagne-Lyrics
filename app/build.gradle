@@ -46,6 +46,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.example.evagnelyrics'
 
     buildFeatures{
         viewBinding = true
@@ -121,13 +122,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
     testImplementation "androidx.arch.core:core-testing:2.1.0"
-//    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    // Optional -- Mockito framework
-//    testImplementation "org.mockito:mockito-core:$mockitoVersion"
-    // Optional -- mockito-kotlin
-//    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     // Optional -- Mockk framework
     def mockkVersion = "1.13.8"
     testImplementation "io.mockk:mockk:$mockkVersion"
