@@ -5,8 +5,11 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -88,18 +91,8 @@ fun ListScreen() {
 
     //viewModel states
     val filterState by viewModel.filterState.collectAsStateWithLifecycle()
-    val lyrics by viewModel.allLyricsFlow.collectAsStateWithLifecycle(initialValue = emptyList())
-    val favoriteLyrics by viewModel.favoritesFlow.collectAsStateWithLifecycle(initialValue = emptyList())
+    val lyrics by viewModel.lyricsFlow.collectAsStateWithLifecycle(initialValue = emptyList())
     val player by viewModel.playerState.collectAsStateWithLifecycle()
-
-    val lyricsState by remember {
-        derivedStateOf {
-            val filtered = if (filterState.favorite) favoriteLyrics
-            else lyrics
-
-            filtered.filter { it.title.contains(filterState.searchText, true) }
-        }
-    }
 
     val onBack: () -> Unit = {
         if (filterState.searchMode) {
@@ -126,7 +119,7 @@ fun ListScreen() {
         SongsList(
             modifier = Modifier
                 .padding(it),
-            songs = lyricsState,
+            songs = lyrics,
             favoriteMode = filterState.favorite,
             playerUi = player,
             onPlayer = { data -> viewModel.onPlayer(data.action, data.rawSong, data.lyric) },
@@ -215,6 +208,7 @@ private fun ListTopAppBar(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SongsList(
     modifier: Modifier = Modifier,
@@ -225,7 +219,7 @@ fun SongsList(
     onFavAction: (title: String) -> Unit,
     navTo: (title: String) -> Unit = {},
 ) {
-    val mutableTransition = remember(favoriteMode){
+    val mutableTransition = remember {
         MutableTransitionState(false).apply {
             targetState = true
         }
@@ -236,21 +230,27 @@ fun SongsList(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.small)
     ) {
-        itemsIndexed(songs, key = {index, item ->item.title}) { index, item ->
+        itemsIndexed(songs, key = { _, item -> item.title }) { index, item ->
             SlideInOutFrom(
                 where = Where.Vertical(Vertically.Top),
                 visibleState = mutableTransition,
                 delayMillis = 0,
                 hasBounce = true,
                 durationMillis = 50,
-                dampingRatio = 1.1f - (index.toFloat() / (songs.size - 1))
+                dampingRatio = 1.1f - (index.toFloat() / (songs.size - 1)),
+                modifier = Modifier.animateItemPlacement(
+                    spring(
+                        Spring.DampingRatioHighBouncy,
+                        Spring.StiffnessLow
+                    )
+                )
             ) {
                 SongItem(
                     lyric = item,
                     favoriteMode = favoriteMode,
                     playerUi = playerUi,
                     onPlayer = onPlayer,
-                    onFavAction = onFavAction,
+                    onFavAction = onFavAction
                 ) {
                     navTo(it)
                 }

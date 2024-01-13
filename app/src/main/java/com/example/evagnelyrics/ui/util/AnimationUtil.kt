@@ -20,7 +20,7 @@ fun SlideInOutFrom(
     delayMillis: Int = 0,
     durationMillis: Int = 400,
     hasBounce: Boolean = false,
-    dampingRatio: Float = 1f,
+    dampingRatio: Float = Spring.DampingRatioHighBouncy,
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
