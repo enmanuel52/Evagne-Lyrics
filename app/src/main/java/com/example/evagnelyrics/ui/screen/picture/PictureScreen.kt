@@ -2,15 +2,17 @@ package com.example.evagnelyrics.ui.screen.picture
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,11 +24,7 @@ import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
 import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PictureScreen(
     page: Int = 0,
@@ -39,8 +37,8 @@ fun PictureScreen(
 }
 
 @Composable
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
-private fun PictureScreen(onBack: ()->Unit, page: Int) {
+@OptIn(ExperimentalMaterial3Api::class)
+private fun PictureScreen(onBack: () -> Unit, page: Int) {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (toolbar, pager) = createRefs()
         TopAppBar(
@@ -64,7 +62,7 @@ private fun PictureScreen(onBack: ()->Unit, page: Int) {
             }
         )
 
-        val pagerState = rememberPagerState(page)
+        val pagerState = rememberPagerState(page) { Items.images.size }
         HorizontalPager(
             modifier = Modifier.constrainAs(pager) {
                 top.linkTo(toolbar.bottom)
@@ -74,8 +72,7 @@ private fun PictureScreen(onBack: ()->Unit, page: Int) {
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             },
-            count = Items.images.size,
-            itemSpacing = MaterialTheme.dimen.verySmall,
+            pageSpacing = MaterialTheme.dimen.verySmall,
             state = pagerState,
         ) { index ->
             Image(
