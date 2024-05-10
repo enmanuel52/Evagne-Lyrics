@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.EvagneLyrics" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.EvagneLyrics" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/pink_gray</item>
     </style>
