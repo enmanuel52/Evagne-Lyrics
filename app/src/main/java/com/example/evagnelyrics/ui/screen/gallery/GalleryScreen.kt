@@ -26,31 +26,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
-import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
-import com.example.evagnelyrics.ui.navigation.Route
-
-@Composable
-fun GalleryScreen(
-) {
-    val navController: NavHostController = LocalNavController.current!!
-
-
-    GalleryScreen(navController::popBackStack) { index ->
-        navController.navigate(Route.Picture.toString() + "/$index")
-    }
-
-
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GalleryScreen(
+fun GalleryScreen(
     onBack: () -> Unit,
-    onPicture: (index: Int) -> Unit,
+    onPicture: (page: Int) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),

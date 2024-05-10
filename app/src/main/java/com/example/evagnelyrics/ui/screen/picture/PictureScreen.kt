@@ -19,20 +19,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
 import com.example.evagnelyrics.core.Items
-import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 
 @Composable
 fun PictureScreen(
-    page: Int = 0,
+    page: Int,
+    onBack: () -> Unit,
 ) {
-
-    val navController: NavHostController = LocalNavController.current!!
-
-    PictureScreen(navController::popBackStack, page)
+    PictureScreen(onBack, page)
 
 }
 

@@ -1,6 +1,5 @@
 package com.example.evagnelyrics.ui.screen.main
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ModeNight
@@ -44,26 +44,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
-import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.domain.model.SystemMode
-import com.example.evagnelyrics.ui.navigation.Route
+import com.example.evagnelyrics.ui.navigation.TopDestination
 import com.example.evagnelyrics.ui.theme.EvagneLyricsTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainScreen(
-    navController: NavHostController = LocalNavController.current!!,
+    onTopDestination: (TopDestination) -> Unit,
 ) {
     val viewModel = koinViewModel<MainVM>()
     val darkMode by viewModel.darkMode.collectAsState(initial = SystemMode.Dark)
 
     MainScreen(
+        darkMode = darkMode,
         onSwitchDarkMode = viewModel::switchDarkMode,
-        darkMode = darkMode
-    ) { route -> navController.navigate(route) }
+        onTopDestination = onTopDestination
+    )
 
 
 }
@@ -72,7 +71,7 @@ fun MainScreen(
 private fun MainScreen(
     darkMode: SystemMode,
     onSwitchDarkMode: () -> Unit,
-    onNavigate: (route: String) -> Unit,
+    onTopDestination: (TopDestination) -> Unit,
 ) {
     val smallDimen = MaterialTheme.dimen.small
     val mediumDimen = MaterialTheme.dimen.medium
@@ -137,11 +136,13 @@ private fun MainScreen(
 
         Text(
             text = stringResource(id = R.string.app_name),
-            modifier = Modifier.layoutId(TITLE_ID).testTag("app title"),
+            modifier = Modifier
+                .layoutId(TITLE_ID)
+                .testTag("app title"),
             style = MaterialTheme.typography.headlineMedium
         )
 
-        MainCards(onNavigate = onNavigate, modifier = Modifier.layoutId(LIST_ID))
+        MainCards(onTopDestination, modifier = Modifier.layoutId(LIST_ID))
 
         Text(
             text = stringResource(id = R.string.by_dev),
@@ -154,17 +155,15 @@ private fun MainScreen(
 }
 
 @Composable
-private fun MainCards(onNavigate: (route: String) -> Unit, modifier: Modifier = Modifier) {
+private fun MainCards(onTopDestination: (TopDestination) -> Unit, modifier: Modifier = Modifier) {
     LazyRow(
         modifier = modifier
             .padding(end = MaterialTheme.dimen.verySmall),
     ) {
-        val pictures = listOf(R.drawable.img2_7190, R.drawable.img4_7236)
-        val titles = listOf(R.string.songs, R.string.title_wallpapers)
-        val destinations = listOf(Route.List.toString(), Route.Gallery.toString())
-        items(count = 2) { index ->
-            MainCard(image = pictures[index], title = stringResource(titles[index])) {
-                onNavigate(destinations[index])
+
+        items(TopDestination.entries) { destination ->
+            MainCard(image = destination.picture, title = stringResource(destination.title)) {
+                onTopDestination(destination)
             }
         }
     }

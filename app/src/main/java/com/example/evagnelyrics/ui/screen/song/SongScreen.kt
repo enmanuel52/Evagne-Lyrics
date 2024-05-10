@@ -22,24 +22,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.domain.model.Lyric
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SongScreen(
-    title: String = "",
+    title: String,
+    onGoBack: () -> Unit,
 ) {
     val viewModel: SongViewModel = koinViewModel()
-    val navController: NavHostController = LocalNavController.current!!
     //observe and fetch the song
     LaunchedEffect(key1 = Unit) { viewModel.fetch(title) }
     //here i should observe when i download the dependencies
     val song by viewModel.songState.collectAsState()
 
-    SongScreen(song = song, onBack = navController::popBackStack)
+    SongScreen(song = song, onBack = onGoBack)
 }
 
 @Composable
