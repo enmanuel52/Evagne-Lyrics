@@ -63,13 +63,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.example.evagnelyrics.R
-import com.example.evagnelyrics.core.LocalNavController
 import com.example.evagnelyrics.core.Resource
 import com.example.evagnelyrics.core.dimen
 import com.example.evagnelyrics.domain.model.Lyric
-import com.example.evagnelyrics.ui.navigation.Route
 import com.example.evagnelyrics.ui.screen.list.model.ListFilter
 import com.example.evagnelyrics.ui.screen.list.model.ListFilterEvent
 import com.example.evagnelyrics.ui.screen.list.model.PlayerUi
@@ -81,11 +78,9 @@ import com.example.evagnelyrics.ui.util.Where
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen() {
+fun ListScreen(onSong: (title: String) -> Unit, onGoBack: () -> Unit) {
     val viewModel: ListViewModel = koinViewModel()
-    val navController: NavHostController = LocalNavController.current!!
     //composable
     val snackBarState = remember { SnackbarHostState() }
 
@@ -99,7 +94,7 @@ fun ListScreen() {
             viewModel.onFilterEvent(ListFilterEvent.SearchMode)
             viewModel.onFilterEvent(ListFilterEvent.SearchText(""))
         } else {
-            navController.popBackStack()
+            onGoBack()
         }
     }
 
@@ -123,10 +118,9 @@ fun ListScreen() {
             favoriteMode = filterState.favorite,
             playerUi = player,
             onPlayer = { data -> viewModel.onPlayer(data.action, data.rawSong, data.lyric) },
-            onFavAction = viewModel::favAction
-        ) { title: String ->
-            navController.navigate(Route.Song.toString() + "/$title")
-        }
+            onFavAction = viewModel::favAction,
+            onSong
+        )
 
 
         //collect uiStates
@@ -217,7 +211,7 @@ fun SongsList(
     playerUi: PlayerUi,
     onPlayer: (PlayerActionData) -> Unit,
     onFavAction: (title: String) -> Unit,
-    navTo: (title: String) -> Unit = {},
+    onSong: (title: String) -> Unit,
 ) {
     val mutableTransition = remember {
         MutableTransitionState(false).apply {
@@ -252,7 +246,7 @@ fun SongsList(
                     onPlayer = onPlayer,
                     onFavAction = onFavAction
                 ) {
-                    navTo(it)
+                    onSong(it)
                 }
             }
         }

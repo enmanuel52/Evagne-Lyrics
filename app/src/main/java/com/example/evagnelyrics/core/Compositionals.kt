@@ -8,6 +8,4 @@ import com.example.evagnelyrics.ui.MainActivity
 
 val LocalDimen: ProvidableCompositionLocal<Dimen> = compositionLocalOf { Dimen() }
 
-val LocalNavController: ProvidableCompositionLocal<NavHostController?> = compositionLocalOf { null }
-
 val LocalActivity: ProvidableCompositionLocal<MainActivity?> = compositionLocalOf { null }
